@@ -16,6 +16,8 @@ namespace WSA
 			void *module = 0;
 			char *function = 0;
 			char *library = 0;
+			char *source = 0;
+			DWORD line = 0;
 
 			frame() = delete;
 			WSA_API

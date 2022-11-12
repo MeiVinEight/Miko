@@ -18,7 +18,7 @@ typedef CHAR *LPSTR;
 typedef void *HMODULE;
 typedef void *PVOID;
 typedef DWORD *PDWORD;
-// typedef CHAR *PCHAR;
+typedef CHAR *PCHAR;
 typedef struct
 {
 	ULONG       SizeOfStruct;
@@ -37,7 +37,6 @@ typedef struct
 	ULONG       MaxNameLen;
 	CHAR        Name[1];          // Name of symbol
 } SYMBOL_INFO, *PSYMBOL_INFO;
-/*
 typedef struct
 {
 	DWORD    SizeOfStruct;           // set to sizeof(IMAGEHLP_LINE64)
@@ -46,14 +45,13 @@ typedef struct
 	PCHAR    FileName;               // full filename
 	DWORD64  Address;                // first instruction of line
 } IMAGEHLP_LINE64, *PIMAGEHLP_LINE64;
-*/
 
 
 HANDLE __stdcall GetCurrentProcess(void);
 BOOL __declspec(dllimport) __stdcall SymFromAddr(HANDLE, DWORD64, PDWORD64, PSYMBOL_INFO);
 DWORD K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
-// BOOL __declspec(dllimport) __stdcall SymGetLineFromAddr64(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
+BOOL __declspec(dllimport) __stdcall SymGetLineFromAddr64(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
 DWORD __stdcall GetLastError(void);
 inline void* __cdecl operator new(size_t size, void* where) noexcept
 {
@@ -67,6 +65,13 @@ inline void* __cdecl operator new(size_t size, void* where) noexcept
 #endif
 
 HANDLE process = GetCurrentProcess();
+
+QWORD strlen(char *str)
+{
+	QWORD len = 0;
+	for (char *s = str; *s++; len++);
+	return len;
+}
 
 void backtrace(WSA::exception &exec)
 {
@@ -101,14 +106,20 @@ WSA::exception::frame::frame(void *returnAddress)
 	syminfo->MaxNameLen = MAX_SYM_NAME;
 	QWORD disp = 0;
 	SymFromAddr(process, (QWORD) returnAddress, &disp, syminfo);
-/*
+
 	DWORD dispLine = 0;
-	IMAGEHLP_LINE64 line{0};
-	line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-	SymGetLineFromAddr64(process, (QWORD) returnAddress, &dispLine, &line);
-*/
-	QWORD len = 0;
-	for (CHAR *s = syminfo->Name; *s++; len ++);
+	IMAGEHLP_LINE64 imgLine{0};
+	imgLine.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+	SymGetLineFromAddr64(process, (QWORD) returnAddress, &dispLine, &imgLine);
+	if (imgLine.LineNumber)
+	{
+		DWORD fnLen = strlen(imgLine.FileName);
+		this->source = (char *) Memory::allocate(fnLen + 1);
+		Memory::copy(this->source, imgLine.FileName, fnLen + 1);
+		this->line = imgLine.LineNumber;
+	}
+
+	QWORD len = strlen(syminfo->Name);
 	this->function = (char *) Memory::allocate(len + 1);
 	Memory::copy(this->function, syminfo->Name, len + 1);
 
@@ -117,8 +128,7 @@ WSA::exception::frame::frame(void *returnAddress)
 
 	char modname[MAX_SYM_NAME * sizeof(CHAR)]{0};
 	K32GetModuleBaseNameA(process, (HMODULE) this->module, modname, MAX_SYM_NAME);
-	len = 0;
-	for (char *s = modname; *s++; len ++);
+	len = strlen(modname);
 	this->library = (char *) Memory::allocate(len + 1);
 	Memory::copy(this->library, modname, len + 1);
 }
@@ -128,32 +138,51 @@ WSA::exception::frame::frame(WSA::exception::frame const &copy)
 	this->address = copy.address;
 	this->offset = copy.offset;
 	this->module = copy.module;
-	DWORD len = 0;
-	for (char *s = copy.function; *s++; len++);
+	DWORD len = strlen(copy.function);
 	this->function = (char *) Memory::allocate(len + 1);
 	Memory::copy(this->function, copy.function, len + 1);
 
-	len = 0;
-	for (char *s = copy.library; *s++; len++);
+	len = strlen(copy.library);
 	this->library = (char *) Memory::allocate(len + 1);
 	Memory::copy(this->library, copy.library, len + 1);
+
+	len = strlen(copy.source);
+	this->source = (char *) Memory::allocate(len + 1);
+	Memory::copy(this->source, copy.source, len + 1);
+
+	this->line = copy.line;
 }
 
 WSA::exception::frame::frame(WSA::exception::frame &&move):
-address(move.address), offset(move.offset), module(move.module), function(move.function), library(move.library)
+address(move.address),
+offset(move.offset),
+module(move.module),
+function(move.function),
+library(move.library),
+source(move.source),
+line(move.line)
 {
 	move.address = 0;
 	move.offset = 0;
 	move.module = 0;
 	move.function = 0;
 	move.library = 0;
+	move.source = 0;
+	move.line = 0;
 }
 
 WSA::exception::frame::~frame()
 {
 	Memory::free(this->function);
 	Memory::free(this->library);
-	this->address = this->offset = this->module = this->function = this->library = NULL;
+	Memory::free(this->source);
+	this->address = 0;
+	this->offset = 0;
+	this->module = 0;
+	this->function = 0;
+	this->library = 0;
+	this->source = 0;
+	this->line = 0;
 }
 
 WSA::exception::frame &WSA::exception::frame::operator=(WSA::exception::frame const &copy)
@@ -171,16 +200,21 @@ WSA::exception::frame& WSA::exception::frame::operator=(WSA::exception::frame &&
 	{
 		Memory::free(this->function);
 		Memory::free(this->library);
+		Memory::free(this->source);
 		this->address = move.address;
 		this->offset = move.offset;
 		this->module = move.module;
 		this->function = move.function;
 		this->library = move.library;
+		this->source = move.source;
+		this->line = move.line;
 		move.address = 0;
 		move.offset = 0;
 		move.module = 0;
 		move.function = 0;
 		move.library = 0;
+		move.source = 0;
+		move.line = 0;
 	}
 	return *this;
 }
