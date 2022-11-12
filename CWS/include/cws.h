@@ -35,6 +35,9 @@ namespace CWS
 {
 	class WebSocket
 	{
+		public:
+		CWS_API
+		WebSocket();
 	};
 }
 
