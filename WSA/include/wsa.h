@@ -24,7 +24,7 @@ namespace WSA
 	WSA_API
 	void startup();
 	WSA_API
-	void cleanup() noexcept(false);
+	void cleanup();
 	WSA_API
 	WSA::Address IP(LPCSTR host);
 	WSA_API
