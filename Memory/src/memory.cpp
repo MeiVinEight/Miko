@@ -43,7 +43,7 @@ void Memory::fill(void * p, BYTE x, QWORD size)
 	memset(p, x, size);
 }
 
-Memory::string::string(QWORD size): address(Memory::allocate(size)), memory(size)
+Memory::string::string(QWORD size): address(Memory::allocate(size)), length(size)
 {
 }
 
@@ -54,7 +54,7 @@ Memory::string::~string()
 		Memory::free(this->address);
 		this->address = NULL;
 	}
-	this->memory = 0;
+	this->length = 0;
 }
 
 BYTE &Memory::string::operator[](QWORD off) const
@@ -64,9 +64,9 @@ BYTE &Memory::string::operator[](QWORD off) const
 
 void Memory::string::ensure(QWORD size)
 {
-	if (this->memory < size)
+	if (this->length < size)
 	{
 		this->address = Memory::reallocate(this->address, size);
-		this->memory = size;
+		this->length = size;
 	}
 }

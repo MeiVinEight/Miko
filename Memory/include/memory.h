@@ -32,7 +32,7 @@ namespace Memory
 	{
 		public:
 		void *address = NULL;
-		QWORD memory = 0;
+		QWORD length = 0;
 
 		string() = delete;
 		MEMORY_API
