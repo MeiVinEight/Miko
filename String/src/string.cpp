@@ -39,11 +39,25 @@ String::string &String::string::operator=(String::string &&move)
 	return *this;
 }
 
-bool String::string::operator==(const String::string &&other) const
+bool String::string::operator==(const String::string &other) const
 {
-	if (this->length == other.length)
+	if (&other != this)
 	{
-		return Memory::compare(this->address.address, other.address.address, this->length);
+		if (this->length == other.length)
+		{
+			return Memory::compare(this->address.address, other.address.address, this->length);
+		}
+		return false;
+	}
+	return true;
+}
+
+bool String::string::operator==(const void *str) const
+{
+	QWORD len = String::length((const char *) str);
+	if (len == this->length)
+	{
+		return Memory::compare(this->address.address, str, len);
 	}
 	return false;
 }

@@ -34,8 +34,9 @@ namespace String
 		STRING_API
 		String::string &operator=(String::string &&);
 		STRING_API
-		bool operator==(const String::string &&) const;
-
+		bool operator==(const String::string &) const;
+		STRING_API
+		bool operator==(const void *) const;
 	};
 }
 
