@@ -38,7 +38,15 @@ namespace Memory
 		MEMORY_API
 		explicit string(QWORD);
 		MEMORY_API
+		string(const Memory::string &);
+		MEMORY_API
+		string(Memory::string &&);
+		MEMORY_API
 		~string();
+		MEMORY_API
+		Memory::string &operator=(const Memory::string &);
+		MEMORY_API
+		Memory::string &operator=(Memory::string &&);
 		MEMORY_API
 		BYTE &operator[](QWORD) const;
 		MEMORY_API
