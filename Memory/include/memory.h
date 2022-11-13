@@ -27,6 +27,8 @@ namespace Memory
 	void copy(void *, const void *, QWORD);
 	MEMORY_API
 	void fill(void *, BYTE, QWORD);
+	MEMORY_API
+	bool compare(const void *, const void *, QWORD);
 
 	class string
 	{

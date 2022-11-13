@@ -43,6 +43,18 @@ void Memory::fill(void * p, BYTE x, QWORD size)
 	memset(p, x, size);
 }
 
+bool Memory::compare(const void *p1, const void *p2, QWORD length)
+{
+	const char *s1 = (const char *)p1;
+	const char *s2 = (const char *)p2;
+	bool ret = true;
+	for (QWORD i = 0; ret && i < length; i++)
+	{
+		ret &= s1[i] == s2[i];
+	}
+	return ret;
+}
+
 Memory::string::string(QWORD size): address(Memory::allocate(size)), length(size)
 {
 }
