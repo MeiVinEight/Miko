@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "wsa.h"
-#include "exception.h"
+#include <wsa.h>
+#include <exception.h>
+#include <sstring.h>
 
 int main()
 {
@@ -11,16 +12,16 @@ int main()
 
 		WSA::Socket socket;
 		socket.connect({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
-		BYTE data[] = "GET /sub HTTP/1.0\r\n"
-					  "Host: broadcastlv.chat.bilibili.com\r\n"
-					  "Upgrade: websocket\r\n"
-					  "Connection: Upgrade\r\n"
-					  "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
-					  "Sec-WebSocket-Protocol: chat, superchat\r\n"
-					  "Sec-WebSocket-Version: 13\r\n"
-					  "Origin: ws://broadcastlv.chat.bilibili.com:2244/sub\r\n"
-					  "\r\n";
-		socket.write(data, sizeof(data) - 1);
+		String::string s = "GET /sub HTTP/1.0\r\n"
+						   "Host: broadcastlv.chat.bilibili.com\r\n"
+						   "Upgrade: websocket\r\n"
+						   "Connection: Upgrade\r\n"
+						   "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
+						   "Sec-WebSocket-Protocol: chat, superchat\r\n"
+						   "Sec-WebSocket-Version: 13\r\n"
+						   "Origin: ws://broadcastlv.chat.bilibili.com:2244/sub\r\n"
+						   "\r\n";
+		socket.write((BYTE *) s.address.address, s.length);
 		int len = 0;
 		int cr = 0;
 		while (true)
