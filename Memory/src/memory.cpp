@@ -49,11 +49,8 @@ Memory::string::string(QWORD size): address(Memory::allocate(size)), length(size
 
 Memory::string::~string()
 {
-	if (this->address)
-	{
-		Memory::free(this->address);
-		this->address = NULL;
-	}
+	Memory::free(this->address);
+	this->address = NULL;
 	this->length = 0;
 }
 
