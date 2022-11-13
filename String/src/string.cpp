@@ -1,11 +1,11 @@
 #define STRING_SHARED
 #include <sstring.h>
 
-QWORD String::length(const char *str)
+QWORD String::length(const void *str)
 {
-	const char *s = str;
+	const char *s = (const char *)str;
 	while (*s++);
-	return s - str - 1;
+	return s - (const char *)str - 1;
 }
 
 String::string::string()
@@ -13,7 +13,7 @@ String::string::string()
 	this->address[0] = 0;
 }
 
-String::string::string(const char *str): address(Memory::string(String::length(str) + 1))
+String::string::string(const void *str): address(Memory::string(String::length(str) + 1))
 {
 	this->length = this->address.length - 1;
 	Memory::copy(this->address.address, str, this->length);
@@ -54,10 +54,34 @@ bool String::string::operator==(const String::string &other) const
 
 bool String::string::operator==(const void *str) const
 {
-	QWORD len = String::length((const char *) str);
+	QWORD len = String::length(str);
 	if (len == this->length)
 	{
 		return Memory::compare(this->address.address, str, len);
 	}
 	return false;
+}
+
+char &String::string::operator[](QWORD idx) const
+{
+	return (char &)this->address[idx];
+}
+
+String::string &String::string::operator+=(const String::string &str)
+{
+	this->address.ensure(this->length + str.length + 1);
+	Memory::copy((char *)this->address.address + this->length, str.address.address, str.length);
+	this->length += str.length;
+	(*this)[this->length] = 0;
+	return *this;
+}
+
+String::string &String::string::operator+=(const void *str)
+{
+	QWORD len = String::length(str);
+	this->address.ensure(this->length + len + 1);
+	Memory::copy((char *)this->address.address + this->length, str, len);
+	this->length += len;
+	(*this)[this->length] = 0;
+	return *this;
 }

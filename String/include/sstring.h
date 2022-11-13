@@ -11,7 +11,7 @@
 
 namespace String
 {
-	QWORD length(const char *);
+	QWORD length(const void *);
 
 	class string
 	{
@@ -22,7 +22,7 @@ namespace String
 		STRING_API
 		string();
 		STRING_API
-		string(const char *);
+		string(const void *);
 		STRING_API
 		string(const String::string &);
 		STRING_API
@@ -37,6 +37,12 @@ namespace String
 		bool operator==(const String::string &) const;
 		STRING_API
 		bool operator==(const void *) const;
+		STRING_API
+		char &operator[](QWORD) const;
+		STRING_API
+		String::string &operator+=(const String::string &);
+		STRING_API
+		String::string &operator+=(const void *);
 	};
 }
 
