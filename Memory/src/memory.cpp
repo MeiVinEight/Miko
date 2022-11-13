@@ -43,10 +43,6 @@ void Memory::fill(void * p, BYTE x, QWORD size)
 	memset(p, x, size);
 }
 
-Memory::string::string(): Memory::string::string(1)
-{
-}
-
 Memory::string::string(QWORD size): address(Memory::allocate(size)), memory(size)
 {
 }

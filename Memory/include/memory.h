@@ -34,8 +34,7 @@ namespace Memory
 		void *address = NULL;
 		QWORD memory = 0;
 
-		MEMORY_API
-		string();
+		string() = delete;
 		MEMORY_API
 		explicit string(QWORD);
 		MEMORY_API
