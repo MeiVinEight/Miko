@@ -40,9 +40,13 @@ namespace String
 		STRING_API
 		char &operator[](QWORD) const;
 		STRING_API
-		String::string &operator+=(const String::string &);
+		String::string &operator+=(const String::string &) &;
 		STRING_API
-		String::string &operator+=(const void *);
+		String::string &operator+=(const void *) &;
+		STRING_API
+		String::string operator+(const String::string &) const;
+		STRING_API
+		String::string operator+(const void *) const;
 	};
 }
 

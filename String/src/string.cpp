@@ -67,7 +67,7 @@ char &String::string::operator[](QWORD idx) const
 	return (char &)this->address[idx];
 }
 
-String::string &String::string::operator+=(const String::string &str)
+String::string &String::string::operator+=(const String::string &str) &
 {
 	this->address.ensure(this->length + str.length + 1);
 	Memory::copy((char *)this->address.address + this->length, str.address.address, str.length);
@@ -76,7 +76,7 @@ String::string &String::string::operator+=(const String::string &str)
 	return *this;
 }
 
-String::string &String::string::operator+=(const void *str)
+String::string &String::string::operator+=(const void *str) &
 {
 	QWORD len = String::length(str);
 	this->address.ensure(this->length + len + 1);
@@ -84,4 +84,14 @@ String::string &String::string::operator+=(const void *str)
 	this->length += len;
 	(*this)[this->length] = 0;
 	return *this;
+}
+
+String::string String::string::operator+(const String::string &str) const
+{
+	return String::string(*this) += str;
+}
+
+String::string String::string::operator+(const void *str) const
+{
+	return String::string(*this) += str;
 }
