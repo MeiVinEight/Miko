@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(Memory)
 add_subdirectory(String)
+add_subdirectory(Exception)
 add_subdirectory(WSA)
 add_subdirectory(CWS)
 add_subdirectory(WST)

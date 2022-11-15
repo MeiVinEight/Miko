@@ -45,12 +45,12 @@ int main()
 
 		WSA::cleanup();
 	}
-	catch (WSA::exception &exec)
+	catch (Exception::exception &exec)
 	{
 		std::cout << "Error: " << exec.value << std::endl;
 		for (DWORD i = 0; i < exec.count; i++)
 		{
-			WSA::exception::frame &frame = exec.stack[i];
+			Exception::exception::frame &frame = exec.stack[i];
 			std::cout	<< "0x"
 						<< frame.offset
 						<< " ("

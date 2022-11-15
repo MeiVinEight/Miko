@@ -1,14 +1,21 @@
-#define WSA_SHARED
+#define EXCEPTION_SHARED
 #include <exception.h>
 #include <memory.h>
+#pragma comment(lib, "DbgHelp.lib")
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#define DLL_PROCESS_ATTACH 1
+#define DLL_PROCESS_DETACH 0
+#define SYMOPT_LOAD_LINES 0x10
 #define MAX_SYM_NAME 2000
 
+typedef const char *PCSTR;
+typedef void *HINSTANCE;
+typedef int BOOL;
 typedef char CHAR;
 typedef unsigned long ULONG;
 typedef unsigned __int64 ULONG64;
@@ -48,6 +55,9 @@ typedef struct
 
 
 HANDLE __stdcall GetCurrentProcess(void);
+DWORD __declspec(dllimport) __stdcall SymSetOptions(DWORD);
+BOOL __declspec(dllimport) __stdcall SymInitialize(HANDLE, PCSTR, BOOL);
+BOOL __declspec(dllimport) __stdcall SymCleanup(HANDLE);
 BOOL __declspec(dllimport) __stdcall SymFromAddr(HANDLE, DWORD64, PDWORD64, PSYMBOL_INFO);
 DWORD K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
@@ -66,6 +76,27 @@ inline void* __cdecl operator new(size_t size, void* where) noexcept
 
 HANDLE process = GetCurrentProcess();
 
+int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
+{
+	(void)&DllMain;
+	(void)instance;
+	(void)reserved;
+
+	switch (reason)
+	{
+		case DLL_PROCESS_ATTACH:
+		{
+			SymSetOptions(SYMOPT_LOAD_LINES);
+			return SymInitialize(process, 0, 1);
+		}
+		case DLL_PROCESS_DETACH:
+		{
+			return SymCleanup(process);
+		}
+	}
+	return 1;
+}
+
 QWORD strlen(char *str)
 {
 	QWORD len = 0;
@@ -73,7 +104,7 @@ QWORD strlen(char *str)
 	return len;
 }
 
-void backtrace(WSA::exception &exec)
+void backtrace(Exception::exception &exec)
 {
 	DWORD max = 64 * sizeof(void *);
 	DWORD count = 0;
@@ -89,14 +120,14 @@ void backtrace(WSA::exception &exec)
 		arr[count++] = retAddr;
 	}
 
-	exec.stack = (WSA::exception::frame *)Memory::allocate(count * sizeof(WSA::exception::frame));
-	for (DWORD i = 0; i < count; new(exec.stack + i) WSA::exception::frame(arr[i]), i++);
+	exec.stack = (Exception::exception::frame *)Memory::allocate(count * sizeof(Exception::exception::frame));
+	for (DWORD i = 0; i < count; new(exec.stack + i) Exception::exception::frame(arr[i]), i++);
 	exec.count = count;
 
 	Memory::free(arr);
 }
 
-WSA::exception::frame::frame(void *returnAddress)
+Exception::exception::frame::frame(void *returnAddress)
 {
 	this->offset = returnAddress;
 
@@ -133,7 +164,7 @@ WSA::exception::frame::frame(void *returnAddress)
 	Memory::copy(this->library, modname, len + 1);
 }
 
-WSA::exception::frame::frame(WSA::exception::frame const &copy)
+Exception::exception::frame::frame(Exception::exception::frame const &copy)
 {
 	this->address = copy.address;
 	this->offset = copy.offset;
@@ -153,14 +184,14 @@ WSA::exception::frame::frame(WSA::exception::frame const &copy)
 	this->line = copy.line;
 }
 
-WSA::exception::frame::frame(WSA::exception::frame &&move):
-address(move.address),
-offset(move.offset),
-module(move.module),
-function(move.function),
-library(move.library),
-source(move.source),
-line(move.line)
+Exception::exception::frame::frame(Exception::exception::frame &&move):
+	address(move.address),
+	offset(move.offset),
+	module(move.module),
+	function(move.function),
+	library(move.library),
+	source(move.source),
+	line(move.line)
 {
 	move.address = 0;
 	move.offset = 0;
@@ -171,7 +202,7 @@ line(move.line)
 	move.line = 0;
 }
 
-WSA::exception::frame::~frame()
+Exception::exception::frame::~frame()
 {
 	Memory::free(this->function);
 	Memory::free(this->library);
@@ -185,16 +216,16 @@ WSA::exception::frame::~frame()
 	this->line = 0;
 }
 
-WSA::exception::frame &WSA::exception::frame::operator=(WSA::exception::frame const &copy)
+Exception::exception::frame &Exception::exception::frame::operator=(Exception::exception::frame const &copy)
 {
 	if (&copy != this)
 	{
-		(*this) = WSA::exception::frame(copy);
+		(*this) = Exception::exception::frame(copy);
 	}
 	return *this;
 }
 
-WSA::exception::frame& WSA::exception::frame::operator=(WSA::exception::frame &&move)
+Exception::exception::frame& Exception::exception::frame::operator=(Exception::exception::frame &&move)
 {
 	if (&move != this)
 	{
@@ -219,30 +250,30 @@ WSA::exception::frame& WSA::exception::frame::operator=(WSA::exception::frame &&
 	return *this;
 }
 
-WSA::exception::exception(BYTE type, WORD value): type(type), value(value)
+Exception::exception::exception(BYTE type, WORD value): type(type), value(value)
 {
 	backtrace(*this);
 }
 
-WSA::exception::exception(): type(0), value(0)
+Exception::exception::exception(): type(0), value(0)
 {
 	backtrace(*this);
 }
 
-WSA::exception::exception(const WSA::exception &copy)
+Exception::exception::exception(const Exception::exception &copy)
 {
 	this->type = copy.type;
 	this->value = copy.value;
 	this->count = copy.count;
-	this->stack = (WSA::exception::frame *)Memory::allocate(this->count * sizeof(WSA::exception::frame));
+	this->stack = (Exception::exception::frame *)Memory::allocate(this->count * sizeof(Exception::exception::frame));
 	for (DWORD i = 0; i < this->count; i++)
 	{
-		new (this->stack + i) WSA::exception::frame(copy.stack[i]);
+		new (this->stack + i) Exception::exception::frame(copy.stack[i]);
 	}
 }
 
-WSA::exception::exception(WSA::exception &&move):
-stack(move.stack), count(move.count), type(move.type), value(move.value)
+Exception::exception::exception(Exception::exception &&move):
+	stack(move.stack), count(move.count), type(move.type), value(move.value)
 {
 	move.stack = 0;
 	move.count = 0;
@@ -250,23 +281,23 @@ stack(move.stack), count(move.count), type(move.type), value(move.value)
 	move.value = 0;
 }
 
-WSA::exception::~exception()
+Exception::exception::~exception()
 {
 	Memory::free(this->stack);
 	this->stack = 0;
 	this->count = this->type = this->value = 0;
 }
 
-WSA::exception &WSA::exception::operator=(const WSA::exception &copy)
+Exception::exception &Exception::exception::operator=(const Exception::exception &copy)
 {
 	if (&copy != this)
 	{
-		(*this) = WSA::exception(copy);
+		(*this) = Exception::exception(copy);
 	}
 	return *this;
 }
 
-WSA::exception &WSA::exception::operator=(WSA::exception &&move)
+Exception::exception &Exception::exception::operator=(Exception::exception &&move)
 {
 	if (&move != this)
 	{

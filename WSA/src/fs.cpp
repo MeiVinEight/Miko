@@ -187,7 +187,7 @@ WSA::FD WSA::open(LPCSTR path, DWORD mode)
 	HFILE hfVal = OpenFile(path, &data, mode);
 	if (hfVal == HFILE_ERROR)
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
 	}
 	return hfVal;
 }
@@ -196,7 +196,7 @@ void WSA::close(WSA::FD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
 	}
 }
 
@@ -205,7 +205,7 @@ DWORD WSA::read(WSA::FD fdVal, BYTE *b, DWORD len)
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, NULL))
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
 	}
 	return readed;
 }
@@ -215,7 +215,7 @@ DWORD WSA::write(WSA::FD fdVal, BYTE *b, DWORD len)
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, NULL))
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
 	}
 	return written;
 }
@@ -226,7 +226,7 @@ void WSA::seek(WSA::FD fdVal, QWORD offset, DWORD mode)
 	distance.QuadPart = (long long) offset;
 	if (!SetFilePointerEx((HANDLE)fdVal, distance, NULL, mode))
 	{
-		throw WSA::exception(WSA::exception::EXTERNAL, GetLastError());
+		throw Exception::exception(Exception::exception::EXTERNAL, GetLastError());
 	}
 }
 
@@ -270,7 +270,7 @@ DWORD WSA::FIO::read(BYTE *b, DWORD len)
 	{
 		return WSA::read(this->file, b, len);
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::FILE_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::FILE_CLOSED);
 }
 
 DWORD WSA::FIO::write(BYTE *b, DWORD len)
@@ -279,7 +279,7 @@ DWORD WSA::FIO::write(BYTE *b, DWORD len)
 	{
 		return WSA::write(this->file, b, len);
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::FILE_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::FILE_CLOSED);
 }
 
 QWORD WSA::FIO::available()

@@ -95,7 +95,7 @@ void WSA::startup()
 	int err = WSAStartup(0x0202, &data);
 	if (err)
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, err);
+		throw Exception::exception(Exception::exception::INTERNAL, err);
 	}
 }
 
@@ -103,7 +103,7 @@ void WSA::cleanup()
 {
 	if (WSACleanup() == SOCKET_ERROR)
 	{
-		throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+		throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 	}
 }
 
@@ -116,7 +116,7 @@ WSA::Address WSA::IP(LPCSTR host)
 		DWORD err = WSAGetLastError();
 		if (err)
 		{
-			throw WSA::exception(WSA::exception::INTERNAL, err);
+			throw Exception::exception(Exception::exception::INTERNAL, err);
 		}
 	}
 	IN_ADDR *addr = (IN_ADDR*)*ho->h_addr_list;
@@ -134,7 +134,7 @@ SOCKET WSA::socket()
 	{
 		return sock;
 	}
-	throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+	throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 }
 
 DWORD WSA::Address::make() const
@@ -170,11 +170,11 @@ void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 		{
 			err = WSAGetLastError();
 			this->close();
-			throw WSA::exception(WSA::exception::INTERNAL, err);
+			throw Exception::exception(Exception::exception::INTERNAL, err);
 		}
 		return;
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_BOUND);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_BOUND);
 }
 
 WSA::Socket WSA::ServerSocket::accept() const
@@ -187,7 +187,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 		SOCKET conn = ::accept(this->connection, (SOCKADDR *) &addr, &len);
 		if (conn == INVALID_SOCKET)
 		{
-			throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+			throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 		}
 		WSA::Socket sock;
 		sock.connection = conn;
@@ -200,7 +200,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 
 		return sock;
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 }
 
 BOOL WSA::ServerSocket::opening() const
@@ -215,7 +215,7 @@ void WSA::ServerSocket::close()
 		if (closesocket(this->connection))
 		{
 			this->connection = INVALID_SOCKET;
-			throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 		}
 	}
 }
@@ -240,7 +240,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		{
 			int err = WSAGetLastError();
 			this->close();
-			throw WSA::exception(WSA::exception::INTERNAL, err);
+			throw Exception::exception(Exception::exception::INTERNAL, err);
 		}
 		this->IP = addr.IP;
 		this->RP = addr.ID;
@@ -251,7 +251,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 
 		return;
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_BOUND);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_BOUND);
 }
 
 DWORD WSA::Socket::read(BYTE *b, DWORD len)
@@ -261,12 +261,12 @@ DWORD WSA::Socket::read(BYTE *b, DWORD len)
 		DWORD readed = recv(this->connection, (char *)b, (int)len, 0);
 		if (readed == (DWORD)SOCKET_ERROR)
 		{
-			throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 		}
 		readed ? void() : this->close();
 		return readed;
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 }
 
 DWORD WSA::Socket::write(BYTE *b, DWORD len)
@@ -279,14 +279,14 @@ DWORD WSA::Socket::write(BYTE *b, DWORD len)
 			DWORD err = WSAGetLastError();
 			if (err != WSAECONNABORTED)
 			{
-				throw WSA::exception(WSA::exception::INTERNAL, err);
+				throw Exception::exception(Exception::exception::INTERNAL, err);
 			}
 			this->close();
-			throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+			throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 		}
 		return sended;
 	}
-	throw WSA::exception(WSA::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 }
 
 QWORD WSA::Socket::available()
@@ -296,7 +296,7 @@ QWORD WSA::Socket::available()
 	{
 		return ava;
 	}
-	throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+	throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 }
 
 BOOL WSA::Socket::opening() const
@@ -311,7 +311,7 @@ void WSA::Socket::close()
 		if (closesocket(this->connection))
 		{
 			this->connection = INVALID_SOCKET;
-			throw WSA::exception(WSA::exception::INTERNAL, WSAGetLastError());
+			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
 		}
 	}
 }
