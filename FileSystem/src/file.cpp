@@ -78,7 +78,7 @@ QWORD FileSystem::File::available()
 						if (lpBuffer)
 						{
 							DWORD eventsRead;
-							noerr = PeekConsoleInput(handle, lpBuffer, events, &eventsRead);
+							noerr = PeekConsoleInputA(handle, lpBuffer, events, &eventsRead);
 							if (noerr)
 							{
 								DWORD curLength = 0;

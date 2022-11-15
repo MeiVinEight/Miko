@@ -4,7 +4,7 @@ bool FileSystem::create(const void *path)
 {
 	DWORD desiredAccess = GENERIC_ALL;
 	DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-	HANDLE h = CreateFile((LPCSTR)path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE h = CreateFileA((LPCSTR)path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (h == INVALID_HANDLE_VALUE)
 	{
 		DWORD err = GetLastError();
