@@ -11,6 +11,7 @@
 
 namespace String
 {
+	STRING_API
 	QWORD length(const void *);
 
 	class string
