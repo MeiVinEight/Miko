@@ -1,6 +1,6 @@
-#define WSA_SHARED
+#define FS_SHARED
 
-#include <fs.h>
+#include <filesystem.h>
 #include <exception.h>
 #include <memory.h>
 
@@ -10,39 +10,52 @@ extern "C"
 {
 #endif
 
-#define CONST					const
-#define WINAPI					__stdcall
-#define NULL					0
-#define GENERIC_READ			(0x80000000L)
-#define GENERIC_WRITE			(0x40000000L)
-#define FILE_SHARE_READ			0x00000001
-#define FILE_SHARE_WRITE		0x00000002
-#define CREATE_NEW				1
-#define FILE_ATTRIBUTE_NORMAL	0x00000080
-#define INVALID_HANDLE_VALUE	((HANDLE)(LONG_PTR)-1)
-#define OF_EXIST				0x00004000
-#define OF_READWRITE			0x00000002
-#define OFS_MAXPATHNAME			128
-#define FILE_BEGIN				0
-#define FILE_TYPE_DISK			0x0001
-#define FILE_TYPE_CHAR			0x0002
-#define FILE_TYPE_PIPE			0x0003
-#define STD_INPUT_HANDLE		((DWORD)-10)
-#define ERROR_BROKEN_PIPE		109L
-#define FILE_CURRENT			1
+#define WINAPI						__stdcall
+#define NULL						0
+#define INVALID_HANDLE_VALUE		((HANDLE)(LONG_PTR)-1)
+#define INVALID_FILE_ATTRIBUTES		(-1)
 
-typedef void		*HANDLE;
-typedef void		*PVOID;
-typedef void		*LPVOID;
-typedef CONST void	*LPCVOID;
+#define GENERIC_READ				(0x80000000L)
+#define GENERIC_WRITE				(0x40000000L)
+#define GENERIC_EXECUTE				(0x20000000L)
+#define GENERIC_ALL					(0x10000000L)
+
+#define FILE_SHARE_READ				0x00000001
+#define FILE_SHARE_WRITE			0x00000002
+#define FILE_SHARE_DELETE			0x00000004
+
+#define CREATE_NEW					1
+#define FILE_ATTRIBUTE_DIRECTORY	0x00000010
+#define FILE_ATTRIBUTE_NORMAL		0x00000080
+
+#define OF_EXIST					0x00004000
+#define OF_READWRITE				0x00000002
+
+#define OFS_MAXPATHNAME				128
+
+#define FILE_BEGIN					0
+#define FILE_CURRENT				1
+
+#define FILE_TYPE_DISK				0x0001
+#define FILE_TYPE_CHAR				0x0002
+#define FILE_TYPE_PIPE				0x0003
+
+#define STD_INPUT_HANDLE			((DWORD)-10)
+
+#define ERROR_FILE_EXISTS			80L
+#define ERROR_BROKEN_PIPE			109L
+
+typedef const char	*LPCSTR;
+typedef void		*HANDLE, *PVOID, *LPVOID;
+typedef const void	*LPCVOID;
 typedef DWORD		*LPDWORD;
+typedef int				BOOL;
 typedef char			CHAR;
 typedef unsigned int	UINT;
 typedef long			LONG;
 typedef short			SHORT;
 typedef wchar_t			WCHAR;
-typedef __int64 			LONG_PTR;
-typedef __int64				LONGLONG;
+typedef __int64 			LONG_PTR, LONGLONG;
 typedef unsigned __int64	ULONG_PTR;
 typedef struct
 {
@@ -153,38 +166,61 @@ BOOL WINAPI PeekConsoleInputA(HANDLE, PINPUT_RECORD, DWORD, LPDWORD);
 BOOL (WINAPI *PeekConsoleInput)(HANDLE, PINPUT_RECORD, DWORD, LPDWORD) = &PeekConsoleInputA;
 BOOL WINAPI PeekNamedPipe(HANDLE, LPVOID, DWORD, LPDWORD, LPDWORD, LPDWORD);
 BOOL WINAPI GetFileSizeEx(HANDLE, PLARGE_INTEGER);
+BOOL WINAPI SetFileAttributesA(LPCSTR, DWORD);
+DWORD WINAPI GetFileAttributesA(LPCSTR);
+BOOL WINAPI RemoveDirectoryA(LPCSTR);
+BOOL WINAPI DeleteFileA(LPCSTR);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-BOOL WSA::create(LPCSTR path)
+bool FileSystem::create(const void *path)
 {
-	HANDLE h = CreateFile(path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-	BYTE success = h != INVALID_HANDLE_VALUE;
-	if (success)
+	DWORD desiredAccess = GENERIC_ALL;
+	DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+	HANDLE h = CreateFile((LPCSTR)path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (h == INVALID_HANDLE_VALUE)
 	{
-		CloseHandle(h);
+		DWORD err = GetLastError();
+		if (err != ERROR_FILE_EXISTS)
+		{
+			throw Exception::exception(Exception::exception::INTERNAL, err);
+		}
+		return false;
 	}
-	return success;
+	CloseHandle(h);
+	return true;
 }
 
-BYTE WSA::exist(LPCSTR path)
+bool FileSystem::exist(const void *path)
 {
 	OFSTRUCT data;
-	if (OpenFile(path, &data, OF_EXIST) == HFILE_ERROR)
-	{
-		return 0;
-	}
-	return 1;
+	data.cBytes = sizeof(OFSTRUCT);
+	return !!(~OpenFile((LPCSTR)path, &data, OF_EXIST));
 }
 
-WSA::FD WSA::open(LPCSTR path, DWORD mode)
+bool FileSystem::remove(const void *path)
 {
-	WSA::create(path);
+	SetFileAttributesA((LPCSTR)path, FILE_ATTRIBUTE_NORMAL);
+	DWORD attr = GetFileAttributesA((LPCSTR)path);
+	if (~attr)
+	{
+		if (attr & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			return RemoveDirectoryA((LPCSTR)path);
+		}
+		return DeleteFileA((LPCSTR)path);
+	}
+	return false;
+}
+
+FileSystem::FD FileSystem::open(const void *path, DWORD mode)
+{
+	FileSystem::create(path);
 	OFSTRUCT data;
-	HFILE hfVal = OpenFile(path, &data, mode);
+	HFILE hfVal = OpenFile((LPCSTR)path, &data, mode);
 	if (hfVal == HFILE_ERROR)
 	{
 		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
@@ -192,7 +228,7 @@ WSA::FD WSA::open(LPCSTR path, DWORD mode)
 	return hfVal;
 }
 
-void WSA::close(WSA::FD fdVal)
+void FileSystem::close(FileSystem::FD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
@@ -200,7 +236,7 @@ void WSA::close(WSA::FD fdVal)
 	}
 }
 
-DWORD WSA::read(WSA::FD fdVal, BYTE *b, DWORD len)
+DWORD FileSystem::read(FileSystem::FD fdVal, void *b, DWORD len)
 {
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, NULL))
@@ -210,7 +246,7 @@ DWORD WSA::read(WSA::FD fdVal, BYTE *b, DWORD len)
 	return readed;
 }
 
-DWORD WSA::write(WSA::FD fdVal, BYTE *b, DWORD len)
+DWORD FileSystem::write(FileSystem::FD fdVal, void *b, DWORD len)
 {
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, NULL))
@@ -220,7 +256,7 @@ DWORD WSA::write(WSA::FD fdVal, BYTE *b, DWORD len)
 	return written;
 }
 
-void WSA::seek(WSA::FD fdVal, QWORD offset, DWORD mode)
+void FileSystem::seek(FileSystem::FD fdVal, QWORD offset, DWORD mode)
 {
 	LARGE_INTEGER distance;
 	distance.QuadPart = (long long) offset;
@@ -230,15 +266,15 @@ void WSA::seek(WSA::FD fdVal, QWORD offset, DWORD mode)
 	}
 }
 
-WSA::FIO::FIO(LPCSTR path): file(WSA::open(path, OF_READWRITE))
+FileSystem::File::File(const void *path): file(FileSystem::open(path, OF_READWRITE))
 {
 }
 
-WSA::FIO::FIO(WSA::FD fdVal): file(fdVal)
+FileSystem::File::File(FileSystem::FD fdVal): file(fdVal)
 {
 }
 
-WSA::FIO::FIO(WSA::FIO &&another) noexcept : file(another.file)
+FileSystem::File::File(FileSystem::File &&another) noexcept: file(another.file)
 {
 	if (~this->file)
 	{
@@ -248,12 +284,12 @@ WSA::FIO::FIO(WSA::FIO &&another) noexcept : file(another.file)
 	another.file = HFILE_ERROR;
 }
 
-WSA::FIO::~FIO()
+FileSystem::File::~File()
 {
 	this->close();
 }
 
-WSA::FIO &WSA::FIO::operator=(WSA::FIO &&fVal) noexcept
+FileSystem::File &FileSystem::File::operator=(FileSystem::File &&fVal) noexcept
 {
 	if (this->file)
 	{
@@ -264,25 +300,25 @@ WSA::FIO &WSA::FIO::operator=(WSA::FIO &&fVal) noexcept
 	return *this;
 }
 
-DWORD WSA::FIO::read(BYTE *b, DWORD len)
+DWORD FileSystem::File::read(void *b, DWORD len)
 {
 	if (~this->file)
 	{
-		return WSA::read(this->file, b, len);
+		return FileSystem::read(this->file, b, len);
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::FILE_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, FileSystem::FILE_CLOSED);
 }
 
-DWORD WSA::FIO::write(BYTE *b, DWORD len)
+DWORD FileSystem::File::write(void *b, DWORD len)
 {
 	if (~this->file)
 	{
-		return WSA::write(this->file, b, len);
+		return FileSystem::write(this->file, b, len);
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::FILE_CLOSED);
+	throw Exception::exception(Exception::exception::EXTERNAL, FileSystem::FILE_CLOSED);
 }
 
-QWORD WSA::FIO::available()
+QWORD FileSystem::File::available()
 {
 	if (~this->file)
 	{
@@ -374,16 +410,16 @@ QWORD WSA::FIO::available()
 	return -1;
 }
 
-void WSA::FIO::seek(QWORD offset) const
+void FileSystem::File::seek(QWORD offset) const
 {
-	WSA::seek(this->file, offset, FILE_BEGIN);
+	FileSystem::seek(this->file, offset, FILE_BEGIN);
 }
 
-void WSA::FIO::close()
+void FileSystem::File::close()
 {
 	if (~this->file)
 	{
-		WSA::close(this->file);
+		FileSystem::close(this->file);
 		this->file = HFILE_ERROR;
 	}
 }

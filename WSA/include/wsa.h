@@ -1,8 +1,8 @@
 #ifndef WSA_WSA_H
 #define WSA_WSA_H
 
-#include "wsadef.h"
-#include "fs.h"
+#include <filesystem.h>
+#include <wsadef.h>
 
 #define INVALID_SOCKET  (SOCKET)(~0)
 
@@ -67,7 +67,7 @@ namespace WSA
 		void close();
 	};
 
-	class Socket: public WSA::BIO
+	class Socket: public FileSystem::AbstractIO
 	{
 		public:
 		SOCKET connection = INVALID_SOCKET; // INVALID_SOCKET
@@ -80,9 +80,9 @@ namespace WSA
 		WSA_API
 		void connect(WSA::SocketAddress addr);
 		WSA_API
-		DWORD read(BYTE *, DWORD) override;
+		DWORD read(void *, DWORD) override;
 		WSA_API
-		DWORD write(BYTE *, DWORD) override;
+		DWORD write(void *, DWORD) override;
 		WSA_API
 		QWORD available() override;
 		WSA_API

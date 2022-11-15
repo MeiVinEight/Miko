@@ -1,4 +1,4 @@
-#pragma comment(lib, "ws2_32.lib") // import ws2_32.lib with 2s
+#pragma comment(lib, "ws2_32.lib") // import ws2_32.lib
 
 #define WSA_SHARED
 #include <wsa.h>
@@ -254,7 +254,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_BOUND);
 }
 
-DWORD WSA::Socket::read(BYTE *b, DWORD len)
+DWORD WSA::Socket::read(void *b, DWORD len)
 {
 	if (~this->connection)
 	{
@@ -269,7 +269,7 @@ DWORD WSA::Socket::read(BYTE *b, DWORD len)
 	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
 }
 
-DWORD WSA::Socket::write(BYTE *b, DWORD len)
+DWORD WSA::Socket::write(void *b, DWORD len)
 {
 	if (~this->connection)
 	{
