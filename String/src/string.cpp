@@ -27,9 +27,9 @@ String::string::string(String::string &&move): address((Memory::string &&)move.a
 
 String::string::~string() = default;
 
-String::string &String::string::operator=(const String::string &) = default;
+String::string &String::string::operator=(const String::string &) & = default;
 
-String::string &String::string::operator=(String::string &&move)
+String::string &String::string::operator=(String::string &&move) &
 {
 	if (&move != this)
 	{
@@ -88,10 +88,12 @@ String::string &String::string::operator+=(const void *str) &
 
 String::string String::string::operator+(const String::string &str) const
 {
-	return String::string(*this) += str;
+	String::string lval(*this);
+	return lval += str;
 }
 
 String::string String::string::operator+(const void *str) const
 {
-	return String::string(*this) += str;
+	String::string lval(*this);
+	return lval += str;
 }

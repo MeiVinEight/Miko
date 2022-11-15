@@ -30,9 +30,9 @@ namespace String
 		STRING_API
 		~string();
 		STRING_API
-		String::string &operator=(const String::string &);
+		String::string &operator=(const String::string &) &;
 		STRING_API
-		String::string &operator=(String::string &&);
+		String::string &operator=(String::string &&) &;
 		STRING_API
 		bool operator==(const String::string &) const;
 		STRING_API
