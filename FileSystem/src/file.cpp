@@ -41,7 +41,7 @@ DWORD FileSystem::File::read(void *b, DWORD len)
 	{
 		return FileSystem::read(this->file, b, len);
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, FileSystem::FILE_CLOSED);
+	throw Exception::exception("File closed");
 }
 
 DWORD FileSystem::File::write(void *b, DWORD len)
@@ -50,7 +50,7 @@ DWORD FileSystem::File::write(void *b, DWORD len)
 	{
 		return FileSystem::write(this->file, b, len);
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, FileSystem::FILE_CLOSED);
+	throw Exception::exception("File closed");
 }
 
 QWORD FileSystem::File::available()

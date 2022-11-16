@@ -21,7 +21,7 @@ int main()
 						   "Sec-WebSocket-Version: 13\r\n"
 						   "Origin: ws://broadcastlv.chat.bilibili.com:2244/sub\r\n"
 						   "\r\n";
-		socket.write((BYTE *) s.address.address, s.length);
+		socket.write(s.address.address, s.length);
 		int len = 0;
 		int cr = 0;
 		while (true)
@@ -47,28 +47,28 @@ int main()
 	}
 	catch (Exception::exception &exec)
 	{
-		std::cout << "Error: " << exec.value << std::endl;
+		std::cout << exec.message.address;
 		for (DWORD i = 0; i < exec.count; i++)
 		{
 			Exception::exception::frame &frame = exec.stack[i];
 			std::cout	<< "0x"
 						<< frame.offset
 						<< " ("
-						<< frame.function
+						<< frame.function.address
 						<< "+0x"
 						<< std::hex
 						<< ((QWORD)frame.offset - (QWORD)frame.address)
 						<< std::dec
 						<< ") ["
-						<< frame.library
+						<< frame.library.address
 						<< "+0x"
 						<< std::hex
 						<< ((QWORD)frame.offset - (QWORD)frame.module)
 						<< std::dec
 						<< "] <";
-			if (frame.source)
+			if (frame.source.length)
 			{
-				std::cout << frame.source << ':' << frame.line;
+				std::cout << frame.source.address << ':' << frame.line;
 			}
 			else
 			{

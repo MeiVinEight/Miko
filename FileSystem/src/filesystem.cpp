@@ -10,7 +10,7 @@ bool FileSystem::create(const void *path)
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_EXISTS)
 		{
-			throw Exception::exception(Exception::exception::INTERNAL, err);
+			throw Exception::exception(Exception::message(err));
 		}
 		return false;
 	}
@@ -47,7 +47,7 @@ FileSystem::FD FileSystem::open(const void *path, DWORD mode)
 	HFILE hfVal = OpenFile((LPCSTR)path, &data, mode);
 	if (hfVal == HFILE_ERROR)
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return hfVal;
 }
@@ -56,7 +56,7 @@ void FileSystem::close(FileSystem::FD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::message(GetLastError()));
 	}
 }
 
@@ -65,7 +65,7 @@ DWORD FileSystem::read(FileSystem::FD fdVal, void *b, DWORD len)
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, NULL))
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return readed;
 }
@@ -75,7 +75,7 @@ DWORD FileSystem::write(FileSystem::FD fdVal, void *b, DWORD len)
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, NULL))
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, GetLastError());
+		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return written;
 }
@@ -86,6 +86,6 @@ void FileSystem::seek(FileSystem::FD fdVal, QWORD offset, DWORD mode)
 	distance.QuadPart = (long long) offset;
 	if (!SetFilePointerEx((HANDLE)fdVal, distance, NULL, mode))
 	{
-		throw Exception::exception(Exception::exception::EXTERNAL, GetLastError());
+		throw Exception::exception(Exception::message(GetLastError()));
 	}
 }

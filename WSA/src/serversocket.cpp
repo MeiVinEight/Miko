@@ -20,11 +20,11 @@ void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 		{
 			err = WSAGetLastError();
 			this->close();
-			throw Exception::exception(Exception::exception::INTERNAL, err);
+			throw Exception::exception(Exception::message(err));
 		}
 		return;
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_BOUND);
+	throw Exception::exception("Already bound");
 }
 
 WSA::Socket WSA::ServerSocket::accept() const
@@ -37,7 +37,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 		SOCKET conn = ::accept(this->connection, (SOCKADDR *) &addr, &len);
 		if (conn == INVALID_SOCKET)
 		{
-			throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+			throw Exception::exception("Socket closed");
 		}
 		WSA::Socket sock;
 		sock.connection = conn;
@@ -50,7 +50,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 
 		return sock;
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception("Socket closed");
 }
 
 BOOL WSA::ServerSocket::opening() const
@@ -65,7 +65,7 @@ void WSA::ServerSocket::close()
 		if (closesocket(this->connection))
 		{
 			this->connection = INVALID_SOCKET;
-			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+			throw Exception::exception(Exception::message(WSAGetLastError()));
 		}
 	}
 }

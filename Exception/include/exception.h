@@ -27,9 +27,9 @@ namespace Exception
 			void *address = 0;
 			void *offset = 0;
 			void *module = 0;
-			char *function = 0;
-			char *library = 0;
-			char *source = 0;
+			Memory::string function = Memory::string(0);
+			Memory::string library = Memory::string(0);
+			Memory::string source = Memory::string(0);
 			DWORD line = 0;
 
 			frame() = delete;
@@ -51,12 +51,11 @@ namespace Exception
 		static const BYTE EXTERNAL = 1;
 		Exception::exception::frame *stack = 0;
 		DWORD count = 0;
-		BYTE type = 0;
-		WORD value = 0;
+		Memory::string message = Memory::string(0);
 		EXCEPTION_API
-		exception(BYTE, WORD);
+		exception(const void *);
 		EXCEPTION_API
-		exception();
+		exception(const Memory::string &);
 		EXCEPTION_API
 		exception(const Exception::exception &);
 		EXCEPTION_API

@@ -6,7 +6,7 @@ void WSA::startup()
 	int err = WSAStartup(0x0202, &data);
 	if (err)
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, err);
+		throw Exception::exception(Exception::message(err));
 	}
 }
 
@@ -14,7 +14,7 @@ void WSA::cleanup()
 {
 	if (WSACleanup() == SOCKET_ERROR)
 	{
-		throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+		throw Exception::exception(Exception::message(WSAGetLastError()));
 	}
 }
 
@@ -24,11 +24,7 @@ WSA::Address WSA::IP(LPCSTR host)
 	HOSTENT *ho = gethostbyname(host);
 	if (ho == NULL)
 	{
-		DWORD err = WSAGetLastError();
-		if (err)
-		{
-			throw Exception::exception(Exception::exception::INTERNAL, err);
-		}
+		throw Exception::exception(Exception::message(WSAGetLastError()));
 	}
 	IN_ADDR *addr = (IN_ADDR*)*ho->h_addr_list;
 	address.address[0] = addr->S_un.S_un_b.s_b1;
@@ -45,5 +41,5 @@ SOCKET WSA::socket()
 	{
 		return sock;
 	}
-	throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+	throw Exception::exception(Exception::message(WSAGetLastError()));
 }

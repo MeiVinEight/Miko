@@ -1,7 +1,13 @@
-#include <sstring.h>
 #include "execdef.h"
 
 HANDLE process = GetCurrentProcess();
+
+DWORD strlen(const void *str)
+{
+	const char *s = (const char *) str;
+	while (*s++);
+	return s - ((const char *)str) - 1;
+}
 
 int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
 {
@@ -64,43 +70,34 @@ Exception::exception::frame::frame(void *returnAddress)
 	SymGetLineFromAddr64(process, (QWORD) returnAddress, &dispLine, &imgLine);
 	if (imgLine.LineNumber)
 	{
-		DWORD fnLen = String::length(imgLine.FileName);
-		this->source = (char *) Memory::allocate(fnLen + 1);
-		Memory::copy(this->source, imgLine.FileName, fnLen + 1);
+		DWORD fnLen = strlen(imgLine.FileName);
+		this->source.ensure(fnLen + 1);
+		Memory::copy(this->source.address, imgLine.FileName, fnLen + 1);
 		this->line = imgLine.LineNumber;
 	}
 
-	QWORD len = String::length(syminfo->Name);
-	this->function = (char *) Memory::allocate(len + 1);
-	Memory::copy(this->function, syminfo->Name, len + 1);
+	QWORD len = strlen(syminfo->Name);
+	this->function.ensure(len + 1);
+	Memory::copy(this->function.address, syminfo->Name, len + 1);
 
 	this->address = (void *)syminfo->Address;
 	this->module = (void *)syminfo->ModBase;
 
 	char modname[MAX_SYM_NAME * sizeof(CHAR)]{0};
 	K32GetModuleBaseNameA(process, (HMODULE) this->module, modname, MAX_SYM_NAME);
-	len = String::length(modname);
-	this->library = (char *) Memory::allocate(len + 1);
-	Memory::copy(this->library, modname, len + 1);
+	len = strlen(modname);
+	this->library.ensure(len + 1);
+	Memory::copy(this->library.address, modname, len + 1);
 }
 
-Exception::exception::frame::frame(Exception::exception::frame const &copy)
+Exception::exception::frame::frame(const Exception::exception::frame &copy)
 {
 	this->address = copy.address;
 	this->offset = copy.offset;
 	this->module = copy.module;
-	DWORD len = String::length(copy.function);
-	this->function = (char *) Memory::allocate(len + 1);
-	Memory::copy(this->function, copy.function, len + 1);
-
-	len = String::length(copy.library);
-	this->library = (char *) Memory::allocate(len + 1);
-	Memory::copy(this->library, copy.library, len + 1);
-
-	len = String::length(copy.source);
-	this->source = (char *) Memory::allocate(len + 1);
-	Memory::copy(this->source, copy.source, len + 1);
-
+	this->function = copy.function;
+	this->library = copy.library;
+	this->source = copy.source;
 	this->line = copy.line;
 }
 
@@ -108,31 +105,22 @@ Exception::exception::frame::frame(Exception::exception::frame &&move):
 	address(move.address),
 	offset(move.offset),
 	module(move.module),
-	function(move.function),
-	library(move.library),
-	source(move.source),
+	function((Memory::string &&)move.function),
+	library((Memory::string &&)move.library),
+	source((Memory::string &&)move.source),
 	line(move.line)
 {
 	move.address = 0;
 	move.offset = 0;
 	move.module = 0;
-	move.function = 0;
-	move.library = 0;
-	move.source = 0;
 	move.line = 0;
 }
 
 Exception::exception::frame::~frame()
 {
-	Memory::free(this->function);
-	Memory::free(this->library);
-	Memory::free(this->source);
 	this->address = 0;
 	this->offset = 0;
 	this->module = 0;
-	this->function = 0;
-	this->library = 0;
-	this->source = 0;
 	this->line = 0;
 }
 
@@ -149,22 +137,16 @@ Exception::exception::frame& Exception::exception::frame::operator=(Exception::e
 {
 	if (&move != this)
 	{
-		Memory::free(this->function);
-		Memory::free(this->library);
-		Memory::free(this->source);
 		this->address = move.address;
 		this->offset = move.offset;
 		this->module = move.module;
-		this->function = move.function;
-		this->library = move.library;
-		this->source = move.source;
+		this->function = (Memory::string &&)move.function;
+		this->library = (Memory::string &&)move.library;
+		this->source = (Memory::string &&)move.source;
 		this->line = move.line;
 		move.address = 0;
 		move.offset = 0;
 		move.module = 0;
-		move.function = 0;
-		move.library = 0;
-		move.source = 0;
 		move.line = 0;
 	}
 	return *this;

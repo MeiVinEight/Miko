@@ -20,7 +20,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		{
 			int err = WSAGetLastError();
 			this->close();
-			throw Exception::exception(Exception::exception::INTERNAL, err);
+			throw Exception::exception(Exception::message(err));
 		}
 		this->IP = addr.IP;
 		this->RP = addr.ID;
@@ -31,7 +31,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 
 		return;
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_BOUND);
+	throw Exception::exception("Already connected");
 }
 
 DWORD WSA::Socket::read(void *b, DWORD len)
@@ -41,12 +41,17 @@ DWORD WSA::Socket::read(void *b, DWORD len)
 		DWORD readed = recv(this->connection, (char *)b, (int)len, 0);
 		if (readed == (DWORD)SOCKET_ERROR)
 		{
-			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+			DWORD err = WSAGetLastError();
+			if (err != WSAECONNABORTED)
+			{
+				throw Exception::exception(Exception::message(err));
+			}
+			this->close();
+			throw Exception::exception("Socket closed");
 		}
-		readed ? void() : this->close();
 		return readed;
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception("Socket closed");
 }
 
 DWORD WSA::Socket::write(void *b, DWORD len)
@@ -59,14 +64,14 @@ DWORD WSA::Socket::write(void *b, DWORD len)
 			DWORD err = WSAGetLastError();
 			if (err != WSAECONNABORTED)
 			{
-				throw Exception::exception(Exception::exception::INTERNAL, err);
+				throw Exception::exception(Exception::message(err));
 			}
 			this->close();
-			throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+			throw Exception::exception("Socket closed");
 		}
 		return sended;
 	}
-	throw Exception::exception(Exception::exception::EXTERNAL, WSA::SOCKET_CLOSED);
+	throw Exception::exception("Socket closed");
 }
 
 QWORD WSA::Socket::available()
@@ -76,7 +81,7 @@ QWORD WSA::Socket::available()
 	{
 		return ava;
 	}
-	throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+	throw Exception::exception(Exception::message(WSAGetLastError()));
 }
 
 BOOL WSA::Socket::opening() const
@@ -91,7 +96,7 @@ void WSA::Socket::close()
 		if (closesocket(this->connection))
 		{
 			this->connection = INVALID_SOCKET;
-			throw Exception::exception(Exception::exception::INTERNAL, WSAGetLastError());
+			throw Exception::exception(Exception::message(WSAGetLastError()));
 		}
 	}
 }
