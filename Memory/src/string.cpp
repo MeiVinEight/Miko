@@ -1,10 +1,10 @@
 #include "memdef.h"
 
-Memory::string::string(QWORD size): address(Memory::allocate(size)), length(size)
+Memory::string::string(QWORD size): address((char *)Memory::allocate(size)), length(size)
 {
 }
 
-Memory::string::string(const Memory::string &copy): address(Memory::allocate(copy.length)), length(copy.length)
+Memory::string::string(const Memory::string &copy): address((char *)Memory::allocate(copy.length)), length(copy.length)
 {
 	Memory::copy(this->address, copy.address, this->length);
 }
@@ -44,16 +44,16 @@ Memory::string &Memory::string::operator=(Memory::string &&move)
 	return *this;
 }
 
-BYTE &Memory::string::operator[](QWORD off) const
+char &Memory::string::operator[](QWORD off) const
 {
-	return ((BYTE *)this->address)[off];
+	return this->address[off];
 }
 
 void Memory::string::ensure(QWORD size)
 {
 	if (this->length < size)
 	{
-		this->address = Memory::reallocate(this->address, size);
+		this->address = (char *)Memory::reallocate(this->address, size);
 		this->length = size;
 	}
 }

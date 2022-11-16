@@ -33,7 +33,7 @@ namespace Memory
 	class string
 	{
 		public:
-		void *address = NULL;
+		char *address = NULL;
 		QWORD length = 0;
 
 		string() = delete;
@@ -50,7 +50,7 @@ namespace Memory
 		MEMORY_API
 		Memory::string &operator=(Memory::string &&);
 		MEMORY_API
-		BYTE &operator[](QWORD) const;
+		char &operator[](QWORD) const;
 		MEMORY_API
 		void ensure(QWORD);
 	};
