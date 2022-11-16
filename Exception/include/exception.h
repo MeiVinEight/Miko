@@ -7,12 +7,17 @@
 	#define EXCEPTION_API
 #endif
 
+#include <memory.h>
+
 typedef unsigned char		BYTE;
 typedef unsigned short		WORD;
 typedef unsigned long		DWORD;
 
 namespace Exception
 {
+	EXCEPTION_API
+	Memory::string message(DWORD);
+
 	class exception
 	{
 		public:

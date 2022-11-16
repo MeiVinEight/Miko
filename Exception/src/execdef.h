@@ -14,8 +14,18 @@ extern "C"
 
 #define DLL_PROCESS_ATTACH 1
 #define DLL_PROCESS_DETACH 0
+
+#define FORMAT_MESSAGE_IGNORE_INSERTS  0x00000200
+#define FORMAT_MESSAGE_FROM_STRING     0x00000400
+#define FORMAT_MESSAGE_FROM_HMODULE    0x00000800
+#define FORMAT_MESSAGE_FROM_SYSTEM     0x00001000
+#define FORMAT_MESSAGE_ARGUMENT_ARRAY  0x00002000
+#define FORMAT_MESSAGE_MAX_WIDTH_MASK  0x000000FF
+
 #define SYMOPT_LOAD_LINES 0x10
 #define MAX_SYM_NAME 2000
+
+
 
 typedef const char *PCSTR;
 typedef void *HINSTANCE;
@@ -30,6 +40,7 @@ typedef void *HMODULE;
 typedef void *PVOID;
 typedef DWORD *PDWORD;
 typedef CHAR *PCHAR;
+typedef char* va_list;
 typedef struct
 {
 	ULONG       SizeOfStruct;
@@ -67,6 +78,7 @@ DWORD K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
 BOOL __declspec(dllimport) __stdcall SymGetLineFromAddr64(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
 DWORD __stdcall GetLastError(void);
+DWORD FormatMessageA(DWORD, const void *, DWORD, DWORD, LPSTR, DWORD, va_list);
 inline void* __cdecl operator new(size_t size, void* where) noexcept
 {
 	(void) size;
