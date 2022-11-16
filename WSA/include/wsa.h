@@ -1,8 +1,19 @@
 #ifndef WSA_WSA_H
 #define WSA_WSA_H
 
+#ifdef WSA_SHARED
+	#define WSA_API __declspec(dllexport)
+#else
+	#define WSA_API
+#endif
+
 #include <filesystem.h>
-#include <wsadef.h>
+
+typedef int					BOOL;
+typedef unsigned char		BYTE;
+typedef unsigned short		WORD;
+typedef unsigned long		DWORD;
+typedef unsigned long long	QWORD;
 
 #define INVALID_SOCKET  (SOCKET)(~0)
 
@@ -30,6 +41,7 @@ namespace WSA
 	WSA_API
 	SOCKET socket();
 
+	// TODO IPv6
 	class Address
 	{
 		public:
