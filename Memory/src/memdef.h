@@ -5,20 +5,30 @@
 
 #include "memory.h"
 
-typedef unsigned __int64 size_t;
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-void* __cdecl malloc(size_t);
-void* __cdecl realloc(void* , size_t);
-void __cdecl free(void*);
-void* __cdecl memcpy(void *, void const*, size_t);
-void* __cdecl memset(void *, int, size_t);
+
+
+#define DLL_PROCESS_DETACH 0
+#define DLL_PROCESS_ATTACH 1
+
+
+typedef void *HANDLE, *HINSTANCE, *LPVOID;
+typedef unsigned long DWORD;
+typedef unsigned __int64 ULONG_PTR, SIZE_T;
+typedef int BOOL;
+
+HANDLE __stdcall GetProcessHeap(void);
+LPVOID __stdcall HeapAlloc(HANDLE, DWORD, SIZE_T);
+LPVOID __stdcall HeapReAlloc(HANDLE, DWORD, LPVOID, SIZE_T);
+BOOL __stdcall HeapFree(HANDLE, DWORD, LPVOID);
 
 #ifdef __cplusplus
 }
 #endif
+
+extern HANDLE heap;
 
 #endif //MEMDEF_H
