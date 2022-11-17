@@ -79,7 +79,7 @@ namespace WSA
 		void close();
 	};
 
-	class Socket: public FileSystem::AbstractIO
+	class Socket: public FileSystem::AbstractStream
 	{
 		public:
 		SOCKET connection = INVALID_SOCKET; // INVALID_SOCKET

@@ -1,15 +1,15 @@
 #include "fsdef.h"
 
 
-FileSystem::File::File(const void *path): file(FileSystem::open(path, OF_READWRITE))
+FileSystem::FileStream::FileStream(const void *path): file(FileSystem::open(path, OF_READWRITE))
 {
 }
 
-FileSystem::File::File(FileSystem::FD fdVal): file(fdVal)
+FileSystem::FileStream::FileStream(FileSystem::FD fdVal): file(fdVal)
 {
 }
 
-FileSystem::File::File(FileSystem::File &&another) noexcept: file(another.file)
+FileSystem::FileStream::FileStream(FileSystem::FileStream &&another) noexcept: file(another.file)
 {
 	if (~this->file)
 	{
@@ -19,12 +19,12 @@ FileSystem::File::File(FileSystem::File &&another) noexcept: file(another.file)
 	another.file = HFILE_ERROR;
 }
 
-FileSystem::File::~File()
+FileSystem::FileStream::~FileStream()
 {
 	this->close();
 }
 
-FileSystem::File &FileSystem::File::operator=(FileSystem::File &&fVal) noexcept
+FileSystem::FileStream &FileSystem::FileStream::operator=(FileSystem::FileStream &&fVal) noexcept
 {
 	if (this->file)
 	{
@@ -35,7 +35,7 @@ FileSystem::File &FileSystem::File::operator=(FileSystem::File &&fVal) noexcept
 	return *this;
 }
 
-DWORD FileSystem::File::read(void *b, DWORD len)
+DWORD FileSystem::FileStream::read(void *b, DWORD len)
 {
 	if (~this->file)
 	{
@@ -44,7 +44,7 @@ DWORD FileSystem::File::read(void *b, DWORD len)
 	throw Exception::exception("File closed");
 }
 
-DWORD FileSystem::File::write(void *b, DWORD len)
+DWORD FileSystem::FileStream::write(void *b, DWORD len)
 {
 	if (~this->file)
 	{
@@ -53,7 +53,7 @@ DWORD FileSystem::File::write(void *b, DWORD len)
 	throw Exception::exception("File closed");
 }
 
-QWORD FileSystem::File::available()
+QWORD FileSystem::FileStream::available()
 {
 	if (~this->file)
 	{
@@ -145,12 +145,12 @@ QWORD FileSystem::File::available()
 	return -1;
 }
 
-void FileSystem::File::seek(QWORD offset) const
+void FileSystem::FileStream::seek(QWORD offset) const
 {
 	FileSystem::seek(this->file, offset, FILE_BEGIN);
 }
 
-void FileSystem::File::close()
+void FileSystem::FileStream::close()
 {
 	if (~this->file)
 	{

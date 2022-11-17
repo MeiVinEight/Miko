@@ -44,7 +44,7 @@ namespace FileSystem
 	FS_API
 	void seek(FileSystem::FD, QWORD, DWORD);
 
-	class AbstractIO
+	class AbstractStream
 	{
 		public:
 		FS_API
@@ -58,21 +58,21 @@ namespace FileSystem
 		 */
 	};
 
-	class File: public FileSystem::AbstractIO
+	class FileStream: public FileSystem::AbstractStream
 	{
 		public:
 		FileSystem::FD file = HFILE_ERROR;
 
 		FS_API
-		explicit File(const void *);
+		explicit FileStream(const void *);
 		FS_API
-		explicit File(FileSystem::FD);
+		explicit FileStream(FileSystem::FD);
 		FS_API
-		File(File &&) noexcept;
+		FileStream(FileStream &&) noexcept;
 		FS_API
-		~File();
+		~FileStream();
 		FS_API
-		FileSystem::File &operator=(FileSystem::File &&) noexcept;
+		FileSystem::FileStream &operator=(FileSystem::FileStream &&) noexcept;
 		FS_API
 		DWORD read(void *, DWORD) override;
 		FS_API
