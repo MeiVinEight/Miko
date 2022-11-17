@@ -1,6 +1,7 @@
 project(CWS)
 
 include_directories(include)
+include_directories(../Memory/include)
 include_directories(../FileSystem/include)
 include_directories(../WSA/include)
 
