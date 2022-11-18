@@ -90,6 +90,6 @@ inline void* __cdecl operator new(size_t size, void* where) noexcept
 #endif
 
 void backtrace(Exception::exception &);
-DWORD strlen(const void *);
+QWORD strlen(const void *);
 
 #endif //EXCEDEF_H

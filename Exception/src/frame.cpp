@@ -2,7 +2,7 @@
 
 HANDLE process = GetCurrentProcess();
 
-DWORD strlen(const void *str)
+QWORD strlen(const void *str)
 {
 	const char *s = (const char *) str;
 	while (*s++);
