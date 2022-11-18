@@ -7,6 +7,8 @@
 	#define FS_API
 #endif
 
+#include <memory.h>
+
 
 #ifndef HFILE_ERROR
 	#define HFILE_ERROR ((HFILE)-1)
@@ -19,7 +21,6 @@ typedef unsigned long long QWORD;
 /*
  * TODO Reparse points ?
  * TODO Directory create/exists/remove
- * TODO Canonical path
  */
 namespace FileSystem
 {
@@ -33,6 +34,8 @@ namespace FileSystem
 	bool exist(const void *);
 	FS_API
 	bool remove(const void *);
+	FS_API
+	Memory::string canonicalize(const void *);
 	FS_API
 	FileSystem::FD open(const void *, DWORD);
 	FS_API

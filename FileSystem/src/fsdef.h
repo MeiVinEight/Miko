@@ -5,7 +5,6 @@
 
 #include <filesystem.h>
 #include <exception.h>
-#include <memory.h>
 
 
 #ifdef __cplusplus
@@ -17,6 +16,7 @@ extern "C"
 #define NULL						0
 #define INVALID_HANDLE_VALUE		((HANDLE)(LONG_PTR)-1)
 #define INVALID_FILE_ATTRIBUTES		(-1)
+#define MAX_PATH					260
 
 #define GENERIC_READ				(0x80000000L)
 #define GENERIC_WRITE				(0x40000000L)
@@ -48,6 +48,7 @@ extern "C"
 #define ERROR_FILE_EXISTS			80L
 #define ERROR_BROKEN_PIPE			109L
 
+typedef char		*LPSTR;
 typedef const char	*LPCSTR;
 typedef void		*HANDLE, *PVOID, *LPVOID;
 typedef const void	*LPCVOID;
@@ -171,9 +172,12 @@ BOOL WINAPI SetFileAttributesA(LPCSTR, DWORD);
 DWORD WINAPI GetFileAttributesA(LPCSTR);
 BOOL WINAPI RemoveDirectoryA(LPCSTR);
 BOOL WINAPI DeleteFileA(LPCSTR);
+DWORD WINAPI GetFullPathNameA(LPCSTR, DWORD, LPSTR, LPSTR *);
 
 #ifdef __cplusplus
 }
 #endif
+
+QWORD strlen(const void *);
 
 #endif //FSDEF_H
