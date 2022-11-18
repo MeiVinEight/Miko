@@ -20,18 +20,34 @@ void WSA::cleanup()
 
 WSA::Address WSA::IP(LPCSTR host)
 {
-	WSA::Address address;
-	HOSTENT *ho = gethostbyname(host);
-	if (ho == NULL)
+	ADDRINFOA ai{0};
+	ADDRINFOA *info = NULL;
+	INT err = getaddrinfo(host, NULL, NULL, &info);
+	if (!err)
 	{
-		throw Exception::exception(Exception::message(WSAGetLastError()));
+		if (info)
+		{
+			WSA::Address address;
+			SOCKADDR_IN *addr = (SOCKADDR_IN *)info->ai_addr;
+			IN_ADDR *ia = &addr->sin_addr;
+			address.address[0] = ia->S_un.S_un_b.s_b1;
+			address.address[1] = ia->S_un.S_un_b.s_b2;
+			address.address[2] = ia->S_un.S_un_b.s_b3;
+			address.address[3] = ia->S_un.S_un_b.s_b4;
+			freeaddrinfo(info);
+			return address;
+		}
+		char append[] = "Could not find host: ";
+		QWORD applen = sizeof(append) - 1;
+		QWORD hoslen = strlen(host);
+		Memory::string msg(applen + hoslen + 1);
+		Memory::copy(msg.address, append, applen);
+		Memory::copy(msg.address + applen, host, hoslen);
+		msg[applen + hoslen] = 0;
+		throw Exception::exception(msg);
 	}
-	IN_ADDR *addr = (IN_ADDR*)*ho->h_addr_list;
-	address.address[0] = addr->S_un.S_un_b.s_b1;
-	address.address[1] = addr->S_un.S_un_b.s_b2;
-	address.address[2] = addr->S_un.S_un_b.s_b3;
-	address.address[3] = addr->S_un.S_un_b.s_b4;
-	return address;
+	freeaddrinfo(info);
+	throw Exception::exception(Exception::message(err));
 }
 
 SOCKET WSA::socket()

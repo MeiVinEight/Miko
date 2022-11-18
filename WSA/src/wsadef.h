@@ -26,11 +26,14 @@ extern "C"
 #define WSAECONNABORTED		10053L
 #define FIONREAD			(0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
 
-typedef unsigned long	u_long;
-typedef unsigned short	u_short;
-typedef BYTE 			UCHAR;
-typedef unsigned short	USHORT;
-typedef DWORD			ULONG;
+typedef unsigned long		u_long;
+typedef unsigned short		u_short;
+typedef BYTE 				UCHAR;
+typedef unsigned short		USHORT;
+typedef DWORD				ULONG;
+typedef unsigned __int64	size_t;
+typedef int					INT;
+typedef const char			*PCSTR;
 typedef struct
 {
 	WORD					wVersion;
@@ -70,6 +73,17 @@ typedef struct
 	u_short sa_family;              /* address family */
 	char    sa_data[14];            /* up to 14 bytes of direct address */
 } SOCKADDR;
+typedef struct addrinfo
+{
+	int			ai_flags;
+	int			ai_family;
+	int			ai_socktype;
+	int			ai_protocol;
+	size_t		ai_addrlen;
+	char 		*ai_canonname;
+	SOCKADDR 	*ai_addr;
+	addrinfo	*ai_next;
+} ADDRINFOA, *PADDRINFOA;
 
 int WSAAPI WSAStartup(WORD, LPWSADATA);
 int WSAAPI WSACleanup(void);
@@ -87,10 +101,14 @@ int WSAAPI recv(SOCKET, char *, int, int);
 int WSAAPI send(SOCKET, const char *, int, int);
 int WSAAPI ioctlsocket(SOCKET, long, u_long *);
 int WSAAPI getsockname(SOCKET, SOCKADDR *, int *);
+INT WSAAPI getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
+void WSAAPI freeaddrinfo(PADDRINFOA);
 
 
 #ifdef __cplusplus
 }
 #endif
+
+QWORD strlen(const void *);
 
 #endif //WSADEF_H
