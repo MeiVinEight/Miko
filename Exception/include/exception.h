@@ -29,8 +29,6 @@ namespace Exception
 			void *module = 0;
 			Memory::string function = Memory::string(0);
 			Memory::string library = Memory::string(0);
-			Memory::string source = Memory::string(0);
-			DWORD line = 0;
 
 			frame() = delete;
 			EXCEPTION_API

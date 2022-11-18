@@ -64,6 +64,7 @@ Exception::exception::frame::frame(void *returnAddress)
 	QWORD disp = 0;
 	SymFromAddr(process, (QWORD) returnAddress, &disp, syminfo);
 
+	/*
 	DWORD dispLine = 0;
 	IMAGEHLP_LINE64 imgLine{0};
 	imgLine.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
@@ -75,6 +76,7 @@ Exception::exception::frame::frame(void *returnAddress)
 		Memory::copy(this->source.address, imgLine.FileName, fnLen + 1);
 		this->line = imgLine.LineNumber;
 	}
+	*/
 
 	QWORD len = strlen(syminfo->Name);
 	this->function.ensure(len + 1);
@@ -97,8 +99,6 @@ Exception::exception::frame::frame(const Exception::exception::frame &copy)
 	this->module = copy.module;
 	this->function = copy.function;
 	this->library = copy.library;
-	this->source = copy.source;
-	this->line = copy.line;
 }
 
 Exception::exception::frame::frame(Exception::exception::frame &&move):
@@ -106,14 +106,11 @@ Exception::exception::frame::frame(Exception::exception::frame &&move):
 	offset(move.offset),
 	module(move.module),
 	function((Memory::string &&)move.function),
-	library((Memory::string &&)move.library),
-	source((Memory::string &&)move.source),
-	line(move.line)
+	library((Memory::string &&)move.library)
 {
 	move.address = 0;
 	move.offset = 0;
 	move.module = 0;
-	move.line = 0;
 }
 
 Exception::exception::frame::~frame()
@@ -121,7 +118,6 @@ Exception::exception::frame::~frame()
 	this->address = 0;
 	this->offset = 0;
 	this->module = 0;
-	this->line = 0;
 }
 
 Exception::exception::frame &Exception::exception::frame::operator=(Exception::exception::frame const &copy)
@@ -142,12 +138,9 @@ Exception::exception::frame& Exception::exception::frame::operator=(Exception::e
 		this->module = move.module;
 		this->function = (Memory::string &&)move.function;
 		this->library = (Memory::string &&)move.library;
-		this->source = (Memory::string &&)move.source;
-		this->line = move.line;
 		move.address = 0;
 		move.offset = 0;
 		move.module = 0;
-		move.line = 0;
 	}
 	return *this;
 }

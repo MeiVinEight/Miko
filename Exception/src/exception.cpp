@@ -21,8 +21,7 @@ Exception::exception::exception(const Exception::exception &copy)
 	}
 }
 
-Exception::exception::exception(Exception::exception &&move):
-	stack(move.stack), count(move.count)
+Exception::exception::exception(Exception::exception &&move): stack(move.stack), count(move.count)
 {
 	move.stack = 0;
 	move.count = 0;
