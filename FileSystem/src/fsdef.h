@@ -45,6 +45,8 @@ extern "C"
 
 #define STD_INPUT_HANDLE			((DWORD)-10)
 
+#define ERROR_FILE_NOT_FOUND		2L
+#define ERROR_PATH_NOT_FOUND		3L
 #define ERROR_FILE_EXISTS			80L
 #define ERROR_BROKEN_PIPE			109L
 
@@ -154,6 +156,25 @@ typedef struct
 		FOCUS_EVENT_RECORD FocusEvent;
 	} Event;
 } INPUT_RECORD, *PINPUT_RECORD;
+typedef struct
+{
+	DWORD dwLowDateTime;
+	DWORD dwHighDateTime;
+} FILETIME, *PFILETIME, *LPFILETIME;
+typedef struct
+{
+	DWORD dwFileAttributes;
+	FILETIME ftCreationTime;
+	FILETIME ftLastAccessTime;
+	FILETIME ftLastWriteTime;
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+} WIN32_FILE_ATTRIBUTE_DATA, *LPWIN32_FILE_ATTRIBUTE_DATA;
+typedef enum
+{
+	GetFileExInfoStandard,
+	GetFileExMaxInfoLevel
+} GET_FILEEX_INFO_LEVELS;
 
 HANDLE WINAPI CreateFileA(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
 BOOL WINAPI CloseHandle(HANDLE);
@@ -173,6 +194,8 @@ DWORD WINAPI GetFileAttributesA(LPCSTR);
 BOOL WINAPI RemoveDirectoryA(LPCSTR);
 BOOL WINAPI DeleteFileA(LPCSTR);
 DWORD WINAPI GetFullPathNameA(LPCSTR, DWORD, LPSTR, LPSTR *);
+BOOL WINAPI GetFileAttributesExA(LPCSTR, GET_FILEEX_INFO_LEVELS, LPVOID);
+BOOL WINAPI CreateDirectoryA(LPCSTR, LPSECURITY_ATTRIBUTES);
 
 #ifdef __cplusplus
 }

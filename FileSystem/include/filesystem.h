@@ -20,7 +20,7 @@ typedef unsigned long long QWORD;
 
 /*
  * TODO Reparse points ?
- * TODO Directory create/exists/remove
+ * TODO UNC ?
  */
 namespace FileSystem
 {
@@ -31,9 +31,17 @@ namespace FileSystem
 	FS_API
 	bool create(const void *);
 	FS_API
-	bool exist(const void *);
+	bool make(const void *);
 	FS_API
 	bool remove(const void *);
+	FS_API
+	bool exist(const void *);
+	FS_API
+	bool file(const void *);
+	FS_API
+	bool directory(const void *);
+	FS_API
+	Memory::string parent(const void *);
 	FS_API
 	Memory::string canonicalize(const void *);
 	FS_API
