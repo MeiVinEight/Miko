@@ -44,12 +44,15 @@ Memory::string FileSystem::canonicalize(const void *path) // Maybe only GetFullP
 {
 	// TODO UNC ?
 	char buf[MAX_PATH + 1];
-	GetFullPathNameA((LPCSTR) path, MAX_PATH + 1, buf, NULL);
-	QWORD len = strlen(buf);
-	Memory::string canon(len + 1);
-	canon[len] = 0;
-	Memory::copy(canon.address, buf, len);
-	return canon;
+	QWORD len = GetFullPathNameA((LPCSTR) path, MAX_PATH + 1, buf, NULL);
+	if (len)
+	{
+		Memory::string canon(len + 1);
+		canon[len] = 0;
+		Memory::copy(canon.address, buf, len);
+		return canon;
+	}
+	throw Exception::exception(Exception::message(GetLastError()));
 }
 
 FileSystem::FD FileSystem::open(const void *path, DWORD mode)
