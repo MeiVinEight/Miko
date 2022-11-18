@@ -22,7 +22,8 @@ void *Memory::reallocate(void *p, QWORD size)
 
 void Memory::free(void *p)
 {
-	HeapFree(heap, 0, p); // Return value unused
+	if (p)
+		HeapFree(heap, 0, p); // Return value unused
 }
 
 void Memory::copy(void *dst, const void *src, QWORD len)
