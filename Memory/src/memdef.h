@@ -24,6 +24,9 @@ HANDLE __stdcall GetProcessHeap(void);
 LPVOID __stdcall HeapAlloc(HANDLE, DWORD, SIZE_T);
 LPVOID __stdcall HeapReAlloc(HANDLE, DWORD, LPVOID, SIZE_T);
 BOOL __stdcall HeapFree(HANDLE, DWORD, LPVOID);
+HANDLE HeapCreate(DWORD, SIZE_T, SIZE_T);
+BOOL HeapDestroy(HANDLE);
+DWORD GetLastError(void);
 
 #ifdef __cplusplus
 }

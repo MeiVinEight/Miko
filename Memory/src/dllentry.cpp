@@ -5,12 +5,20 @@ HANDLE heap;
 int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
 {
 	heap = 0;
-	if (reason == DLL_PROCESS_ATTACH)
+	switch (reason)
 	{
-		heap = GetProcessHeap();
-		if (!heap)
+		case DLL_PROCESS_ATTACH:
 		{
-			return 0;
+			heap = HeapCreate(0, 0, 0);
+			if (!heap)
+			{
+				return 0;
+			}
+			break;
+		}
+		case DLL_PROCESS_DETACH:
+		{
+			return HeapDestroy(heap);
 		}
 	}
 	return 1;
