@@ -1,5 +1,7 @@
 #include "memdef.h"
 
+HANDLE heap;
+
 int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
 {
 	heap = 0;
