@@ -67,8 +67,16 @@ namespace WSA
 		WORD backlog = 50;
 		WSA::SocketAddress address;
 
+		ServerSocket(const WSA::ServerSocket &) = delete;
+		WSA::ServerSocket &operator=(const WSA::ServerSocket &) = delete;
 		WSA_API
-		ServerSocket() = default;
+		ServerSocket();
+		WSA_API
+		ServerSocket(WSA::ServerSocket &&);
+		WSA_API
+		~ServerSocket();
+		WSA_API
+		WSA::ServerSocket &operator=(WSA::ServerSocket &&);
 		WSA_API
 		void bind(const WSA::SocketAddress &);
 		WSA_API
@@ -84,11 +92,17 @@ namespace WSA
 		public:
 		SOCKET connection = INVALID_SOCKET; // INVALID_SOCKET
 		WSA::Address IP;
-		WORD RP{}; // remote port
-		WORD LP{}; // local port
+		WORD RP = 0; // remote port
+		WORD LP = 0; // local port
 
+		Socket(const WSA::Socket &) = delete;
+		WSA::Socket &operator=(const WSA::Socket &) = delete;
 		WSA_API
 		Socket();
+		WSA_API
+		Socket(WSA::Socket &&);
+		WSA_API
+		WSA::Socket &operator=(WSA::Socket &&);
 		WSA_API
 		void connect(WSA::SocketAddress addr);
 		WSA_API

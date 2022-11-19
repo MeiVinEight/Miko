@@ -1,5 +1,32 @@
 #include "wsadef.h"
 
+WSA::ServerSocket::ServerSocket() = default;
+
+WSA::ServerSocket::ServerSocket(WSA::ServerSocket &&move): connection(move.connection), backlog(move.backlog), address(move.address)
+{
+	move.connection = INVALID_SOCKET;
+	move.address = {{0, 0, 0, 0}, 0};
+}
+
+WSA::ServerSocket::~ServerSocket()
+{
+	this->close();
+}
+
+WSA::ServerSocket &WSA::ServerSocket::operator=(WSA::ServerSocket &&move)
+{
+	if (&move != this)
+	{
+		this->close();
+		this->connection = move.connection;
+		this->backlog = move.backlog;
+		this->address = move.address;
+		move.connection = INVALID_SOCKET;
+		move.address = {{0, 0, 0, 0}, 0};
+	}
+	return *this;
+}
+
 void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 {
 	if (this->connection == INVALID_SOCKET)

@@ -1,7 +1,28 @@
 #include "wsadef.h"
 
-WSA::Socket::Socket():IP(WSA::Address()), RP(0), LP(0)
+WSA::Socket::Socket() = default;
+
+WSA::Socket::Socket(WSA::Socket &&move): connection(move.connection), IP(move.IP), RP(move.RP), LP(move.LP)
 {
+	move.connection = INVALID_SOCKET;
+	move.IP = {0, 0, 0, 0};
+	move.LP = move.RP = 0;
+}
+
+WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move)
+{
+	if (&move != this)
+	{
+		this->close();
+		this->connection = move.connection;
+		this->IP = move.IP;
+		this->LP = move.LP;
+		this->RP = move.RP;
+		move.connection = INVALID_SOCKET;
+		move.IP = {0, 0, 0, 0};
+		move.LP = move.RP = 0;
+	}
+	return *this;
 }
 
 void WSA::Socket::connect(WSA::SocketAddress addr)
