@@ -93,9 +93,12 @@ void WSA::Socket::close()
 {
 	if (~this->connection)
 	{
-		if (closesocket(this->connection))
+		int wrong = closesocket(this->connection);
+		this->connection = INVALID_SOCKET;
+		this->IP = {0, 0, 0, 0};
+		this->RP = this->LP = 0;
+		if (wrong)
 		{
-			this->connection = INVALID_SOCKET;
 			throw Exception::exception(Exception::message(WSAGetLastError()));
 		}
 	}
