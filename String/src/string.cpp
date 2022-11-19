@@ -13,10 +13,14 @@ String::string::string()
 	this->address[0] = 0;
 }
 
-String::string::string(const void *str): address(Memory::string(String::length(str) + 1))
+String::string::string(const void *str): String::string::string(str, String::length(str))
 {
-	this->length = this->address.length - 1;
-	Memory::copy(this->address.address, str, this->length);
+}
+
+String::string::string(const void *str, QWORD len): address(len + 1), length(len)
+{
+	Memory::copy(this->address.address, str, len);
+	this->address[len] = 0;
 }
 
 String::string::string(const String::string &) = default;

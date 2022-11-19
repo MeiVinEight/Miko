@@ -25,6 +25,8 @@ namespace String
 		STRING_API
 		string(const void *);
 		STRING_API
+		string(const void *, QWORD);
+		STRING_API
 		string(const String::string &);
 		STRING_API
 		string(String::string &&);
