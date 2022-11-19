@@ -56,7 +56,7 @@ HTTP::Message HTTP::ConnectionManager::accept()
 	WORD majVer = buf[5] - '0';
 	WORD minVer = buf[7] - '0';
 	message.version = (majVer << 8) | minVer;
-	message.state = 100 * (buf[9] - '0') + 10 * (buf[10] - '0') + (buf[11] - '0');
+	message.status = 100 * (buf[9] - '0') + 10 * (buf[10] - '0') + (buf[11] - '0');
 	buf[0] = 0;
 	QWORD idx = 0;
 	while (true)

@@ -34,7 +34,7 @@ namespace HTTP
 		WORD method = 0;
 		String::string URL;
 		WORD version = HTTP::HV_1_1;
-		WORD state = 0;
+		WORD status = 0;
 		String::string (*context)[2] = nullptr;
 		QWORD length = 0;
 		Memory::string content = Memory::string(0);

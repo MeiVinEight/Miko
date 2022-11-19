@@ -3,13 +3,13 @@
 HTTP::Message::Message() = default;
 
 HTTP::Message::Message(const HTTP::Message &copy):
-method(copy.method),
-URL(copy.URL),
-version(copy.version),
-state(copy.state),
-context(new String::string[copy.length][2]),
-length(copy.length),
-content(copy.content)
+	method(copy.method),
+	URL(copy.URL),
+	version(copy.version),
+	status(copy.status),
+	context(new String::string[copy.length][2]),
+	length(copy.length),
+	content(copy.content)
 {
 	for (QWORD i = 0; i < copy.length; i++)
 	{
@@ -19,17 +19,17 @@ content(copy.content)
 }
 
 HTTP::Message::Message(HTTP::Message &&move):
-method(move.method),
-URL((String::string &&)move.URL),
-version(move.version),
-state(move.state),
-context(move.context),
-length(move.length),
-content((Memory::string &&)move.content)
+	method(move.method),
+	URL((String::string &&)move.URL),
+	version(move.version),
+	status(move.status),
+	context(move.context),
+	length(move.length),
+	content((Memory::string &&)move.content)
 {
 	move.method = 0;
 	move.version = HTTP::HV_1_1;
-	move.state = 0;
+	move.status = 0;
 	move.context = nullptr;
 	move.length = 0;
 }
@@ -38,7 +38,7 @@ HTTP::Message::~Message()
 {
 	this->method = 0;
 	this->version = HTTP::HV_1_1;
-	this->state = 0;
+	this->status = 0;
 	delete[] this->context;
 	this->context = NULL;
 	this->length = 0;
@@ -60,14 +60,14 @@ HTTP::Message &HTTP::Message::operator=(HTTP::Message &&move)
 		this->method = move.method;
 		this->URL = (String::string &&)move.URL;
 		this->version = move.version;
-		this->state = move.state;
+		this->status = move.status;
 		delete[] this->context;
 		this->context = move.context;
 		this->length = move.length;
 		this->content = (Memory::string &&)move.content;
 		move.method = 0;
 		move.version = HTTP::HV_1_1;
-		move.state = 0;
+		move.status = 0;
 		move.context = nullptr;
 		move.length = 0;
 	}

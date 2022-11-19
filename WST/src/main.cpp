@@ -62,7 +62,7 @@ void http()
 	msg["Origin"] = "ws://broadcastlv.chat.bilibili.com:2244/sub";
 	cm.send(msg);
 	msg = cm.accept();
-	std::cout << "HTTP/" << (msg.version >> 8) << '.' << (msg.version & 0xFF) << ' ' << msg.state << std::endl;
+	std::cout << "HTTP/" << (msg.version >> 8) << '.' << (msg.version & 0xFF) << ' ' << msg.status << std::endl;
 	for (QWORD i = 0; i < msg.length; i++)
 	{
 		std::cout << msg[i][0].address.address << ": " << msg[i][1].address.address << std::endl;
