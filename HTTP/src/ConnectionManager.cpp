@@ -125,5 +125,11 @@ HTTP::Message HTTP::ConnectionManager::accept()
 		message.content.ensure(contentLength);
 		this->connection.read(message.content.address, contentLength);
 	}
+	QWORD ava = this->connection.available();
+	if (ava && message["Connection"] == "close")
+	{
+		message.content.ensure(ava);
+		this->connection.read(message.content.address, ava);
+	}
 	return message;
 }
