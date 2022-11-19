@@ -27,6 +27,7 @@ String::string::string(const String::string &) = default;
 
 String::string::string(String::string &&move): address((Memory::string &&)move.address), length(move.length)
 {
+	move.length = 0;
 }
 
 String::string::~string() = default;
