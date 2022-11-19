@@ -35,20 +35,34 @@ FileSystem::FileStream &FileSystem::FileStream::operator=(FileSystem::FileStream
 	return *this;
 }
 
-DWORD FileSystem::FileStream::read(void *b, DWORD len)
+void FileSystem::FileStream::read(void *b, DWORD len)
 {
 	if (~this->file)
 	{
-		return FileSystem::read(this->file, b, len);
+		char *buf = (char *)b;
+		while (len)
+		{
+			DWORD readed = FileSystem::read(this->file, buf, len);
+			buf += readed;
+			len -= readed;
+		}
+		return;
 	}
 	throw Exception::exception("File closed");
 }
 
-DWORD FileSystem::FileStream::write(void *b, DWORD len)
+void FileSystem::FileStream::write(void *b, DWORD len)
 {
 	if (~this->file)
 	{
-		return FileSystem::write(this->file, b, len);
+		char *buf = (char *)b;
+		while (len)
+		{
+			DWORD written = FileSystem::write(this->file, buf, len);
+			buf += written;
+			len -= written;
+		}
+		return;
 	}
 	throw Exception::exception("File closed");
 }

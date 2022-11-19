@@ -106,9 +106,9 @@ namespace WSA
 		WSA_API
 		void connect(WSA::SocketAddress addr);
 		WSA_API
-		DWORD read(void *, DWORD) override;
+		void read(void *, DWORD) override;
 		WSA_API
-		DWORD write(void *, DWORD) override;
+		void write(void *, DWORD) override;
 		WSA_API
 		QWORD available() override;
 		WSA_API
