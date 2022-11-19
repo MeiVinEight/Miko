@@ -26,7 +26,10 @@ namespace HTTP
 	const WORD HV_1_1		= ((1 << 8) | 1);
 	const WORD HV_2_0		= ((2 << 8) | 0);
 
+	HTTP_API
 	String::string method(WORD);
+	HTTP_API
+	String::string status(WORD);
 
 	class Message
 	{
