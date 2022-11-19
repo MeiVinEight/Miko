@@ -81,7 +81,7 @@ void WSA::Socket::read(void *b, DWORD len)
 	throw Exception::exception("Socket closed");
 }
 
-void WSA::Socket::write(void *b, DWORD len)
+void WSA::Socket::write(const void *b, DWORD len)
 {
 	if (~this->connection)
 	{

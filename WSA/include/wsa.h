@@ -108,7 +108,7 @@ namespace WSA
 		WSA_API
 		void read(void *, DWORD) override;
 		WSA_API
-		void write(void *, DWORD) override;
+		void write(const void *, DWORD) override;
 		WSA_API
 		QWORD available() override;
 		WSA_API

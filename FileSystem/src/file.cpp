@@ -51,7 +51,7 @@ void FileSystem::FileStream::read(void *b, DWORD len)
 	throw Exception::exception("File closed");
 }
 
-void FileSystem::FileStream::write(void *b, DWORD len)
+void FileSystem::FileStream::write(const void *b, DWORD len)
 {
 	if (~this->file)
 	{

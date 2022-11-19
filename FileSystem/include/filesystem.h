@@ -61,7 +61,7 @@ namespace FileSystem
 		FS_API
 		virtual void read(void *, DWORD) = 0;
 		FS_API
-		virtual void write(void *, DWORD) = 0;
+		virtual void write(const void *, DWORD) = 0;
 		FS_API
 		virtual QWORD available() = 0;
 		/**
@@ -87,7 +87,7 @@ namespace FileSystem
 		FS_API
 		void read(void *, DWORD) override;
 		FS_API
-		void write(void *, DWORD) override;
+		void write(const void *, DWORD) override;
 		FS_API
 		QWORD available() override;
 		FS_API
