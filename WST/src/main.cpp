@@ -3,15 +3,16 @@
 #include <wsa.h>
 #include <exception.h>
 #include <sstring.h>
+#include <hhttp.h>
 #include <filesystem.h>
 
-void ws()
+void wsa()
 {
 	WSA::startup();
 
 	WSA::Socket socket;
 	socket.connect({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
-	String::string s = "GET /sub HTTP/1.0\r\n"
+	String::string s = "GET /sub HTTP/1.1\r\n"
 					   "Host: broadcastlv.chat.bilibili.com\r\n"
 					   "Upgrade: websocket\r\n"
 					   "Connection: Upgrade\r\n"
@@ -45,11 +46,35 @@ void ws()
 	WSA::cleanup();
 }
 
+void http()
+{
+	WSA::startup();
+	HTTP::ConnectionManager cm({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
+	HTTP::Message msg;
+	msg.method = HTTP::RM_GET;
+	msg.URL = "/sub";
+	msg["Host"] = "broadcastlv.chat.bilibili.com";
+	msg["Upgrade"] = "websocket";
+	msg["Connection"] = "Upgrade";
+	msg["Sec-WebSocket-Key"] = "x3JJHMbDL1EzLkh9GBhXDw==";
+	msg["Sec-WebSocket-Protocol"] = "chat, superchat";
+	msg["Sec-WebSocket-Version"] = "13";
+	msg["Origin"] = "ws://broadcastlv.chat.bilibili.com:2244/sub";
+	cm.send(msg);
+	msg = cm.accept();
+	std::cout << "HTTP/" << (msg.version >> 8) << '.' << (msg.version & 0xFF) << ' ' << msg.state << std::endl;
+	for (QWORD i = 0; i < msg.length; i++)
+	{
+		std::cout << msg[i][0].address.address << ": " << msg[i][1].address.address << std::endl;
+	}
+	WSA::cleanup();
+}
+
 int main()
 {
 	try
 	{
-		std::cout << (int)FileSystem::create(".release");
+		http();
 	}
 	catch (Exception::exception &exec)
 	{
