@@ -1,5 +1,5 @@
-#ifndef CWS_CWS_H
-#define CWS_CWS_H
+#ifndef CWS_H
+#define CWS_H
 
 #ifdef CWS_SHARED
 	#define CWS_API __declspec(dllexport)
@@ -41,4 +41,4 @@ namespace CWS
 	};
 }
 
-#endif //CWS_CWS_H
+#endif //CWS_H
