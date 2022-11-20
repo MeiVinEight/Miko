@@ -105,6 +105,7 @@ int WSAAPI ioctlsocket(SOCKET, long, u_long *);
 int WSAAPI getsockname(SOCKET, SOCKADDR *, int *);
 INT WSAAPI getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
 void WSAAPI freeaddrinfo(PADDRINFOA);
+char *WSAAPI inet_ntoa(IN_ADDR);
 
 
 #ifdef __cplusplus

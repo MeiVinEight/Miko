@@ -47,6 +47,8 @@ namespace WSA
 		DWORD make() const;
 		WSA_API
 		void take(DWORD);
+		WSA_API
+		Memory::string string() const;
 	};
 	class SocketAddress
 	{
