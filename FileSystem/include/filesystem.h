@@ -22,7 +22,7 @@ typedef unsigned long long QWORD;
  * TODO Reparse points ?
  * TODO UNC ?
  */
-namespace FileSystem
+namespace Filesystem
 {
 	typedef QWORD FD;
 	static const QWORD FILE_EOF = -1;
@@ -45,15 +45,15 @@ namespace FileSystem
 	FS_API
 	Memory::string canonicalize(const void *);
 	FS_API
-	FileSystem::FD open(const void *, DWORD);
+	Filesystem::FD open(const void *, DWORD);
 	FS_API
-	void close(FileSystem::FD);
+	void close(Filesystem::FD);
 	FS_API
-	DWORD read(FileSystem::FD, void *, DWORD);
+	DWORD read(Filesystem::FD, void *, DWORD);
 	FS_API
-	DWORD write(FileSystem::FD, void *, DWORD);
+	DWORD write(Filesystem::FD, void *, DWORD);
 	FS_API
-	void seek(FileSystem::FD, QWORD, DWORD);
+	void seek(Filesystem::FD, QWORD, DWORD);
 
 	class AbstractStream
 	{
@@ -69,21 +69,21 @@ namespace FileSystem
 		 */
 	};
 
-	class FileStream: public FileSystem::AbstractStream
+	class FileStream: public Filesystem::AbstractStream
 	{
 		public:
-		FileSystem::FD file = HFILE_ERROR;
+		Filesystem::FD file = HFILE_ERROR;
 
 		FS_API
 		explicit FileStream(const void *);
 		FS_API
-		explicit FileStream(FileSystem::FD);
+		explicit FileStream(Filesystem::FD);
 		FS_API
 		FileStream(FileStream &&) noexcept;
 		FS_API
 		~FileStream();
 		FS_API
-		FileSystem::FileStream &operator=(FileSystem::FileStream &&) noexcept;
+		Filesystem::FileStream &operator=(Filesystem::FileStream &&) noexcept;
 		FS_API
 		void read(void *, DWORD) override;
 		FS_API

@@ -1,15 +1,15 @@
 #include "fsdef.h"
 
 
-FileSystem::FileStream::FileStream(const void *path): file(FileSystem::open(path, OF_READWRITE))
+Filesystem::FileStream::FileStream(const void *path): file(Filesystem::open(path, OF_READWRITE))
 {
 }
 
-FileSystem::FileStream::FileStream(FileSystem::FD fdVal): file(fdVal)
+Filesystem::FileStream::FileStream(Filesystem::FD fdVal): file(fdVal)
 {
 }
 
-FileSystem::FileStream::FileStream(FileSystem::FileStream &&another) noexcept: file(another.file)
+Filesystem::FileStream::FileStream(Filesystem::FileStream &&another) noexcept: file(another.file)
 {
 	if (~this->file)
 	{
@@ -19,12 +19,12 @@ FileSystem::FileStream::FileStream(FileSystem::FileStream &&another) noexcept: f
 	another.file = HFILE_ERROR;
 }
 
-FileSystem::FileStream::~FileStream()
+Filesystem::FileStream::~FileStream()
 {
 	this->close();
 }
 
-FileSystem::FileStream &FileSystem::FileStream::operator=(FileSystem::FileStream &&fVal) noexcept
+Filesystem::FileStream &Filesystem::FileStream::operator=(Filesystem::FileStream &&fVal) noexcept
 {
 	if (this->file)
 	{
@@ -35,14 +35,14 @@ FileSystem::FileStream &FileSystem::FileStream::operator=(FileSystem::FileStream
 	return *this;
 }
 
-void FileSystem::FileStream::read(void *b, DWORD len)
+void Filesystem::FileStream::read(void *b, DWORD len)
 {
 	if (~this->file)
 	{
 		char *buf = (char *)b;
 		while (len)
 		{
-			DWORD readed = FileSystem::read(this->file, buf, len);
+			DWORD readed = Filesystem::read(this->file, buf, len);
 			buf += readed;
 			len -= readed;
 		}
@@ -51,14 +51,14 @@ void FileSystem::FileStream::read(void *b, DWORD len)
 	throw Exception::exception("File closed");
 }
 
-void FileSystem::FileStream::write(const void *b, DWORD len)
+void Filesystem::FileStream::write(const void *b, DWORD len)
 {
 	if (~this->file)
 	{
 		char *buf = (char *)b;
 		while (len)
 		{
-			DWORD written = FileSystem::write(this->file, buf, len);
+			DWORD written = Filesystem::write(this->file, buf, len);
 			buf += written;
 			len -= written;
 		}
@@ -67,7 +67,7 @@ void FileSystem::FileStream::write(const void *b, DWORD len)
 	throw Exception::exception("File closed");
 }
 
-QWORD FileSystem::FileStream::available()
+QWORD Filesystem::FileStream::available()
 {
 	if (~this->file)
 	{
@@ -159,16 +159,16 @@ QWORD FileSystem::FileStream::available()
 	return -1;
 }
 
-void FileSystem::FileStream::seek(QWORD offset) const
+void Filesystem::FileStream::seek(QWORD offset) const
 {
-	FileSystem::seek(this->file, offset, FILE_BEGIN);
+	Filesystem::seek(this->file, offset, FILE_BEGIN);
 }
 
-void FileSystem::FileStream::close()
+void Filesystem::FileStream::close()
 {
 	if (~this->file)
 	{
-		FileSystem::close(this->file);
+		Filesystem::close(this->file);
 		this->file = HFILE_ERROR;
 	}
 }

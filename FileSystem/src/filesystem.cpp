@@ -1,13 +1,13 @@
 #include "fsdef.h"
 
-bool FileSystem::create(const void *path)
+bool Filesystem::create(const void *path)
 {
-	Memory::string canon = FileSystem::canonicalize(path);
-	if (!FileSystem::directory(path))
+	Memory::string canon = Filesystem::canonicalize(path);
+	if (!Filesystem::directory(path))
 	{
-		if (!FileSystem::exist(path))
+		if (!Filesystem::exist(path))
 		{
-			FileSystem::make(FileSystem::parent(path));
+			Filesystem::make(Filesystem::parent(path));
 			DWORD desiredAccess = GENERIC_ALL;
 			DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 			HANDLE h = CreateFileA((LPCSTR) path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -34,14 +34,14 @@ bool FileSystem::create(const void *path)
 	throw Exception::exception(msg);
 }
 
-bool FileSystem::make(const void *path)
+bool Filesystem::make(const void *path)
 {
-	Memory::string canon = FileSystem::canonicalize(path);
-	if (!FileSystem::file(path))
+	Memory::string canon = Filesystem::canonicalize(path);
+	if (!Filesystem::file(path))
 	{
-		if (!FileSystem::exist(path))
+		if (!Filesystem::exist(path))
 		{
-			FileSystem::make(FileSystem::parent(path));
+			Filesystem::make(Filesystem::parent(path));
 			if (CreateDirectoryA(canon, NULL))
 			{
 				return true;
@@ -59,7 +59,7 @@ bool FileSystem::make(const void *path)
 	throw Exception::exception(msg);
 }
 
-bool FileSystem::exist(const void *path)
+bool Filesystem::exist(const void *path)
 {
 	if (GetFileAttributesA((LPCSTR)path) == INVALID_FILE_ATTRIBUTES)
 	{
@@ -73,12 +73,12 @@ bool FileSystem::exist(const void *path)
 	return true;
 }
 
-bool FileSystem::file(const void *path)
+bool Filesystem::file(const void *path)
 {
-	return FileSystem::exist(path) && !FileSystem::directory(path);
+	return Filesystem::exist(path) && !Filesystem::directory(path);
 }
 
-bool FileSystem::directory(const void *path)
+bool Filesystem::directory(const void *path)
 {
 	WIN32_FILE_ATTRIBUTE_DATA data{0};
 	if (!GetFileAttributesExA((LPCSTR)path, GetFileExInfoStandard, &data))
@@ -93,9 +93,9 @@ bool FileSystem::directory(const void *path)
 	return !!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-Memory::string FileSystem::parent(const void *path)
+Memory::string Filesystem::parent(const void *path)
 {
-	Memory::string canon = FileSystem::canonicalize(path);
+	Memory::string canon = Filesystem::canonicalize(path);
 	QWORD length = canon.length - 1;
 	while (length && *(canon + --length) != '\\');
 	length = (canon.length == 4) ? 0 : length;
@@ -106,7 +106,7 @@ Memory::string FileSystem::parent(const void *path)
 	return ret;
 }
 
-bool FileSystem::remove(const void *path)
+bool Filesystem::remove(const void *path)
 {
 	SetFileAttributesA((LPCSTR)path, FILE_ATTRIBUTE_NORMAL);
 	DWORD attr = GetFileAttributesA((LPCSTR)path);
@@ -121,7 +121,7 @@ bool FileSystem::remove(const void *path)
 	return false;
 }
 
-Memory::string FileSystem::canonicalize(const void *path) // Maybe only GetFullPathName
+Memory::string Filesystem::canonicalize(const void *path) // Maybe only GetFullPathName
 {
 	char buf[MAX_PATH + 1];
 	QWORD len = GetFullPathNameA((LPCSTR) path, MAX_PATH + 1, buf, NULL);
@@ -135,9 +135,9 @@ Memory::string FileSystem::canonicalize(const void *path) // Maybe only GetFullP
 	throw Exception::exception(Exception::message(GetLastError()));
 }
 
-FileSystem::FD FileSystem::open(const void *path, DWORD mode)
+Filesystem::FD Filesystem::open(const void *path, DWORD mode)
 {
-	FileSystem::create(path);
+	Filesystem::create(path);
 	OFSTRUCT data;
 	HFILE hfVal = OpenFile((LPCSTR)path, &data, mode);
 	if (hfVal == HFILE_ERROR)
@@ -147,7 +147,7 @@ FileSystem::FD FileSystem::open(const void *path, DWORD mode)
 	return hfVal;
 }
 
-void FileSystem::close(FileSystem::FD fdVal)
+void Filesystem::close(Filesystem::FD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
@@ -155,7 +155,7 @@ void FileSystem::close(FileSystem::FD fdVal)
 	}
 }
 
-DWORD FileSystem::read(FileSystem::FD fdVal, void *b, DWORD len)
+DWORD Filesystem::read(Filesystem::FD fdVal, void *b, DWORD len)
 {
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, NULL))
@@ -165,7 +165,7 @@ DWORD FileSystem::read(FileSystem::FD fdVal, void *b, DWORD len)
 	return readed;
 }
 
-DWORD FileSystem::write(FileSystem::FD fdVal, void *b, DWORD len)
+DWORD Filesystem::write(Filesystem::FD fdVal, void *b, DWORD len)
 {
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, NULL))
@@ -175,7 +175,7 @@ DWORD FileSystem::write(FileSystem::FD fdVal, void *b, DWORD len)
 	return written;
 }
 
-void FileSystem::seek(FileSystem::FD fdVal, QWORD offset, DWORD mode)
+void Filesystem::seek(Filesystem::FD fdVal, QWORD offset, DWORD mode)
 {
 	LARGE_INTEGER distance;
 	distance.QuadPart = (long long) offset;
