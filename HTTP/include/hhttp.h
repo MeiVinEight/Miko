@@ -7,6 +7,8 @@
 	#define HTTP_API
 #endif
 
+#include <memory.h>
+#include <sstring.h>
 #include <wsa.h>
 
 namespace HTTP

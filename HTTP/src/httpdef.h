@@ -2,7 +2,6 @@
 #define HTTPDEF_H
 
 #define HTTP_SHARED
-#include <sstring.h>
 #include <exception.h>
 #include <hhttp.h>
 
