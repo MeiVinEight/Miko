@@ -25,11 +25,13 @@ extern "C"
 #define IPPROTO_TCP			6               /* tcp */
 #define WSAECONNABORTED		10053L
 #define FIONREAD			(0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
+#define DLL_PROCESS_DETACH	0
+#define DLL_PROCESS_ATTACH	1
 
+typedef void 				*HANDLE, *HINSTANCE, *LPVOID;
 typedef unsigned long		u_long;
-typedef unsigned short		u_short;
 typedef BYTE 				UCHAR;
-typedef unsigned short		USHORT;
+typedef unsigned short		USHORT, u_short;
 typedef DWORD				ULONG;
 typedef unsigned __int64	size_t;
 typedef int					INT;

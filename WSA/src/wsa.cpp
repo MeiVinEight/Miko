@@ -1,23 +1,5 @@
 #include "wsadef.h"
 
-void WSA::startup()
-{
-	WSADATA data;
-	int err = WSAStartup(0x0202, &data);
-	if (err)
-	{
-		throw Exception::exception(Exception::message(err));
-	}
-}
-
-void WSA::cleanup()
-{
-	if (WSACleanup() == SOCKET_ERROR)
-	{
-		throw Exception::exception(Exception::message(WSAGetLastError()));
-	}
-}
-
 WSA::Address WSA::IP(LPCSTR host)
 {
 	ADDRINFOA ai{0};

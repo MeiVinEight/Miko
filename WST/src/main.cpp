@@ -4,12 +4,11 @@
 #include <exception.h>
 #include <sstring.h>
 #include <hhttp.h>
+#include <cws.h>
 #include <filesystem.h>
 
 void wsa()
 {
-	WSA::startup();
-
 	WSA::Socket socket;
 	socket.connect({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
 	String::string s = "GET /sub HTTP/1.1\r\n"
@@ -42,13 +41,10 @@ void wsa()
 		cr = byte == '\r';
 	}
 	socket.close();
-
-	WSA::cleanup();
 }
 
 void http()
 {
-	WSA::startup();
 	HTTP::ConnectionManager cm({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
 	HTTP::Message msg;
 	msg.method = HTTP::RM_GET;
@@ -62,12 +58,29 @@ void http()
 	msg["Origin"] = "ws://broadcastlv.chat.bilibili.com:2244/sub";
 	cm.send(msg);
 	msg = cm.accept();
-	std::cout << "HTTP/" << (msg.version >> 8) << '.' << (msg.version & 0xFF) << ' ' << msg.status << std::endl;
+	std::cout	<< "HTTP/"
+				<< (msg.version >> 8)
+				<< '.'
+				<< (msg.version & 0xFF)
+				<< ' '
+				<< msg.status
+				<< ' '
+				<< HTTP::status(msg.status).address
+				<< std::endl;
 	for (QWORD i = 0; i < msg.length; i++)
 	{
 		std::cout << msg[i][0].address << ": " << msg[i][1].address << std::endl;
 	}
-	WSA::cleanup();
+	if (msg.contain("Content-Type"))
+	{
+		std::cout << std::endl;
+		String::string ct = msg["Content-Type"];
+		if (ct[0] == 't' && ct[1] == 'e' && ct[2] == 'x' && ct[3] == 't')
+		{
+			std::cout.write(msg.content, (std::streamsize)msg.content.length);
+			std::cout.flush();
+		}
+	}
 }
 
 int main()

@@ -33,10 +33,6 @@ namespace WSA
 	class Socket;
 
 	WSA_API
-	void startup();
-	WSA_API
-	void cleanup();
-	WSA_API
 	WSA::Address IP(LPCSTR host);
 	WSA_API
 	SOCKET socket();
