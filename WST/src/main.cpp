@@ -6,6 +6,7 @@
 #include <hhttp.h>
 #include <cws.h>
 #include <filesystem.h>
+#include <timestamp.h>
 
 void wsa()
 {
@@ -42,14 +43,13 @@ void wsa()
 	}
 	socket.close();
 }
-
 void http()
 {
 	HTTP::ConnectionManager cm({WSA::IP("broadcastlv.chat.bilibili.com"), 2244});
 	HTTP::Message msg;
 	msg.method = HTTP::RM_GET;
 	msg.URL = "/sub";
-	msg["Host"] = "broadcastlv.chat.bilibili.com";
+	msg["Host"] = WSA::IP("broadcastlv.chat.bilibili.com").string();
 	msg["Upgrade"] = "websocket";
 	msg["Connection"] = "Upgrade";
 	msg["Sec-WebSocket-Key"] = "x3JJHMbDL1EzLkh9GBhXDw==";
@@ -82,12 +82,70 @@ void http()
 		}
 	}
 }
+void ws()
+{
+	QWORD roomID = 24543023;
+	CWS::WebSocket ws({WSA::IP("broadcastlv.chat.bilibili.com"), 2244}, "/sub");
+
+	String::string json = R"({"uid":0,"roomid":24543023,"protover":3,"platform":"web","type":2,"key":""})";
+	Memory::string cert(json.length + 16);
+	Memory::fill(cert, 0, cert.length);
+	cert[0] = (char)((cert.length >> 0x18) & 0xFF);
+	cert[1] = (char)((cert.length >> 0x10) & 0xFF);
+	cert[2] = (char)((cert.length >> 0x08) & 0xFF);
+	cert[3] = (char)((cert.length >> 0x00) & 0xFF);
+	cert[5] = 16;
+	cert[7] = 1;
+	cert[11] = 7;
+	cert[15] = 1;
+	Memory::copy(cert + 16, json.address, cert.length - 16);
+	ws.send(cert);
+
+	Memory::string payload = ws.accept();
+
+	std::cout << payload.length;
+	Timestamp::calender cal;
+	cal.convert();
+
+	Memory::string file(29); //bilibili/YYYY-MM-DD HH-mm-ss
+	file[28] = 0;
+	Memory::copy(file, "bilibili/", 9);
+
+	WORD data = cal[Timestamp::calender::YEAR];
+	for (QWORD i = 4; i--;)
+	{
+		file[i + 9] = (char)('0' + (data % 10));
+		data /= 10;
+	}
+	file[13] = '-';
+	file[14] = (char)('0' + (cal[Timestamp::calender::MONTH] / 10));
+	file[15] = (char)('0' + (cal[Timestamp::calender::MONTH] % 10));
+	file[16] = '-';
+	file[17] = (char)('0' + (cal[Timestamp::calender::DAY] / 10));
+	file[18] = (char)('0' + (cal[Timestamp::calender::DAY] % 10));
+	file[19] = ' ';
+	file[20] = (char)('0' + (cal[Timestamp::calender::HOUR] / 10));
+	file[21] = (char)('0' + (cal[Timestamp::calender::HOUR] % 10));
+	file[22] = '-';
+	file[23] = (char)('0' + (cal[Timestamp::calender::MINUTE] / 10));
+	file[24] = (char)('0' + (cal[Timestamp::calender::MINUTE] % 10));
+	file[25] = '-';
+	file[26] = (char)('0' + (cal[Timestamp::calender::SECOND] / 10));
+	file[27] = (char)('0' + (cal[Timestamp::calender::SECOND] % 10));
+
+	std::cout << (file + 9) << " -> " << payload.length << std::endl;
+	Filesystem::FileStream stream(file);
+	stream.write(payload, payload.length);
+	stream.close();
+
+	ws.close();
+}
 
 int main()
 {
 	try
 	{
-		http();
+		ws();
 	}
 	catch (Exception::exception &exec)
 	{

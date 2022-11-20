@@ -7,7 +7,9 @@
 	#define CWS_API
 #endif
 
+#include <memory.h>
 #include <wsa.h>
+#include <hhttp.h>
 
 /*
 +---------------------------------------------------------------+
@@ -36,8 +38,27 @@ namespace CWS
 	class WebSocket
 	{
 		public:
+		HTTP::ConnectionManager manager;
+		WSA::Socket &connection = manager.connection;
+
+		WebSocket() = delete;
+		WebSocket(const WebSocket &) = delete;
+		CWS::WebSocket &operator=(const WebSocket &) = delete;
+
 		CWS_API
-		WebSocket();
+		WebSocket(const WSA::SocketAddress &, const String::string &);
+		CWS_API
+		WebSocket(CWS::WebSocket &&);
+		CWS_API
+		~WebSocket();
+		CWS_API
+		CWS::WebSocket &operator=(WebSocket &&);
+		CWS_API
+		Memory::string accept();
+		CWS_API
+		void send(const Memory::string &);
+		CWS_API
+		void close();
 	};
 }
 
