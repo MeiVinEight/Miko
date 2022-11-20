@@ -78,6 +78,8 @@ namespace HTTP
 		HTTP_API
 		ConnectionManager(HTTP::ConnectionManager &&);
 		HTTP_API
+		~ConnectionManager();
+		HTTP_API
 		HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&);
 		HTTP_API
 		void send(const HTTP::Message &);

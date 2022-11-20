@@ -9,6 +9,11 @@ HTTP::ConnectionManager::ConnectionManager(HTTP::ConnectionManager &&move): conn
 {
 }
 
+HTTP::ConnectionManager::~ConnectionManager()
+{
+	this->connection.close();
+}
+
 HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionManager &&move)
 {
 	this->connection = (WSA::Socket &&)move.connection;
