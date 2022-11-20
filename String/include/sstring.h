@@ -33,6 +33,8 @@ namespace String
 		STRING_API
 		~string();
 		STRING_API
+		String::string &operator=(const void *);
+		STRING_API
 		String::string &operator=(const String::string &) &;
 		STRING_API
 		String::string &operator=(String::string &&) &;

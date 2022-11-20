@@ -32,6 +32,11 @@ String::string::string(String::string &&move): address((Memory::string &&)move.a
 
 String::string::~string() = default;
 
+String::string &String::string::operator=(const void *str)
+{
+	return (*this) = (String::string)str;
+}
+
 String::string &String::string::operator=(const String::string &) & = default;
 
 String::string &String::string::operator=(String::string &&move) &
