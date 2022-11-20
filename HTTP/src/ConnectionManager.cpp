@@ -141,3 +141,8 @@ HTTP::Message HTTP::ConnectionManager::accept()
 	}
 	return message;
 }
+
+void HTTP::ConnectionManager::close()
+{
+	this->connection.close();
+}

@@ -85,6 +85,8 @@ namespace HTTP
 		void send(const HTTP::Message &);
 		HTTP_API
 		HTTP::Message accept();
+		HTTP_API
+		void close();
 	};
 }
 
