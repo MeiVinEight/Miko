@@ -2,7 +2,7 @@
 
 Exception::exception::exception(const void *message): message(strlen(message) + 1)
 {
-	Memory::copy(this->message.address, message, this->message.length);
+	Memory::copy(this->message, message, this->message.length);
 	backtrace(*this);
 }
 

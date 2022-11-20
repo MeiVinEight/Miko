@@ -19,7 +19,7 @@ String::string::string(const void *str): String::string::string(str, String::len
 
 String::string::string(const void *str, QWORD len): address(len + 1), length(len)
 {
-	Memory::copy(this->address.address, str, len);
+	Memory::copy(this->address, str, len);
 	this->address[len] = 0;
 }
 
@@ -55,7 +55,7 @@ bool String::string::operator==(const String::string &other) const
 	{
 		if (this->length == other.length)
 		{
-			return Memory::compare(this->address.address, other.address.address, this->length);
+			return Memory::compare(this->address, other.address, this->length);
 		}
 		return false;
 	}
@@ -67,7 +67,7 @@ bool String::string::operator==(const void *str) const
 	QWORD len = String::length(str);
 	if (len == this->length)
 	{
-		return Memory::compare(this->address.address, str, len);
+		return Memory::compare(this->address, str, len);
 	}
 	return false;
 }
@@ -80,7 +80,7 @@ char &String::string::operator[](QWORD idx) const
 String::string &String::string::operator+=(const String::string &str) &
 {
 	this->address.ensure(this->length + str.length + 1);
-	Memory::copy(this->address.address + this->length, str.address.address, str.length);
+	Memory::copy(this->address + this->length, str.address, str.length);
 	this->length += str.length;
 	(*this)[this->length] = 0;
 	return *this;
@@ -90,7 +90,7 @@ String::string &String::string::operator+=(const void *str) &
 {
 	QWORD len = String::length(str);
 	this->address.ensure(this->length + len + 1);
-	Memory::copy(this->address.address + this->length, str, len);
+	Memory::copy(this->address + this->length, str, len);
 	this->length += len;
 	(*this)[this->length] = 0;
 	return *this;

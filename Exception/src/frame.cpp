@@ -80,7 +80,7 @@ Exception::exception::frame::frame(void *returnAddress)
 
 	QWORD len = strlen(syminfo->Name);
 	this->function.ensure(len + 1);
-	Memory::copy(this->function.address, syminfo->Name, len + 1);
+	Memory::copy(this->function, syminfo->Name, len + 1);
 
 	this->address = (void *)syminfo->Address;
 	this->module = (void *)syminfo->ModBase;
@@ -89,7 +89,7 @@ Exception::exception::frame::frame(void *returnAddress)
 	K32GetModuleBaseNameA(process, (HMODULE) this->module, modname, MAX_SYM_NAME);
 	len = strlen(modname);
 	this->library.ensure(len + 1);
-	Memory::copy(this->library.address, modname, len + 1);
+	Memory::copy(this->library, modname, len + 1);
 }
 
 Exception::exception::frame::frame(const Exception::exception::frame &copy)

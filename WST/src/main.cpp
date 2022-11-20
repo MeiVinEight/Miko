@@ -21,7 +21,7 @@ void wsa()
 					   "Sec-WebSocket-Version: 13\r\n"
 					   "Origin: ws://broadcastlv.chat.bilibili.com:2244/sub\r\n"
 					   "\r\n";
-	socket.write(s.address.address, s.length);
+	socket.write(s.address, s.length);
 	int len = 0;
 	int cr = 0;
 	while (true)
@@ -65,7 +65,7 @@ void http()
 	std::cout << "HTTP/" << (msg.version >> 8) << '.' << (msg.version & 0xFF) << ' ' << msg.status << std::endl;
 	for (QWORD i = 0; i < msg.length; i++)
 	{
-		std::cout << msg[i][0].address.address << ": " << msg[i][1].address.address << std::endl;
+		std::cout << msg[i][0].address << ": " << msg[i][1].address << std::endl;
 	}
 	WSA::cleanup();
 }
@@ -78,20 +78,20 @@ int main()
 	}
 	catch (Exception::exception &exec)
 	{
-		std::cout << exec.message.address << std::endl;
+		std::cout << exec.message << std::endl;
 		for (DWORD i = 0; i < exec.count; i++)
 		{
 			Exception::exception::frame &frame = exec.stack[i];
 			std::cout	<< "0x"
 						<< frame.offset
 						<< " ("
-						<< frame.function.address
+						<< frame.function
 						<< "+0x"
 						<< std::hex
 						<< ((QWORD)frame.offset - (QWORD)frame.address)
 						<< std::dec
 						<< ") ["
-						<< frame.library.address
+						<< frame.library
 						<< "+0x"
 						<< std::hex
 						<< ((QWORD)frame.offset - (QWORD)frame.module)

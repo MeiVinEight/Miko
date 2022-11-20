@@ -7,7 +7,7 @@ bool FileSystem::create(const void *path)
 	{
 		if (!FileSystem::exist(path))
 		{
-			FileSystem::make(FileSystem::parent(path).address);
+			FileSystem::make(FileSystem::parent(path));
 			DWORD desiredAccess = GENERIC_ALL;
 			DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 			HANDLE h = CreateFileA((LPCSTR) path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -28,8 +28,8 @@ bool FileSystem::create(const void *path)
 	// path is not a directory
 	char append[] = " is not a file";
 	Memory::string msg(canon.length + sizeof(append) - 1);
-	Memory::copy(msg.address, canon.address, canon.length - 1);
-	Memory::copy(msg.address + (canon.length - 1), append, sizeof(append));
+	Memory::copy(msg, canon, canon.length - 1);
+	Memory::copy(msg + (canon.length - 1), append, sizeof(append));
 	msg[msg.length - 1] = 0;
 	throw Exception::exception(msg);
 }
@@ -41,8 +41,8 @@ bool FileSystem::make(const void *path)
 	{
 		if (!FileSystem::exist(path))
 		{
-			FileSystem::make(FileSystem::parent(path).address);
-			if (CreateDirectoryA(canon.address, NULL))
+			FileSystem::make(FileSystem::parent(path));
+			if (CreateDirectoryA(canon, NULL))
 			{
 				return true;
 			}
@@ -53,8 +53,8 @@ bool FileSystem::make(const void *path)
 	// path is not a directory
 	char append[] = " is not a directory";
 	Memory::string msg(canon.length + sizeof(append) - 1);
-	Memory::copy(msg.address, canon.address, canon.length - 1);
-	Memory::copy(msg.address + (canon.length - 1), append, sizeof(append));
+	Memory::copy(msg, canon, canon.length - 1);
+	Memory::copy(msg + (canon.length - 1), append, sizeof(append));
 	msg[msg.length - 1] = 0;
 	throw Exception::exception(msg);
 }
@@ -97,11 +97,11 @@ Memory::string FileSystem::parent(const void *path)
 {
 	Memory::string canon = FileSystem::canonicalize(path);
 	QWORD length = canon.length - 1;
-	while (length && *(canon.address + --length) != '\\');
+	while (length && *(canon + --length) != '\\');
 	length = (canon.length == 4) ? 0 : length;
 	length = (length && (length < 3)) ? 3 : length;
 	Memory::string ret(length + 1);
-	Memory::copy(ret.address, canon.address, length);
+	Memory::copy(ret, canon, length);
 	ret[length] = 0;
 	return ret;
 }
@@ -129,7 +129,7 @@ Memory::string FileSystem::canonicalize(const void *path) // Maybe only GetFullP
 	{
 		Memory::string canon(len + 1);
 		canon[len] = 0;
-		Memory::copy(canon.address, buf, len);
+		Memory::copy(canon, buf, len);
 		return canon;
 	}
 	throw Exception::exception(Exception::message(GetLastError()));

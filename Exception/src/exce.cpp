@@ -10,7 +10,7 @@ Memory::string Exception::message(DWORD errcode)
 		len -= 2;
 	}
 	Memory::string msg(len + 1);
-	Memory::copy(msg.address, buf, len);
+	Memory::copy(msg, buf, len);
 	msg[len] = 0;
 	return msg;
 }

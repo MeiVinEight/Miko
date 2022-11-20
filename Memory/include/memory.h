@@ -52,6 +52,8 @@ namespace Memory
 		MEMORY_API
 		char &operator[](QWORD) const;
 		MEMORY_API
+		operator char *() const;
+		MEMORY_API
 		void ensure(QWORD);
 	};
 }

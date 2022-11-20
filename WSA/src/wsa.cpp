@@ -41,8 +41,8 @@ WSA::Address WSA::IP(LPCSTR host)
 		QWORD applen = sizeof(append) - 1;
 		QWORD hoslen = strlen(host);
 		Memory::string msg(applen + hoslen + 1);
-		Memory::copy(msg.address, append, applen);
-		Memory::copy(msg.address + applen, host, hoslen);
+		Memory::copy(msg, append, applen);
+		Memory::copy(msg + applen, host, hoslen);
 		msg[applen + hoslen] = 0;
 		throw Exception::exception(msg);
 	}

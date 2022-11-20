@@ -26,11 +26,11 @@ HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionMana
 void HTTP::ConnectionManager::send(const HTTP::Message &msg)
 {
 	String::string rm = HTTP::method(msg.method);
-	this->connection.write(rm.address.address, rm.length);
+	this->connection.write(rm.address, rm.length);
 	char buf[11];
 	buf[0] = ' ';
 	this->connection.write(buf, 1);
-	this->connection.write(msg.URL.address.address, msg.URL.length);
+	this->connection.write(msg.URL.address, msg.URL.length);
 	Memory::copy(buf, " HTTP/", 6);
 	buf[6] = (char)('0' + ((msg.version >> 8) & 0xFF));
 	buf[7] = '.';
@@ -47,13 +47,13 @@ void HTTP::ConnectionManager::send(const HTTP::Message &msg)
 	{
 		String::string &key = msg.context[i][0];
 		String::string &val = msg.context[i][1];
-		this->connection.write(key.address.address, key.length);
+		this->connection.write(key.address, key.length);
 		this->connection.write(buf, 2);
-		this->connection.write(val.address.address, val.length);
+		this->connection.write(val.address, val.length);
 		this->connection.write(buf + 2, 2);
 	}
 	this->connection.write(buf + 2, 2);
-	this->connection.write(msg.content.address, msg.content.length);
+	this->connection.write(msg.content, msg.content.length);
 }
 
 HTTP::Message HTTP::ConnectionManager::accept()
@@ -103,7 +103,7 @@ HTTP::Message HTTP::ConnectionManager::accept()
 			len = 0;
 			idx = 0;
 			type = 0;
-			message[str[0].address] = str[1].address;
+			message[(void *)str[0]] = str[1];
 		}
 		else if (ch == ':')
 		{
@@ -131,13 +131,13 @@ HTTP::Message HTTP::ConnectionManager::accept()
 			contentLength += cl[i] - '0';
 		}
 		message.content.ensure(contentLength);
-		this->connection.read(message.content.address, contentLength);
+		this->connection.read(message.content, contentLength);
 	}
 	QWORD ava = this->connection.available();
 	if (ava && message["Connection"] == "close")
 	{
 		message.content.ensure(ava);
-		this->connection.read(message.content.address, ava);
+		this->connection.read(message.content, ava);
 	}
 	return message;
 }

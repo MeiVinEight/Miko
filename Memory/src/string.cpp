@@ -6,10 +6,10 @@ Memory::string::string(QWORD size): address((char *)Memory::allocate(size)), len
 
 Memory::string::string(const Memory::string &copy): address((char *)Memory::allocate(copy.length)), length(copy.length)
 {
-	Memory::copy(this->address, copy.address, this->length);
+	Memory::copy(this->address, copy, this->length);
 }
 
-Memory::string::string(Memory::string &&move): address(move.address), length(move.length)
+Memory::string::string(Memory::string &&move): address(move), length(move.length)
 {
 	move.address = 0;
 	move.length = 0;
@@ -36,7 +36,7 @@ Memory::string &Memory::string::operator=(Memory::string &&move)
 	if (&move != this)
 	{
 		Memory::free(this->address);
-		this->address = move.address;
+		this->address = move;
 		this->length = move.length;
 		move.address = 0;
 		move.length = 0;
@@ -47,6 +47,11 @@ Memory::string &Memory::string::operator=(Memory::string &&move)
 char &Memory::string::operator[](QWORD off) const
 {
 	return this->address[off];
+}
+
+Memory::string::operator char *() const
+{
+	return this->address;
 }
 
 void Memory::string::ensure(QWORD size)
