@@ -16,7 +16,10 @@ HTTP::ConnectionManager::~ConnectionManager()
 
 HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionManager &&move)
 {
-	this->connection = (WSA::Socket &&)move.connection;
+	if (&move != this)
+	{
+		this->connection = (WSA::Socket &&) move.connection;
+	}
 	return *this;
 }
 
