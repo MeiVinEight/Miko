@@ -4,6 +4,7 @@ project(Miko)
 set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(Memory)
+add_subdirectory(Timestamp)
 add_subdirectory(String)
 add_subdirectory(Exception)
 add_subdirectory(FileSystem)
