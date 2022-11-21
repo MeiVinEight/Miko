@@ -4,7 +4,7 @@ include_directories(include)
 include_directories(../Memory/include)
 include_directories(../String/include)
 include_directories(../Exception/include)
-include_directories(../FileSystem/include)
+include_directories(../Filesystem/include)
 include_directories(../WSA/include)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)
