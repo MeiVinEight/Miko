@@ -57,28 +57,28 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 
 void WSA::Socket::read(void *b, DWORD len)
 {
-	if (~this->connection)
+	char *buf = (char *) b;
+	while (len)
 	{
-		char *buf = (char *)b;
-		while (len)
+		if (~this->connection)
 		{
 			DWORD readed = recv(this->connection, buf, (int) len, 0);
-			if (readed == (DWORD) SOCKET_ERROR)
+			if (readed)
 			{
-				DWORD err = WSAGetLastError();
-				if (err != WSAECONNABORTED)
+				if (readed == SOCKET_ERROR)
 				{
+					DWORD err = WSAGetLastError();
+					this->close();
 					throw Exception::exception(Exception::message(err));
 				}
-				this->close();
-				throw Exception::exception("Socket closed");
+				buf += readed;
+				len -= readed;
+				continue;
 			}
-			buf += readed;
-			len -= readed;
+			this->close();
 		}
-		return;
+		throw Exception::exception("Socket closed");
 	}
-	throw Exception::exception("Socket closed");
 }
 
 void WSA::Socket::write(const void *b, DWORD len)
