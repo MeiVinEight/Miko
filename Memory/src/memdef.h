@@ -27,6 +27,11 @@ BOOL __stdcall HeapFree(HANDLE, DWORD, LPVOID);
 HANDLE HeapCreate(DWORD, SIZE_T, SIZE_T);
 BOOL HeapDestroy(HANDLE);
 DWORD GetLastError(void);
+void *malloc(SIZE_T);
+void *realloc(void *, SIZE_T);
+void free(void *);
+void *memcpy(void *, const void *, SIZE_T);
+void *memset(void *, int, SIZE_T);
 
 #ifdef __cplusplus
 }

@@ -2,41 +2,27 @@
 
 void *Memory::allocate(QWORD size)
 {
-	size = size ? size : 1;
-	return HeapAlloc(heap, 0, size);
+	return malloc(size);
 }
 
 void *Memory::reallocate(void *p, QWORD size)
 {
-	if (p)
-	{
-		if (!size)
-		{
-			Memory::free(p);
-			return NULL;
-		}
-		return HeapReAlloc(heap, 0, p, size);
-	}
-	return Memory::allocate(size);
+	return realloc(p, size);
 }
 
 void Memory::free(void *p)
 {
-	if (p)
-		HeapFree(heap, 0, p); // Return value unused
+	::free(p);
 }
 
 void Memory::copy(void *dst, const void *src, QWORD len)
 {
-	char *d = (char *)dst;
-	char *s = (char *)src;
-	for (QWORD i = 0; i++ < len; d[i - 1] = s[i - 1]);
+	memcpy(dst, src, len);
 }
 
 void Memory::fill(void *p, BYTE x, QWORD size)
 {
-	char *s= (char *)p;
-	for (QWORD i = 0; i < size; s[i++] = (char)x);
+	memset(p, x, size);
 }
 
 bool Memory::compare(const void *p1, const void *p2, QWORD length)
