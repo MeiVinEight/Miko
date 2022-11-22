@@ -46,7 +46,11 @@ Memory::string &Memory::string::operator=(Memory::string &&move)
 
 char &Memory::string::operator[](QWORD off) const
 {
-	return this->address[off];
+	if (off < this->length)
+	{
+		return this->address[off];
+	}
+	return *((char *)1);
 }
 
 Memory::string::operator char *() const
