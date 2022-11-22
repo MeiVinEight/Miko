@@ -76,7 +76,7 @@ Memory::string CWS::WebSocket::accept()
 		{
 			this->connection.read(maskingKey, 4);
 		}
-		payload.ensure(payload.length + length);
+		payload.resize(payload.length + length);
 		this->connection.read(payload + offset, length);
 		if (MASK)
 		{

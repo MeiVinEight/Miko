@@ -54,7 +54,7 @@ namespace Memory
 		MEMORY_API
 		operator char *() const;
 		MEMORY_API
-		void ensure(QWORD);
+		void resize(QWORD);
 	};
 }
 

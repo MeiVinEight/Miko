@@ -72,14 +72,14 @@ Exception::exception::frame::frame(void *returnAddress)
 	if (imgLine.LineNumber)
 	{
 		DWORD fnLen = strlen(imgLine.FileName);
-		this->source.ensure(fnLen + 1);
+		this->source.resize(fnLen + 1);
 		Memory::copy(this->source.address, imgLine.FileName, fnLen + 1);
 		this->line = imgLine.LineNumber;
 	}
 	*/
 
 	QWORD len = strlen(syminfo->Name);
-	this->function.ensure(len + 1);
+	this->function.resize(len + 1);
 	Memory::copy(this->function, syminfo->Name, len + 1);
 
 	this->address = (void *)syminfo->Address;
@@ -88,7 +88,7 @@ Exception::exception::frame::frame(void *returnAddress)
 	char modname[MAX_SYM_NAME * sizeof(CHAR)]{0};
 	K32GetModuleBaseNameA(process, (HMODULE) this->module, modname, MAX_SYM_NAME);
 	len = strlen(modname);
-	this->library.ensure(len + 1);
+	this->library.resize(len + 1);
 	Memory::copy(this->library, modname, len + 1);
 }
 

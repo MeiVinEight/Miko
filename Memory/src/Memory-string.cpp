@@ -54,9 +54,9 @@ Memory::string::operator char *() const
 	return this->address;
 }
 
-void Memory::string::ensure(QWORD size)
+void Memory::string::resize(QWORD size)
 {
-	if (this->length < size)
+	if (this->length != size)
 	{
 		this->address = (char *)Memory::reallocate(this->address, size);
 		this->length = size;

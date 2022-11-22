@@ -115,7 +115,7 @@ HTTP::Message HTTP::ConnectionManager::accept()
 		{
 			if (idx >= str[type].length)
 			{
-				str[type].ensure(str[type].length + 64);
+				str[type].resize(str[type].length + 64);
 			}
 			str[type][idx++] = ch;
 			str[type][idx] = 0;
@@ -130,13 +130,13 @@ HTTP::Message HTTP::ConnectionManager::accept()
 			contentLength *= 10;
 			contentLength += cl[i] - '0';
 		}
-		message.content.ensure(contentLength);
+		message.content.resize(contentLength);
 		this->connection.read(message.content, contentLength);
 	}
 	QWORD ava = this->connection.available();
 	if (ava && message["Connection"] == "close")
 	{
-		message.content.ensure(ava);
+		message.content.resize(ava);
 		this->connection.read(message.content, ava);
 	}
 	return message;
