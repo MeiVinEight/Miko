@@ -11,6 +11,21 @@
 
 namespace Compression
 {
+	class NibbleReader
+	{
+		public:
+		Memory::string stream;
+		QWORD position = 0;
+
+		NibbleReader() = delete;
+		COMPRESSIONAPI
+		NibbleReader(const Memory::string &);
+		COMPRESSIONAPI
+		QWORD read(BYTE);
+		COMPRESSIONAPI
+		BYTE boundary();
+	};
+
 	namespace LZ77
 	{
 	}
