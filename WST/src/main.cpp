@@ -101,42 +101,40 @@ void ws()
 	Memory::copy(cert + 16, json.address, cert.length - 16);
 	ws.send(cert);
 
-	Memory::string payload = ws.accept();
-
-	std::cout << payload.length;
-	Timestamp::calender cal;
-	cal.convert();
-
-	Memory::string file(29); //bilibili/YYYY-MM-DD HH-mm-ss
-	file[28] = 0;
-	Memory::copy(file, "bilibili/", 9);
-
-	WORD data = cal[Timestamp::calender::YEAR];
-	for (QWORD i = 4; i--;)
+	Memory::string payload(0);
+	while ((payload = ws.accept()))
 	{
-		file[i + 9] = (char)('0' + (data % 10));
-		data /= 10;
+		Timestamp::calender cal;
+		cal.convert();
+		Memory::string file(29); //bilibili/YYYY-MM-DD HH-mm-ss
+		file[28] = 0;
+		Memory::copy(file, "bilibili/", 9);
+		WORD data = cal[Timestamp::calender::YEAR];
+		for (QWORD i = 4; i--;)
+		{
+			file[i + 9] = (char) ('0' + (data % 10));
+			data /= 10;
+		}
+		file[13] = '-';
+		file[14] = (char) ('0' + (cal[Timestamp::calender::MONTH] / 10));
+		file[15] = (char) ('0' + (cal[Timestamp::calender::MONTH] % 10));
+		file[16] = '-';
+		file[17] = (char) ('0' + (cal[Timestamp::calender::DAY] / 10));
+		file[18] = (char) ('0' + (cal[Timestamp::calender::DAY] % 10));
+		file[19] = ' ';
+		file[20] = (char) ('0' + (cal[Timestamp::calender::HOUR] / 10));
+		file[21] = (char) ('0' + (cal[Timestamp::calender::HOUR] % 10));
+		file[22] = '-';
+		file[23] = (char) ('0' + (cal[Timestamp::calender::MINUTE] / 10));
+		file[24] = (char) ('0' + (cal[Timestamp::calender::MINUTE] % 10));
+		file[25] = '-';
+		file[26] = (char) ('0' + (cal[Timestamp::calender::SECOND] / 10));
+		file[27] = (char) ('0' + (cal[Timestamp::calender::SECOND] % 10));
+		std::cout << (file + 9) << " -> " << payload.length << std::endl;
+		Filesystem::FileStream stream(file);
+		stream.write(payload, payload.length);
+		stream.close();
 	}
-	file[13] = '-';
-	file[14] = (char)('0' + (cal[Timestamp::calender::MONTH] / 10));
-	file[15] = (char)('0' + (cal[Timestamp::calender::MONTH] % 10));
-	file[16] = '-';
-	file[17] = (char)('0' + (cal[Timestamp::calender::DAY] / 10));
-	file[18] = (char)('0' + (cal[Timestamp::calender::DAY] % 10));
-	file[19] = ' ';
-	file[20] = (char)('0' + (cal[Timestamp::calender::HOUR] / 10));
-	file[21] = (char)('0' + (cal[Timestamp::calender::HOUR] % 10));
-	file[22] = '-';
-	file[23] = (char)('0' + (cal[Timestamp::calender::MINUTE] / 10));
-	file[24] = (char)('0' + (cal[Timestamp::calender::MINUTE] % 10));
-	file[25] = '-';
-	file[26] = (char)('0' + (cal[Timestamp::calender::SECOND] / 10));
-	file[27] = (char)('0' + (cal[Timestamp::calender::SECOND] % 10));
-
-	std::cout << (file + 9) << " -> " << payload.length << std::endl;
-	Filesystem::FileStream stream(file);
-	stream.write(payload, payload.length);
-	stream.close();
 
 	ws.close();
 }
