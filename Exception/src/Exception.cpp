@@ -1,4 +1,4 @@
-#include "execdef.h"
+#include "definitions.h"
 
 Memory::string Exception::message(DWORD errcode)
 {

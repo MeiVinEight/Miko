@@ -1,4 +1,4 @@
-#include "wsadef.h"
+#include "definitions.h"
 
 WSA::Address WSA::IP(LPCSTR host)
 {

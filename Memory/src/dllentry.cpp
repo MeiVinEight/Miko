@@ -1,4 +1,4 @@
-#include "memdef.h"
+#include "definitions.h"
 
 HANDLE heap;
 

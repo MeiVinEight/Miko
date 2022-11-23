@@ -1,4 +1,4 @@
-#include "httpdef.h"
+#include "definitions.h"
 
 HTTP::ConnectionManager::ConnectionManager(const WSA::SocketAddress &address)
 {

@@ -1,4 +1,4 @@
-#include "wsadef.h"
+#include "definitions.h"
 
 WSA::ServerSocket::ServerSocket() = default;
 

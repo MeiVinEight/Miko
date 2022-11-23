@@ -1,4 +1,4 @@
-#include "wsadef.h"
+#include "definitions.h"
 
 int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
 {

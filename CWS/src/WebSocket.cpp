@@ -1,4 +1,4 @@
-#include "cwsdef.h"
+#include "definitions.h"
 
 CWS::WebSocket::WebSocket(const WSA::SocketAddress &endpoint, const String::string &URL): manager(endpoint)
 {

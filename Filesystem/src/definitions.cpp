@@ -1,4 +1,4 @@
-#include "fsdef.h"
+#include "definitions.h"
 
 QWORD strlen(const void *str)
 {

@@ -1,4 +1,4 @@
-#include "fsdef.h"
+#include "definitions.h"
 
 
 Filesystem::FileStream::FileStream(const void *path): file(Filesystem::open(path, OF_READWRITE))

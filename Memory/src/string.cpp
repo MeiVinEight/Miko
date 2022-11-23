@@ -1,4 +1,4 @@
-#include "memdef.h"
+#include "definitions.h"
 
 Memory::string::string(QWORD size): address((char *)Memory::allocate(size)), length(size)
 {
