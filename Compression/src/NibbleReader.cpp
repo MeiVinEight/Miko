@@ -43,3 +43,21 @@ BYTE Compression::NibbleReader::boundary()
 	}
 	return ret;
 }
+
+void Compression::NibbleReader::seek(QWORD pos)
+{
+	if (pos > this->stream.length * 8)
+	{
+		throw Exception::exception("EOF");
+	}
+	this->position = pos;
+}
+
+void Compression::NibbleReader::skip(QWORD len)
+{
+	if (this->position + len > this->stream.length * 8)
+	{
+		throw Exception::exception("EOF");
+	}
+	this->position += len;
+}

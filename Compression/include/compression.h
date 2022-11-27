@@ -24,6 +24,10 @@ namespace Compression
 		QWORD read(BYTE);
 		COMPRESSIONAPI
 		BYTE boundary();
+		COMPRESSIONAPI
+		void seek(QWORD);
+		COMPRESSIONAPI
+		void skip(QWORD);
 	};
 
 	namespace LZ77
