@@ -33,8 +33,8 @@ namespace Memory
 	class string
 	{
 		public:
-		BYTE *address = NULL;
 		QWORD length = 0;
+		BYTE *address = NULL;
 
 		string() = delete;
 		MEMORY_API
