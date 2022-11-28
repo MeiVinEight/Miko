@@ -351,7 +351,13 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 	// TODO More data
 
 	DWORD dcode = DecodeWithHuffman(br, TREESD[0]);
-	DWORD distance = s.distance[DISTANCE_INDEX[dcode]] + DISTANCE_OFFSET[dcode];
+	DWORD distance = 0;
+	if (dcode < 16)
+		distance = s.distance[DISTANCE_INDEX[dcode]] + DISTANCE_OFFSET[dcode];
+	else
+	{
+		// TODO dcode >= 16
+	}
 	s.updateLastDistance(distance);
 	Memory::copy(output + length, output + (length - distance), clength);
 
