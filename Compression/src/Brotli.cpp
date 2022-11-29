@@ -30,6 +30,24 @@ class Huffman
 	}
 };
 
+void IMTF(Memory::string &data)
+{
+	BYTE que[256];
+	for (WORD i = 0; i < 256; i++)
+		que[i] = i;
+
+	for (QWORD i = 0; i < data.length; i++)
+	{
+		BYTE idx = data[i];
+		BYTE val = que[idx];
+		data[i] = val;
+		for (; idx; idx--)
+			que[idx] = que[idx] - 1;
+
+		que[0] = val;
+	}
+}
+
 BYTE ReadWBITS(Compression::NibbleReader &br)
 {
 	BYTE WBITS = br.read(1);
@@ -189,6 +207,47 @@ QWORD DecodeWithHuffman(Compression::NibbleReader &br, Huffman *huffman)
 		huffman = (*huffman)[br.read(1)];
 	}
 	return huffman->value;
+}
+
+Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapSize, WORD trees)
+{
+	Memory::string context(contextMapSize);
+	if (trees >= 2)
+	{
+		DWORD RELMAX = br.read(1);
+		if (RELMAX)
+			RELMAX = br.read(4) + 1;
+
+		Huffman *huffman = DecodeHuffman(br, RELMAX + trees);
+		for (QWORD i = 0; i < contextMapSize;)
+		{
+			DWORD code = DecodeWithHuffman(br, huffman);
+			if (code > RELMAX)
+			{
+				context[i++] = code - RELMAX;
+				i++;
+			}
+			else
+			{
+				DWORD rep = (1 << code) + br.read(code);
+				if (i + rep > contextMapSize)
+				{
+					throw Exception::exception("Corrupted context map");
+				}
+				Memory::fill(context + i, 0, rep);
+				i += rep;
+			}
+		}
+		delete huffman;
+
+		if (br.read(1))
+			IMTF(context);
+	}
+	else
+	{
+		Memory::fill(context, 0, context.length);
+	}
+	return context;
 }
 
 /* References: RFC7932 - Section 5. Encoding of Literal Insertion Lengths and Copy Lengths */
