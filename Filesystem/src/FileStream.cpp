@@ -26,7 +26,7 @@ Filesystem::FileStream::~FileStream()
 
 Filesystem::FileStream &Filesystem::FileStream::operator=(Filesystem::FileStream &&fVal) noexcept
 {
-	if (this->file)
+	if (~this->file)
 	{
 		CloseHandle((HANDLE)this->file);
 	}
