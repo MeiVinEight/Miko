@@ -25,7 +25,7 @@ bool Filesystem::create(const void *path)
 		}
 		return false;
 	}
-	// path is not a directory
+	// path is not a file
 	char append[] = " is not a file";
 	Memory::string msg(canon.length + sizeof(append) - 1);
 	Memory::copy(msg, canon, canon.length - 1);
