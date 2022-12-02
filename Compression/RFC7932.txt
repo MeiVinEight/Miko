@@ -7039,7 +7039,7 @@ RFC 7932                         Brotli                        July 2016
           99           ""     FermentFirst            ","
          100           ""     Identity             "ize "
          101           ""     FermentAll              "."
-         102   "\xc2\xa0"   Identity                 ""
+         102   "\xc2\xa0"     Identity                 ""
          103          " "     Identity                ","
          104           ""     FermentFirst          "=\""
          105           ""     FermentAll            "=\""
