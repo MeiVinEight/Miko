@@ -17,7 +17,10 @@ void Memory::free(void *p)
 
 void Memory::copy(void *dst, const void *src, QWORD len)
 {
-	memcpy(dst, src, len);
+	BYTE *bdst = (BYTE *)dst;
+	BYTE *bsrc = (BYTE *)src;
+	while (len--)
+		(*bdst++) = (*bsrc++);
 }
 
 void Memory::fill(void *p, BYTE x, QWORD size)
