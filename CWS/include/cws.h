@@ -32,7 +32,7 @@
 |                     Payload Data continued ...                |
 +---------------------------------------------------------------+
 */
-// TLS->WSS: OpenSSL
+// TODO TLS->WSS: OpenSSL
 namespace CWS
 {
 	class WebSocket
