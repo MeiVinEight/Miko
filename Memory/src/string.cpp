@@ -50,7 +50,7 @@ BYTE &Memory::string::operator[](QWORD off) const
 	{
 		return this->address[off];
 	}
-	return *((BYTE *)1); // Access violation
+	return (*((BYTE *)1) = *((BYTE *)1)); // Access violation
 }
 
 Memory::string::operator char *() const
