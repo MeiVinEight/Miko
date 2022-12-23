@@ -1,5 +1,4 @@
-#define STRING_SHARED
-#include <sstring.h>
+#include "definitions.h"
 
 QWORD String::length(const void *str)
 {

@@ -2,57 +2,61 @@
 #define MIKO_SSTRING_H
 
 #ifdef STRING_SHARED
-	#define STRING_API __declspec(dllexport)
+	#define STRINGAPI __declspec(dllexport)
 #else
-	#define STRING_API
+	#define STRINGAPI
 #endif
 
 #include <memory.h>
 
 namespace String
 {
-	STRING_API
-	QWORD length(const void *);
-
 	class string
 	{
 		public:
 		Memory::string address = Memory::string(1);
 		QWORD length = 0;
 
-		STRING_API
+		STRINGAPI
 		string();
-		STRING_API
+		STRINGAPI
 		string(const void *);
-		STRING_API
+		STRINGAPI
 		string(const void *, QWORD);
-		STRING_API
+		STRINGAPI
 		string(const String::string &);
-		STRING_API
+		STRINGAPI
 		string(String::string &&);
-		STRING_API
+		STRINGAPI
 		~string();
-		STRING_API
+		STRINGAPI
 		String::string &operator=(const void *);
-		STRING_API
+		STRINGAPI
 		String::string &operator=(const String::string &) &;
-		STRING_API
+		STRINGAPI
 		String::string &operator=(String::string &&) &;
-		STRING_API
+		STRINGAPI
 		bool operator==(const String::string &) const;
-		STRING_API
+		STRINGAPI
 		bool operator==(const void *) const;
-		STRING_API
+		STRINGAPI
 		char &operator[](QWORD) const;
-		STRING_API
+		STRINGAPI
 		String::string &operator+=(const String::string &) &;
-		STRING_API
+		STRINGAPI
 		String::string &operator+=(const void *) &;
-		STRING_API
+		STRINGAPI
 		String::string operator+(const String::string &) const;
-		STRING_API
+		STRINGAPI
 		String::string operator+(const void *) const;
 	};
+
+	STRINGAPI
+	QWORD length(const void *);
+	STRINGAPI
+	String::string stringify(double);
+	STRINGAPI
+	double floating(const String::string &);
 }
 
 #endif //MIKO_SSTRING_H
