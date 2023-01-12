@@ -56,7 +56,15 @@ namespace String
 	STRINGAPI
 	String::string stringify(double);
 	STRINGAPI
+	String::string stringify(QWORD, bool);
+	STRINGAPI
+	String::string stringify(QWORD);
+	STRINGAPI
+	String::string stringify(int);
+	STRINGAPI
 	double floating(const String::string &);
+	STRINGAPI
+	QWORD integer(const String::string &);
 }
 
 #endif //MIKO_SSTRING_H

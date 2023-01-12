@@ -83,6 +83,7 @@ void roundup(int firstDigitIndex, int nDigits, Memory::string &digits, int &decE
 	}
 	digits[i] = (char) (q + 1);
 }
+
 String::string String::stringify(double d)
 {
 	Memory::string digits(20);
@@ -309,6 +310,43 @@ String::string String::stringify(double d)
 	}
 	return String::string(result, i);
 }
+String::string String::stringify(QWORD val, bool sign)
+{
+	char buf[25]{0};
+	int i = 0;
+	if (sign)
+	{
+		bool neg = val >> 63;
+		val &= ((1ULL << 63) - 1);
+		if (neg)
+		{
+			buf[i++] = '-';
+			val -= 1;
+			val = ~val;
+			val &= ((1ULL << 63) - 1);
+		}
+	}
+	QWORD dec = 10000000000000000000ULL;
+	bool add = false;
+	while (dec)
+	{
+		BYTE dig = val / dec;
+		val %= dec;
+		dec /= 10;
+		add |= !!dig;
+		buf[i] = (char)(dig + '0');
+		i += add;
+	}
+	return String::string(buf);
+}
+String::string String::stringify(QWORD val)
+{
+	return String::stringify(val, false);
+}
+String::string String::stringify(int val)
+{
+	return String::stringify(val, true);
+}
 double String::floating(const String::string &str)
 {
 	bool negative = false;
@@ -429,7 +467,33 @@ double String::floating(const String::string &str)
 			}
 		}
 		if (i < str.length)
-			(void)*((QWORD *)1);
+			return *((double *)1);
 		return val;
 	}
+}
+QWORD String::integer(const String::string &str)
+{
+	QWORD i = 0;
+	bool neg = false;
+	if (i < str.length && str[i] == '-')
+	{
+		neg = true;
+		i++;
+	}
+	QWORD val = 0;
+	for (; i < str.length; i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			val *= 10;
+			val += str[i] - '0';
+			continue;
+		}
+		break;
+	}
+	if (i < str.length)
+		return *((QWORD *)1);
+
+	return neg ? (val * -1) : (val);
+	return 0;
 }
