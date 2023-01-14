@@ -450,8 +450,12 @@ double String::floating(const String::string &str)
 				exp++;
 			}
 		}
-		bits |= exp << EXP_SHIFT;
-		double val = LongToDouble(bits);
+		double val = 0;
+		if (bits)
+		{
+			bits |= exp << EXP_SHIFT;
+			val = LongToDouble(bits);
+		}
 		if (i < str.length && (str[i] == 'E' || str[i] == 'e'))
 		{
 			i++;
