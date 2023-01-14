@@ -495,5 +495,4 @@ QWORD String::integer(const String::string &str)
 		return *((QWORD *)1);
 
 	return neg ? (val * -1) : (val);
-	return 0;
 }
