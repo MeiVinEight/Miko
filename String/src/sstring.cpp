@@ -434,6 +434,21 @@ double String::floating(const String::string &str)
 					exp = EXP_OFFSET - bitcount;
 				}
 			}
+			fpart <<= 1;
+			QWORD b = fpart >= dec;
+			if (exp != 0x7FF)
+			{
+				bits++;
+			}
+			else if (b)
+			{
+				exp = EXP_OFFSET - bitcount;
+			}
+			if (bits > ((1ULL << EXP_SHIFT) - 1))
+			{
+				bits >>= 1;
+				exp++;
+			}
 		}
 		bits |= exp << EXP_SHIFT;
 		double val = LongToDouble(bits);
