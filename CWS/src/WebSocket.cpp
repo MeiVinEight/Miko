@@ -30,7 +30,10 @@ CWS::WebSocket::~WebSocket()
 {
 	this->manager.close();
 }
-
+WSA::Socket &CWS::WebSocket::connection()
+{
+	return this->manager.connection;
+}
 CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept
 {
 	if (&move != this)
@@ -49,21 +52,21 @@ Memory::string CWS::WebSocket::accept()
 	BYTE FIN = 0;
 	while (!FIN)
 	{
-		this->connection.read(buf, 1);
+		this->connection().read(buf, 1);
 		FIN = (buf[0] >> 7) & 0x1;
 		BYTE RSV = (buf[0] >> 4) & 0x7;
 		BYTE opcode = buf[0] & 0xF;
-		this->connection.read(buf, 1);
+		this->connection().read(buf, 1);
 		BYTE MASK = (buf[0] >> 7) & 0x1;
 		QWORD length = buf[0] & 0x7F;
 		if (length == 126)
 		{
-			this->connection.read(buf, 2);
+			this->connection().read(buf, 2);
 			length = (buf[0] << 8) | buf[1];
 		}
 		else if (length == 127)
 		{
-			this->connection.read(buf, 8);
+			this->connection().read(buf, 8);
 			length = 0;
 			for (WORD i = 0; i < 8; i++)
 			{
@@ -74,10 +77,10 @@ Memory::string CWS::WebSocket::accept()
 		BYTE maskingKey[4]{0};
 		if (MASK)
 		{
-			this->connection.read(maskingKey, 4);
+			this->connection().read(maskingKey, 4);
 		}
 		payload.resize(payload.length + length);
-		this->connection.read(payload.address + offset, length);
+		this->connection().read(payload.address + offset, length);
 		if (MASK)
 		{
 			for (QWORD i = 0; i < offset; i++)
@@ -121,8 +124,8 @@ void CWS::WebSocket::send(const Memory::string &payload)
 	prefix[offset + 1] = 0;
 	prefix[offset + 2] = 0;
 	prefix[offset + 3] = 0;
-	this->connection.write(prefix, offset + 4);
-	this->connection.write(payload.address, payload.length);
+	this->connection().write(prefix, offset + 4);
+	this->connection().write(payload.address, payload.length);
 }
 
 void CWS::WebSocket::close()

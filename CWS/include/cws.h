@@ -39,7 +39,6 @@ namespace CWS
 	{
 		public:
 		HTTP::ConnectionManager manager;
-		WSA::Socket &connection = manager.connection;
 
 		WebSocket() = delete;
 		WebSocket(const WebSocket &) = delete;
@@ -51,6 +50,8 @@ namespace CWS
 		WebSocket(CWS::WebSocket &&) noexcept;
 		CWSAPI
 		~WebSocket();
+		CWSAPI
+		WSA::Socket &connection();
 		CWSAPI
 		CWS::WebSocket &operator=(WebSocket &&) noexcept;
 		CWSAPI
