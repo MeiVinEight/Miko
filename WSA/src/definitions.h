@@ -14,6 +14,7 @@ extern "C"
 #endif
 
 
+#define WINAPI				__stdcall
 #define NULL				0
 #define PASCAL				__stdcall
 #define WSAAPI				PASCAL
@@ -106,6 +107,7 @@ int WSAAPI getsockname(SOCKET, SOCKADDR *, int *);
 INT WSAAPI getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
 void WSAAPI freeaddrinfo(PADDRINFOA);
 char *WSAAPI inet_ntoa(IN_ADDR);
+BOOL WINAPI FlushFileBuffers(HANDLE);
 
 
 #ifdef __cplusplus

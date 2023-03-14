@@ -7,7 +7,7 @@
 	#define WSA_API
 #endif
 
-#include <filesystem.h>
+#include <streaming.h>
 
 #define INVALID_SOCKET  (SOCKET)(~0)
 
@@ -79,7 +79,7 @@ namespace WSA
 		void close();
 	};
 
-	class Socket: public Filesystem::AbstractStream
+	class Socket: public Streaming::stream
 	{
 		public:
 		SOCKET connection = INVALID_SOCKET; // INVALID_SOCKET
@@ -101,6 +101,8 @@ namespace WSA
 		void read(void *, DWORD) override;
 		WSA_API
 		void write(const void *, DWORD) override;
+		WSA_API
+		void flush() override;
 		WSA_API
 		QWORD available() override;
 		WSA_API

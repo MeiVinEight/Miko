@@ -11,12 +11,28 @@
 #include <sstring.h>
 
 /*
- * TODO Reparse points ?
  * TODO UNC ?
  */
 namespace Filesystem
 {
 	const static QWORD FILE_ERROR = -1;
+	const static DWORD OF_SHARE_COMPAT     = 0x00000000;
+	const static DWORD OF_READ             = 0x00000000;
+	const static DWORD OF_WRITE            = 0x00000001;
+	const static DWORD OF_READWRITE        = 0x00000002;
+	const static DWORD OF_SHARE_EXCLUSIVE  = 0x00000010;
+	const static DWORD OF_SHARE_DENY_WRITE = 0x00000020;
+	const static DWORD OF_SHARE_DENY_READ  = 0x00000030;
+	const static DWORD OF_SHARE_DENY_NONE  = 0x00000040;
+	const static DWORD OF_PARSE            = 0x00000100;
+	const static DWORD OF_DELETE           = 0x00000200;
+	const static DWORD OF_VERIFY           = 0x00000400;
+	const static DWORD OF_CANCEL           = 0x00000800;
+	const static DWORD OF_CREATE           = 0x00001000;
+	const static DWORD OF_PROMPT           = 0x00002000;
+	const static DWORD OF_EXIST            = 0x00004000;
+	const static DWORD OF_REOPEN           = 0x00008000;
+
 	FSAPI
 	bool create(const String::string &);
 	FSAPI
@@ -43,47 +59,8 @@ namespace Filesystem
 	DWORD write(QWORD, const void *, DWORD);
 	FSAPI
 	void seek(QWORD, QWORD, DWORD);
-
-	class AbstractStream
-	{
-		public:
-		FSAPI
-		virtual void read(void *, DWORD) = 0;
-		FSAPI
-		virtual void write(const void *, DWORD) = 0;
-		FSAPI
-		virtual QWORD available() = 0;
-		/**
-		 * @TODO unread support
-		 */
-	};
-
-	class FileStream: public Filesystem::AbstractStream
-	{
-		public:
-		QWORD file = Filesystem::FILE_ERROR;
-
-		FSAPI
-		explicit FileStream(const void *);
-		FSAPI
-		explicit FileStream(QWORD);
-		FSAPI
-		FileStream(FileStream &&) noexcept;
-		FSAPI
-		~FileStream();
-		FSAPI
-		Filesystem::FileStream &operator=(Filesystem::FileStream &&) noexcept;
-		FSAPI
-		void read(void *, DWORD) override;
-		FSAPI
-		void write(const void *, DWORD) override;
-		FSAPI
-		QWORD available() override;
-		FSAPI
-		void seek(QWORD) const;
-		FSAPI
-		void close();
-	};
+	FSAPI
+	void flush(QWORD);
 }
 
 #endif //FILESYSTEM_H

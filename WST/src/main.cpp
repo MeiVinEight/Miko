@@ -1,11 +1,11 @@
-#include <iostream>
 #include <sstring.h>
 #include <filesystem.h>
+#include <streaming.h>
 
 int main()
 {
-	String::string path = "C:/Windows";
-	path = Filesystem::canonicalize(path);
-	path = Filesystem::parent(path);
-	return 0;
+	Streaming::file file = Streaming::file("sample.txt");
+	file.write("Hello World", 11);
+	file.flush();
+	file.close();
 }

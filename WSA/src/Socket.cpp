@@ -101,6 +101,16 @@ void WSA::Socket::write(const void *b, DWORD len)
 	}
 	throw Exception::exception("Socket closed");
 }
+void WSA::Socket::flush()
+{
+	if (~this->connection)
+	{
+		if (!FlushFileBuffers((HANDLE) this->connection))
+		{
+			throw Exception::exception(Exception::message(WSAGetLastError()));
+		}
+	}
+}
 QWORD WSA::Socket::available()
 {
 	u_long ava = 0;

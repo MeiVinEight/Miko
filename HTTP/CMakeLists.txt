@@ -6,6 +6,7 @@ include_directories(
 	../String/include
 	../Exception/include
 	../Filesystem/include
+	../Streaming/include
 	../WSA/include
 )
 

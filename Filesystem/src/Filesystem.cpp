@@ -176,3 +176,10 @@ void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 		throw Exception::exception(Exception::message(GetLastError()));
 	}
 }
+void Filesystem::flush(QWORD fdVal)
+{
+	if (!FlushFileBuffers((HANDLE) fdVal))
+	{
+		throw Exception::exception(Exception::message(GetLastError()));
+	}
+}
