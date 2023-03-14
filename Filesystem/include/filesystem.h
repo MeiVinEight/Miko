@@ -10,19 +10,13 @@
 #include <memory.h>
 #include <sstring.h>
 
-
-#ifndef HFILE_ERROR
-	#define HFILE_ERROR ((HFILE)-1)
-#endif
-
-typedef int HFILE;
-
 /*
  * TODO Reparse points ?
  * TODO UNC ?
  */
 namespace Filesystem
 {
+	const static QWORD FILE_ERROR = -1;
 	FSAPI
 	bool create(const String::string &);
 	FSAPI
@@ -67,7 +61,7 @@ namespace Filesystem
 	class FileStream: public Filesystem::AbstractStream
 	{
 		public:
-		QWORD file = HFILE_ERROR;
+		QWORD file = Filesystem::FILE_ERROR;
 
 		FSAPI
 		explicit FileStream(const void *);

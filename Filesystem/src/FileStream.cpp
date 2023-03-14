@@ -16,7 +16,7 @@ Filesystem::FileStream::FileStream(Filesystem::FileStream &&another) noexcept: f
 		CloseHandle((HANDLE) this->file);
 	}
 	this->file = another.file;
-	another.file = HFILE_ERROR;
+	another.file = FILE_ERROR;
 }
 
 Filesystem::FileStream::~FileStream()
@@ -31,7 +31,7 @@ Filesystem::FileStream &Filesystem::FileStream::operator=(Filesystem::FileStream
 		CloseHandle((HANDLE)this->file);
 	}
 	this->file = fVal.file;
-	fVal.file = HFILE_ERROR;
+	fVal.file = FILE_ERROR;
 	return *this;
 }
 
@@ -169,6 +169,6 @@ void Filesystem::FileStream::close()
 	if (~this->file)
 	{
 		Filesystem::close(this->file);
-		this->file = HFILE_ERROR;
+		this->file = FILE_ERROR;
 	}
 }

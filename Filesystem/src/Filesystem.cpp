@@ -136,7 +136,7 @@ QWORD Filesystem::open(const String::string &path, DWORD mode)
 	Filesystem::create(path);
 	OFSTRUCT data;
 	HFILE hfVal = OpenFile(cstring(path).address, &data, mode);
-	if (hfVal == HFILE_ERROR)
+	if (hfVal == Filesystem::FILE_ERROR)
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}

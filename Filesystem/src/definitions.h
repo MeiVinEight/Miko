@@ -50,6 +50,7 @@ extern "C"
 #define ERROR_FILE_EXISTS			80L
 #define ERROR_BROKEN_PIPE			109L
 
+typedef int			HFILE;
 typedef char		*LPSTR;
 typedef const char	*LPCSTR;
 typedef void		*HANDLE, *PVOID, *LPVOID;
