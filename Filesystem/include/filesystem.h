@@ -40,7 +40,7 @@ namespace Filesystem
 	FSAPI
 	DWORD read(QWORD, void *, DWORD);
 	FSAPI
-	DWORD write(QWORD, void *, DWORD);
+	DWORD write(QWORD, const void *, DWORD);
 	FSAPI
 	void seek(QWORD, QWORD, DWORD);
 

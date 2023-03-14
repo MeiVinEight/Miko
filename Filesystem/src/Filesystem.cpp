@@ -158,7 +158,7 @@ DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
 	}
 	return readed;
 }
-DWORD Filesystem::write(QWORD fdVal, void *b, DWORD len)
+DWORD Filesystem::write(QWORD fdVal, const void *b, DWORD len)
 {
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, nullptr))
