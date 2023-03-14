@@ -84,10 +84,16 @@ void roundup(int firstDigitIndex, int nDigits, Memory::string &digits, int &decE
 	digits[i] = (char) (q + 1);
 }
 
+QWORD String::length(const void *str)
+{
+	const char *s = (const char *)str;
+	while (*s++);
+	return s - (const char *)str - 1;
+}
 String::string String::stringify(double d)
 {
 	Memory::string digits(20);
-	Memory::fill(digits, 0, digits.length);
+	Memory::fill(digits.address, 0, digits.length);
 	int decExponent = 0;
 	int firstDigitIndex;
 	int nDigits;
@@ -229,7 +235,7 @@ String::string String::stringify(double d)
 	if (decExponent > 0 && decExponent < 8)
 	{
 		DWORD charLength = (nDigits < decExponent) ? nDigits : decExponent;
-		Memory::copy(result + i, digits + firstDigitIndex, charLength);
+		Memory::copy(result + i, digits.address + firstDigitIndex, charLength);
 		i += charLength;
 		if (charLength < decExponent)
 		{
@@ -245,7 +251,7 @@ String::string String::stringify(double d)
 			if (charLength < nDigits)
 			{
 				DWORD t = nDigits - charLength;
-				Memory::copy(result + i, digits + firstDigitIndex + charLength, t);
+				Memory::copy(result + i, digits.address + firstDigitIndex + charLength, t);
 				i += t;
 			}
 			else
@@ -263,7 +269,7 @@ String::string String::stringify(double d)
 			Memory::fill(result + i, '0', -decExponent);
 			i -= decExponent;
 		}
-		Memory::copy(result + i, digits + firstDigitIndex, nDigits);
+		Memory::copy(result + i, digits.address + firstDigitIndex, nDigits);
 		i += nDigits;
 	}
 	else
@@ -272,7 +278,7 @@ String::string String::stringify(double d)
 		result[i++] = '.';
 		if (nDigits > 1)
 		{
-			Memory::copy(result + i, digits + firstDigitIndex + 1, nDigits - 1);
+			Memory::copy(result + i, digits.address + firstDigitIndex + 1, nDigits - 1);
 			i += nDigits - 1;
 		}
 		else
@@ -308,7 +314,7 @@ String::string String::stringify(double d)
 			result[i++] = (e % 10) + '0';
 		}
 	}
-	return String::string(result, i);
+	return String::string((char *) result, i);
 }
 String::string String::stringify(QWORD val, bool sign)
 {
@@ -354,11 +360,11 @@ double String::floating(const String::string &str)
 	if (str[i] == '+' || str[i] == '-')
 		negative = str[i++] == '-';
 
-	if (String::string(str.address + i, str.length - i) == "NaN")
+	if (String::string(str.address.address + i, str.length() - i) == "NaN")
 	{
 		return LongToDouble((1ULL << 63) - 1);
 	}
-	else if (String::string(str.address + i, str.length - i) == "Infinity")
+	else if (String::string(str.address.address + i, str.length() - i) == "Infinity")
 	{
 		QWORD bits = 0x7FFULL << 52;
 		if (negative)
@@ -373,7 +379,7 @@ double String::floating(const String::string &str)
 		BYTE off = EXP_SHIFT;
 		QWORD ipart = 0;
 		QWORD exp = 0x7FF;
-		for (; i < str.length; i++)
+		for (; i < str.length(); i++)
 		{
 			if (str[i] >= '0' && str[i] <= '9')
 			{
@@ -400,12 +406,12 @@ double String::floating(const String::string &str)
 			ipart &= SIGNIF_BIT_MASK;
 			bits |= ipart;
 		}
-		if (i < str.length && str[i] == '.')
+		if (i < str.length() && str[i] == '.')
 		{
 			i++;
 			QWORD fpart = 0;
 			QWORD dec = 1;
-			for (; i < str.length; i++)
+			for (; i < str.length(); i++)
 			{
 				if (str[i] >= '0' && str[i] <= '9')
 				{
@@ -457,7 +463,7 @@ double String::floating(const String::string &str)
 			bits |= exp << EXP_SHIFT;
 			val = LongToDouble(bits);
 		}
-		if (i < str.length && (str[i] == 'E' || str[i] == 'e'))
+		if (i < str.length() && (str[i] == 'E' || str[i] == 'e'))
 		{
 			i++;
 			bool positiveE = true;
@@ -465,7 +471,7 @@ double String::floating(const String::string &str)
 				positiveE = str[i++] == '+';
 
 			QWORD decExp = 0;
-			for (; i < str.length; i++)
+			for (; i < str.length(); i++)
 			{
 				if (str[i] >= '0' && str[i] <= '9')
 				{
@@ -486,7 +492,7 @@ double String::floating(const String::string &str)
 				a *= a;
 			}
 		}
-		if (i < str.length)
+		if (i < str.length())
 			return *((double *)1);
 		return val;
 	}
@@ -495,13 +501,13 @@ QWORD String::integer(const String::string &str)
 {
 	QWORD i = 0;
 	bool neg = false;
-	if (i < str.length && str[i] == '-')
+	if (i < str.length() && str[i] == '-')
 	{
 		neg = true;
 		i++;
 	}
 	QWORD val = 0;
-	for (; i < str.length; i++)
+	for (; i < str.length(); i++)
 	{
 		if (str[i] >= '0' && str[i] <= '9')
 		{
@@ -511,7 +517,7 @@ QWORD String::integer(const String::string &str)
 		}
 		break;
 	}
-	if (i < str.length)
+	if (i < str.length())
 		return *((QWORD *)1);
 
 	return neg ? (val * -1) : (val);

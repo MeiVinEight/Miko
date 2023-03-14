@@ -28,7 +28,7 @@ namespace JSON
 	{
 		public:
 		typedef void *(KV[2]);
-		JSON::object::KV *content = NULL;
+		JSON::object::KV *content = nullptr;
 		QWORD size = 0;
 		BYTE type = JSON::type::UNKNOWN;
 
@@ -36,15 +36,15 @@ namespace JSON
 		JSONAPI
 		object(const JSON::object &);
 		JSONAPI
-		object(JSON::object &&);
+		object(JSON::object &&) noexcept ;
 		JSONAPI
 		~object();
 		JSONAPI
 		JSON::object &operator=(const JSON::object &);
 		JSONAPI
-		JSON::object &operator=(JSON::object &&);
+		JSON::object &operator=(JSON::object &&) noexcept;
 		JSONAPI
-		JSON::object &operator=(const void *);
+		JSON::object &operator=(const char *);
 		JSONAPI
 		JSON::object &operator=(const String::string &);
 		JSONAPI

@@ -1,9 +1,8 @@
 #include "definitions.h"
 
-Compression::NibbleReader::NibbleReader(const Memory::string &stream): stream(stream)
+Compression::NibbleReader::NibbleReader(Memory::string stream): stream((Memory::string &&) stream)
 {
 }
-
 QWORD Compression::NibbleReader::read(BYTE bits)
 {
 	if (bits <= 64)
@@ -30,7 +29,6 @@ QWORD Compression::NibbleReader::read(BYTE bits)
 	}
 	throw Exception::exception("Bitwise count is too large");
 }
-
 BYTE Compression::NibbleReader::boundary()
 {
 	QWORD idx = this->position >> 3;
@@ -43,7 +41,6 @@ BYTE Compression::NibbleReader::boundary()
 	}
 	return ret;
 }
-
 void Compression::NibbleReader::seek(QWORD pos)
 {
 	if (pos > this->stream.length * 8)
@@ -52,7 +49,6 @@ void Compression::NibbleReader::seek(QWORD pos)
 	}
 	this->position = pos;
 }
-
 void Compression::NibbleReader::skip(QWORD len)
 {
 	if (this->position + len > this->stream.length * 8)

@@ -9,5 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)
 aux_source_directory(src WSA_SOURCE)
 
 add_library(WSA SHARED ${WSA_SOURCE})
+target_include_directories(WSA PUBLIC
+	Filesystem
+)
 target_link_libraries(WSA Exception)
 target_link_libraries(WSA Filesystem)

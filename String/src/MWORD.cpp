@@ -30,14 +30,14 @@ MWORD::MWORD(QWORD value): MWORD()
 
 MWORD::MWORD(const MWORD &) = default;
 
-MWORD::MWORD(MWORD &&move): address((Memory::string &&) move.address), length(move.length)
+MWORD::MWORD(MWORD &&move) noexcept: address((Memory::string &&) move.address), length(move.length)
 {
 	move.length = 0;
 }
 
 MWORD &MWORD::operator=(const MWORD &) & = default;
 
-MWORD &MWORD::operator=(MWORD &&move) &
+MWORD &MWORD::operator=(MWORD &&move) & noexcept
 {
 	if (&move != this)
 	{
@@ -52,7 +52,7 @@ MWORD &MWORD::operator+=(const MWORD &val) &
 {
 	DWORD carry = 0;
 	QWORD size = max(this->length, val.length);
-	Memory::fill(this->address + this->length, 0, this->address.length - this->length);
+	Memory::fill(this->address.address + this->length, 0, this->address.length - this->length);
 	this->address.resize(size + 1);
 	for (QWORD i = 0; i < size; i++)
 	{
@@ -90,7 +90,7 @@ MWORD &MWORD::operator*=(const MWORD &val2) &
 	const Memory::string &addr1 = val1.address;
 	const Memory::string &addr2 = val2.address;
 	Memory::string addr3(val1.length + val2.length);
-	Memory::fill(addr3, 0, addr3.length);
+	Memory::fill(addr3.address, 0, addr3.length);
 
 	for (QWORD i = 0; i < val1.length; i++)
 	{
@@ -127,7 +127,7 @@ MWORD &MWORD::operator<<=(QWORD val) &
 	QWORD byt = val >> 3;
 	QWORD bit = val & 0x7;
 	this->address.resize(this->length + byt + 1);
-	Memory::fill(this->address + this->length, 0, byt + 1);
+	Memory::fill(this->address.address + this->length, 0, byt + 1);
 	for (QWORD i = this->length; i--;)
 	{
 		DWORD x = this->address[i] << bit;
@@ -135,7 +135,7 @@ MWORD &MWORD::operator<<=(QWORD val) &
 		x >>= 8;
 		this->address[i + byt + 1] |= x;
 	}
-	Memory::fill(this->address, 0, byt);
+	Memory::fill(this->address.address, 0, byt);
 	this->clear();
 	return *this;
 }
@@ -303,7 +303,7 @@ String::string MWORD::string() const
 	// log10(2)
 	double log2 = 0.30102999566398119521373889472449;
 	Memory::string buf((QWORD) ((double) this->width() * log2) + 2);
-	Memory::fill(buf, 0, buf.length);
+	Memory::fill(buf.address, 0, buf.length);
 	QWORD idx = buf.length - 2;
 	QWORD off = 0;
 	buf[idx]  = '0';
@@ -317,7 +317,7 @@ String::string MWORD::string() const
 		off = 1;
 		buf[idx] = x + '0';
 	}
-	return String::string(buf + idx);
+	return String::string(buf.address + idx, buf.length - idx);
 }
 
 /*

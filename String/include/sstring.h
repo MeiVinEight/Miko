@@ -15,40 +15,45 @@ namespace String
 	{
 		public:
 		Memory::string address = Memory::string(1);
-		QWORD length = 0;
 
 		STRINGAPI
 		string();
 		STRINGAPI
-		string(const void *);
+		string(const char *);
 		STRINGAPI
-		string(const void *, QWORD);
+		string(const char *, QWORD);
+		STRINGAPI
+		string(const Memory::string &);
+		STRINGAPI
+		string(const Memory::string &, QWORD);
 		STRINGAPI
 		string(const String::string &);
 		STRINGAPI
-		string(String::string &&);
+		string(String::string &&) noexcept;
 		STRINGAPI
 		~string();
 		STRINGAPI
-		String::string &operator=(const void *);
+		String::string &operator=(const char *);
 		STRINGAPI
 		String::string &operator=(const String::string &) &;
 		STRINGAPI
-		String::string &operator=(String::string &&) &;
+		String::string &operator=(String::string &&) & noexcept;
+		STRINGAPI
+		bool operator==(const char *) const;
 		STRINGAPI
 		bool operator==(const String::string &) const;
 		STRINGAPI
-		bool operator==(const void *) const;
-		STRINGAPI
 		char &operator[](QWORD) const;
+		STRINGAPI
+		String::string &operator+=(const char *) &;
 		STRINGAPI
 		String::string &operator+=(const String::string &) &;
 		STRINGAPI
-		String::string &operator+=(const void *) &;
+		String::string operator+(const char *) const;
 		STRINGAPI
 		String::string operator+(const String::string &) const;
 		STRINGAPI
-		String::string operator+(const void *) const;
+		QWORD length() const;
 	};
 
 	STRINGAPI

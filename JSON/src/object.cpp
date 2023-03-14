@@ -4,12 +4,12 @@ JSON::object::object(const JSON::object &copy): content(new JSON::object::KV[cop
 {
 	for (QWORD i = 0; i < copy.size; i++)
 	{
-		this->content[i][0] = NULL;
+		this->content[i][0] = nullptr;
 		switch (copy.type)
 		{
 			case JSON::type::UNKNOWN:
 			{
-				this->content[i][1] = NULL;
+				this->content[i][1] = nullptr;
 				break;
 			}
 			case JSON::type::STRING:
@@ -46,9 +46,9 @@ JSON::object::object(const JSON::object &copy): content(new JSON::object::KV[cop
 	}
 }
 
-JSON::object::object(JSON::object &&move): content(move.content), size(move.size), type(move.type)
+JSON::object::object(JSON::object &&move) noexcept: content(move.content), size(move.size), type(move.type)
 {
-	move.content = NULL;
+	move.content = nullptr;
 	move.size = 0;
 	move.type = JSON::type::UNKNOWN;
 }
@@ -67,7 +67,7 @@ JSON::object &JSON::object::operator=(const JSON::object &copy)
 	return *this;
 }
 
-JSON::object &JSON::object::operator=(JSON::object &&move)
+JSON::object &JSON::object::operator=(JSON::object &&move) noexcept
 {
 	if (&move != this)
 	{
@@ -82,7 +82,7 @@ JSON::object &JSON::object::operator=(JSON::object &&move)
 	return *this;
 }
 
-JSON::object &JSON::object::operator=(const void *str)
+JSON::object &JSON::object::operator=(const char *str)
 {
 	return (*this) = String::string(str);
 }
@@ -91,7 +91,7 @@ JSON::object &JSON::object::operator=(const String::string &str)
 {
 	this->cleanup();
 	this->content = new JSON::object::KV[1];
-	this->content[0][0] = NULL;
+	this->content[0][0] = nullptr;
 	this->content[0][1] = new String::string(str);
 	this->size = 1;
 	this->type = JSON::type::STRING;
@@ -102,7 +102,7 @@ JSON::object &JSON::object::operator=(QWORD value)
 {
 	this->cleanup();
 	this->content = new JSON::object::KV[1];
-	this->content[0][0] = NULL;
+	this->content[0][0] = nullptr;
 	this->content[0][1] = new QWORD(value);
 	this->size = 1;
 	this->type = JSON::type::INTEGER;
@@ -119,7 +119,7 @@ JSON::object &JSON::object::operator=(double value)
 {
 	this->cleanup();
 	this->content = new JSON::object::KV[1];
-	this->content[0][0] = NULL;
+	this->content[0][0] = nullptr;
 	this->content[0][1] = new double(value);
 	this->size = 1;
 	this->type = JSON::type::FLOAT;
@@ -130,7 +130,7 @@ JSON::object &JSON::object::operator=(bool val)
 {
 	this->cleanup();
 	this->content = new JSON::object::KV[1];
-	this->content[0][0] = NULL;
+	this->content[0][0] = nullptr;
 	this->content[0][1] = new bool(val);
 	this->size = 1;
 	this->type = JSON::type::BOOLEAN;
@@ -188,7 +188,7 @@ JSON::object &JSON::object::operator[](QWORD idx)
 			JSON::object::KV *nkv = new JSON::object::KV[idx + 1];
 			for (QWORD i = 0; i < idx + 1; i++)
 			{
-				nkv[i][0] = NULL;
+				nkv[i][0] = nullptr;
 				if (i < this->size)
 				{
 					nkv[i][1] = this->content[i][1];
@@ -293,7 +293,7 @@ void JSON::object::cleanup()
 		}
 	}
 	delete[] this->content;
-	this->content = NULL;
+	this->content = nullptr;
 	this->size = 0;
 	this->type = JSON::type::UNKNOWN;
 }

@@ -11,9 +11,9 @@ class MWORD
 	MWORD();
 	MWORD(QWORD);
 	MWORD(const MWORD &);
-	MWORD(MWORD &&);
+	MWORD(MWORD &&) noexcept;
 	MWORD &operator=(const MWORD &) &;
-	MWORD &operator=(MWORD &&) &;
+	MWORD &operator=(MWORD &&) & noexcept;
 	MWORD &operator+=(const MWORD &) &;
 	MWORD &operator-=(const MWORD &) &;
 	MWORD &operator*=(const MWORD &) &;

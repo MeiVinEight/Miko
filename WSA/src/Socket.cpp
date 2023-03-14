@@ -1,15 +1,13 @@
 #include "definitions.h"
 
 WSA::Socket::Socket() = default;
-
-WSA::Socket::Socket(WSA::Socket &&move): connection(move.connection), IP(move.IP), RP(move.RP), LP(move.LP)
+WSA::Socket::Socket(WSA::Socket &&move) noexcept: connection(move.connection), IP(move.IP), RP(move.RP), LP(move.LP)
 {
 	move.connection = INVALID_SOCKET;
 	move.IP = {0, 0, 0, 0};
 	move.LP = move.RP = 0;
 }
-
-WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move)
+WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move) noexcept
 {
 	if (&move != this)
 	{
@@ -24,7 +22,6 @@ WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move)
 	}
 	return *this;
 }
-
 void WSA::Socket::connect(WSA::SocketAddress addr)
 {
 	if (this->connection == INVALID_SOCKET)
@@ -54,7 +51,6 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 	}
 	throw Exception::exception("Already connected");
 }
-
 void WSA::Socket::read(void *b, DWORD len)
 {
 	char *buf = (char *) b;
@@ -80,7 +76,6 @@ void WSA::Socket::read(void *b, DWORD len)
 		throw Exception::exception("Socket closed");
 	}
 }
-
 void WSA::Socket::write(const void *b, DWORD len)
 {
 	if (~this->connection)
@@ -106,7 +101,6 @@ void WSA::Socket::write(const void *b, DWORD len)
 	}
 	throw Exception::exception("Socket closed");
 }
-
 QWORD WSA::Socket::available()
 {
 	u_long ava = 0;
@@ -116,12 +110,10 @@ QWORD WSA::Socket::available()
 	}
 	throw Exception::exception(Exception::message(WSAGetLastError()));
 }
-
 BOOL WSA::Socket::opening() const
 {
 	return !!(~this->connection);
 }
-
 void WSA::Socket::close()
 {
 	if (~this->connection)

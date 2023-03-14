@@ -49,13 +49,13 @@ namespace HTTP
 		HTTP_API
 		Message(const HTTP::Message &);
 		HTTP_API
-		Message(HTTP::Message &&);
+		Message(HTTP::Message &&) noexcept;
 		HTTP_API
 		~Message();
 		HTTP_API
 		HTTP::Message &operator=(const HTTP::Message &);
 		HTTP_API
-		HTTP::Message &operator=(HTTP::Message &&);
+		HTTP::Message &operator=(HTTP::Message &&) noexcept;
 		HTTP_API
 		String::string &operator[](const String::string &);
 		HTTP_API
@@ -76,11 +76,11 @@ namespace HTTP
 		HTTP_API
 		ConnectionManager(const WSA::SocketAddress &);
 		HTTP_API
-		ConnectionManager(HTTP::ConnectionManager &&);
+		ConnectionManager(HTTP::ConnectionManager &&) noexcept;
 		HTTP_API
 		~ConnectionManager();
 		HTTP_API
-		HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&);
+		HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&) noexcept;
 		HTTP_API
 		void send(const HTTP::Message &);
 		HTTP_API

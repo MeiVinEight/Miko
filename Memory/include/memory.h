@@ -2,9 +2,9 @@
 #define MEMORY_MEMORY_H
 
 #ifdef MEMORY_SHARED
-	#define MEMORY_API __declspec(dllexport)
+	#define MEMORYAPI __declspec(dllexport)
 #else
-	#define MEMORY_API
+	#define MEMORYAPI
 #endif
 
 #ifndef NULL
@@ -17,43 +17,43 @@ typedef unsigned char BYTE;
 
 namespace Memory
 {
-	MEMORY_API
+	MEMORYAPI
 	void *allocate(QWORD);
-	MEMORY_API
+	MEMORYAPI
 	void *reallocate(void *, QWORD);
-	MEMORY_API
+	MEMORYAPI
 	void free(void *);
-	MEMORY_API
+	MEMORYAPI
 	void copy(void *, const void *, QWORD);
-	MEMORY_API
+	MEMORYAPI
 	void fill(void *, BYTE, QWORD);
-	MEMORY_API
+	MEMORYAPI
 	bool compare(const void *, const void *, QWORD);
+	MEMORYAPI
+	void violation();
 
 	class string
 	{
 		public:
 		QWORD length = 0;
-		BYTE *address = NULL;
+		char *address = nullptr;
 
 		string() = delete;
-		MEMORY_API
+		MEMORYAPI
 		explicit string(QWORD);
-		MEMORY_API
+		MEMORYAPI
 		string(const Memory::string &);
-		MEMORY_API
-		string(Memory::string &&);
-		MEMORY_API
+		MEMORYAPI
+		string(Memory::string &&) noexcept;
+		MEMORYAPI
 		~string();
-		MEMORY_API
+		MEMORYAPI
 		Memory::string &operator=(const Memory::string &);
-		MEMORY_API
-		Memory::string &operator=(Memory::string &&);
-		MEMORY_API
+		MEMORYAPI
+		Memory::string &operator=(Memory::string &&) noexcept;
+		MEMORYAPI
 		BYTE &operator[](QWORD) const;
-		MEMORY_API
-		operator char *() const;
-		MEMORY_API
+		MEMORYAPI
 		void resize(QWORD);
 	};
 }

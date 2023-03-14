@@ -70,11 +70,11 @@ namespace WSA
 		WSA_API
 		ServerSocket();
 		WSA_API
-		ServerSocket(WSA::ServerSocket &&);
+		ServerSocket(WSA::ServerSocket &&) noexcept;
 		WSA_API
 		~ServerSocket();
 		WSA_API
-		WSA::ServerSocket &operator=(WSA::ServerSocket &&);
+		WSA::ServerSocket &operator=(WSA::ServerSocket &&) noexcept;
 		WSA_API
 		void bind(const WSA::SocketAddress &);
 		WSA_API
@@ -98,9 +98,9 @@ namespace WSA
 		WSA_API
 		Socket();
 		WSA_API
-		Socket(WSA::Socket &&);
+		Socket(WSA::Socket &&) noexcept;
 		WSA_API
-		WSA::Socket &operator=(WSA::Socket &&);
+		WSA::Socket &operator=(WSA::Socket &&) noexcept;
 		WSA_API
 		void connect(WSA::SocketAddress addr);
 		WSA_API

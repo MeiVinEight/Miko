@@ -23,8 +23,8 @@ Memory::string WSA::Address::string() const
 	char *s = inet_ntoa(ia);
 	if (s)
 	{
-		Memory::string ret(strlen(s) + 1);
-		Memory::copy(ret, s, ret.length);
+		Memory::string ret(strlen(s));
+		Memory::copy(ret.address, s, ret.length);
 		return ret;
 	}
 	throw Exception::exception(Exception::message(WSAGetLastError()));

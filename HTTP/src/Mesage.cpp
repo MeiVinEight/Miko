@@ -18,7 +18,7 @@ HTTP::Message::Message(const HTTP::Message &copy):
 	}
 }
 
-HTTP::Message::Message(HTTP::Message &&move):
+HTTP::Message::Message(HTTP::Message &&move) noexcept:
 	method(move.method),
 	URL((String::string &&)move.URL),
 	version(move.version),
@@ -40,7 +40,7 @@ HTTP::Message::~Message()
 	this->version = HTTP::HV_1_1;
 	this->status = 0;
 	delete[] this->context;
-	this->context = NULL;
+	this->context = nullptr;
 	this->length = 0;
 }
 
@@ -53,7 +53,7 @@ HTTP::Message &HTTP::Message::operator=(const HTTP::Message &copy)
 	return *this;
 }
 
-HTTP::Message &HTTP::Message::operator=(HTTP::Message &&move)
+HTTP::Message &HTTP::Message::operator=(HTTP::Message &&move) noexcept
 {
 	if (&move != this)
 	{

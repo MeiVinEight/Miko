@@ -22,7 +22,7 @@ CWS::WebSocket::WebSocket(const WSA::SocketAddress &endpoint, const String::stri
 	}
 }
 
-CWS::WebSocket::WebSocket(CWS::WebSocket &&move): manager((HTTP::ConnectionManager &&)move.manager)
+CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept: manager((HTTP::ConnectionManager &&)move.manager)
 {
 }
 
@@ -31,7 +31,7 @@ CWS::WebSocket::~WebSocket()
 	this->manager.close();
 }
 
-CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move)
+CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept
 {
 	if (&move != this)
 	{
@@ -77,7 +77,7 @@ Memory::string CWS::WebSocket::accept()
 			this->connection.read(maskingKey, 4);
 		}
 		payload.resize(payload.length + length);
-		this->connection.read(payload + offset, length);
+		this->connection.read(payload.address + offset, length);
 		if (MASK)
 		{
 			for (QWORD i = 0; i < offset; i++)
@@ -122,7 +122,7 @@ void CWS::WebSocket::send(const Memory::string &payload)
 	prefix[offset + 2] = 0;
 	prefix[offset + 3] = 0;
 	this->connection.write(prefix, offset + 4);
-	this->connection.write(payload, payload.length);
+	this->connection.write(payload.address, payload.length);
 }
 
 void CWS::WebSocket::close()

@@ -5,7 +5,7 @@ HTTP::ConnectionManager::ConnectionManager(const WSA::SocketAddress &address)
 	this->connection.connect(address);
 }
 
-HTTP::ConnectionManager::ConnectionManager(HTTP::ConnectionManager &&move): connection((WSA::Socket &&)move)
+HTTP::ConnectionManager::ConnectionManager(HTTP::ConnectionManager &&move) noexcept: connection((WSA::Socket &&)move)
 {
 }
 
@@ -14,7 +14,7 @@ HTTP::ConnectionManager::~ConnectionManager()
 	this->connection.close();
 }
 
-HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionManager &&move)
+HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionManager &&move) noexcept
 {
 	if (&move != this)
 	{
@@ -26,11 +26,11 @@ HTTP::ConnectionManager &HTTP::ConnectionManager::operator=(HTTP::ConnectionMana
 void HTTP::ConnectionManager::send(const HTTP::Message &msg)
 {
 	String::string rm = HTTP::method(msg.method);
-	this->connection.write(rm.address, rm.length);
+	this->connection.write(rm.address.address, rm.length());
 	char buf[11];
 	buf[0] = ' ';
 	this->connection.write(buf, 1);
-	this->connection.write(msg.URL.address, msg.URL.length);
+	this->connection.write(msg.URL.address.address, msg.URL.length());
 	Memory::copy(buf, " HTTP/", 6);
 	buf[6] = (char)('0' + ((msg.version >> 8) & 0xFF));
 	buf[7] = '.';
@@ -47,13 +47,13 @@ void HTTP::ConnectionManager::send(const HTTP::Message &msg)
 	{
 		String::string &key = msg.context[i][0];
 		String::string &val = msg.context[i][1];
-		this->connection.write(key.address, key.length);
+		this->connection.write(key.address.address, key.length());
 		this->connection.write(buf, 2);
-		this->connection.write(val.address, val.length);
+		this->connection.write(val.address.address, val.length());
 		this->connection.write(buf + 2, 2);
 	}
 	this->connection.write(buf + 2, 2);
-	this->connection.write(msg.content, msg.content.length);
+	this->connection.write(msg.content.address, msg.content.length);
 }
 
 HTTP::Message HTTP::ConnectionManager::accept()
@@ -103,7 +103,7 @@ HTTP::Message HTTP::ConnectionManager::accept()
 			len = 0;
 			idx = 0;
 			type = 0;
-			message[(void *)str[0]] = str[1];
+			message[str[0].address] = str[1].address;
 		}
 		else if (ch == ':')
 		{
@@ -125,19 +125,19 @@ HTTP::Message HTTP::ConnectionManager::accept()
 	{
 		QWORD contentLength = 0;
 		String::string &cl = message["Content-Length"];
-		for (QWORD i = 0; i < cl.length; i++)
+		for (QWORD i = 0; i < cl.length(); i++)
 		{
 			contentLength *= 10;
 			contentLength += cl[i] - '0';
 		}
 		message.content.resize(contentLength);
-		this->connection.read(message.content, contentLength);
+		this->connection.read(message.content.address, contentLength);
 	}
 	QWORD ava = this->connection.available();
 	if (ava && message["Connection"] == "close")
 	{
 		message.content.resize(ava);
-		this->connection.read(message.content, ava);
+		this->connection.read(message.content.address, ava);
 	}
 	return message;
 }

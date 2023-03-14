@@ -202,5 +202,6 @@ BOOL WINAPI CreateDirectoryA(LPCSTR, LPSECURITY_ATTRIBUTES);
 #endif
 
 QWORD strlen(const void *);
+Memory::string cstring(const String::string &);
 
 #endif //FSDEF_H

@@ -31,7 +31,7 @@ BYTE UTF8W(QWORD x)
 }
 void Whitespace(const String::string &str, QWORD &pos)
 {
-	for (; pos < str.length && str[pos] <= 0x20; pos++);
+	for (; pos < str.length() && str[pos] <= 0x20; pos++);
 }
 String::string ReadEscapeString(const String::string &str, QWORD &pos)
 {
@@ -114,7 +114,7 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 						else
 						{
 							char msg[] = "Unknown unicode: \\u0000";
-							Memory::copy(msg + 19, str.address + pos, 4);
+							Memory::copy(msg + 19, str.address.address + pos, 4);
 							throw Exception::exception(msg);
 						}
 					}
@@ -123,9 +123,9 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 				}
 				default:
 				{
-					BYTE msg[] = "Invalid escape sequence: \\0";
+					BYTE msg[] = "Invalid escape sequence: \\\0";
 					msg[26] = escaped;
-					throw Exception::exception(msg);
+					throw Exception::exception((char *) msg);
 				}
 			}
 		}
@@ -144,7 +144,7 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 			buffer[len++] = 0x80 | ((byt >> (6 * (size - 1))) & 0x3F);
 		}
 	}
-	String::string ret = String::string(buffer, len);
+	String::string ret = String::string((char *) buffer, len);
 	delete[] buffer;
 	return ret;
 }
@@ -153,7 +153,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 	JSON::object obj;
 
 	Whitespace(str, pos);
-	if (pos < str.length)
+	if (pos < str.length())
 	{
 		switch (str[pos])
 		{
@@ -230,7 +230,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 				Whitespace(str, pos);
 				bool digit = true;
 				QWORD len = 0;
-				while (pos + len < str.length)
+				while (pos + len < str.length())
 				{
 					if (str[pos + len] == ',' || str[pos + len] == '}' || str[pos + len] == ']' || str[pos + len] <= 0x20)
 						break;
@@ -239,7 +239,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 					len++;
 				}
 				if (len == 0) throw Exception::exception("Expected value");
-				String::string value = String::string(str.address + pos, len);
+				String::string value = String::string(str.address.address + pos, len);
 				if (value == "null")
 				{
 					obj.type = JSON::type::UNKNOWN;
@@ -268,11 +268,11 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 
 String::string JSON::stringify(const String::string &str)
 {
-	QWORD bsize = str.length + 2;
+	QWORD bsize = str.length() + 2;
 	BYTE *buf = new BYTE[bsize];
 	QWORD len = 0;
 	buf[len++] = '\"';
-	for (QWORD i = 0; i < str.length; i++)
+	for (QWORD i = 0; i < str.length(); i++)
 	{
 		BYTE byt = str[i];
 		if (ESCAPE[byt])
@@ -298,7 +298,7 @@ String::string JSON::stringify(const String::string &str)
 		}
 	}
 	buf[len++] = '\"';
-	String::string ret(buf, bsize);
+	String::string ret((char *) buf, bsize);
 	delete[] buf;
 	return ret;
 }

@@ -1,27 +1,23 @@
 #include "definitions.h"
 
-Memory::string::string(QWORD size): address((BYTE *)Memory::allocate(size)), length(size)
+Memory::string::string(QWORD size): address((char *) Memory::allocate(size)), length(size)
 {
 }
-
-Memory::string::string(const Memory::string &copy): address((BYTE *)Memory::allocate(copy.length)), length(copy.length)
+Memory::string::string(const Memory::string &copy): string(copy.length)
 {
-	Memory::copy(this->address, copy, this->length);
+	Memory::copy(this->address, copy.address, this->length);
 }
-
-Memory::string::string(Memory::string &&move): address(move.address), length(move.length)
+Memory::string::string(Memory::string &&move) noexcept: address(move.address), length(move.length)
 {
-	move.address = 0;
+	move.address = nullptr;
 	move.length = 0;
 }
-
 Memory::string::~string()
 {
 	Memory::free(this->address);
-	this->address = NULL;
+	this->address = nullptr;
 	this->length = 0;
 }
-
 Memory::string &Memory::string::operator=(const Memory::string &copy)
 {
 	if (&copy != this)
@@ -30,39 +26,32 @@ Memory::string &Memory::string::operator=(const Memory::string &copy)
 	}
 	return *this;
 }
-
-Memory::string &Memory::string::operator=(Memory::string &&move)
+Memory::string &Memory::string::operator=(Memory::string &&move) noexcept
 {
 	if (&move != this)
 	{
 		Memory::free(this->address);
 		this->address = move.address;
 		this->length = move.length;
-		move.address = 0;
+		move.address = nullptr;
 		move.length = 0;
 	}
 	return *this;
 }
-
 BYTE &Memory::string::operator[](QWORD off) const
 {
 	if (off < this->length)
 	{
-		return this->address[off];
+		return ((BYTE *) this->address)[off];
 	}
-	return (*((BYTE *)1) = *((BYTE *)1)); // Access violation
+	Memory::violation();
+	return *(BYTE *) (this->address); // unreachable
 }
-
-Memory::string::operator char *() const
-{
-	return (char *) this->address;
-}
-
 void Memory::string::resize(QWORD size)
 {
 	if (this->length != size)
 	{
-		this->address = (BYTE *)Memory::reallocate(this->address, size);
+		this->address = (char *) Memory::reallocate(this->address, size);
 		this->length = size;
 	}
 }

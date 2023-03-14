@@ -39,3 +39,7 @@ bool Memory::compare(const void *p1, const void *p2, QWORD length)
 	}
 	return ret;
 }
+void Memory::violation()
+{
+	*((BYTE *)1) = 0; // Access violation
+}

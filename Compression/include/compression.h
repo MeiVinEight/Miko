@@ -19,7 +19,7 @@ namespace Compression
 
 		NibbleReader() = delete;
 		COMPRESSIONAPI
-		NibbleReader(const Memory::string &);
+		NibbleReader(Memory::string );
 		COMPRESSIONAPI
 		QWORD read(BYTE);
 		COMPRESSIONAPI

@@ -1,19 +1,16 @@
 #include "definitions.h"
 
 WSA::ServerSocket::ServerSocket() = default;
-
-WSA::ServerSocket::ServerSocket(WSA::ServerSocket &&move): connection(move.connection), backlog(move.backlog), address(move.address)
+WSA::ServerSocket::ServerSocket(WSA::ServerSocket &&move) noexcept: connection(move.connection), backlog(move.backlog), address(move.address)
 {
 	move.connection = INVALID_SOCKET;
 	move.address = {{0, 0, 0, 0}, 0};
 }
-
 WSA::ServerSocket::~ServerSocket()
 {
 	this->close();
 }
-
-WSA::ServerSocket &WSA::ServerSocket::operator=(WSA::ServerSocket &&move)
+WSA::ServerSocket &WSA::ServerSocket::operator=(WSA::ServerSocket &&move) noexcept
 {
 	if (&move != this)
 	{
@@ -26,7 +23,6 @@ WSA::ServerSocket &WSA::ServerSocket::operator=(WSA::ServerSocket &&move)
 	}
 	return *this;
 }
-
 void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 {
 	if (this->connection == INVALID_SOCKET)
@@ -53,7 +49,6 @@ void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 	}
 	throw Exception::exception("Already bound");
 }
-
 WSA::Socket WSA::ServerSocket::accept() const
 {
 	if (~this->connection)
@@ -79,12 +74,10 @@ WSA::Socket WSA::ServerSocket::accept() const
 	}
 	throw Exception::exception("Socket closed");
 }
-
 BOOL WSA::ServerSocket::opening() const
 {
 	return !!(~this->connection);
 }
-
 void WSA::ServerSocket::close()
 {
 	if (~this->connection)

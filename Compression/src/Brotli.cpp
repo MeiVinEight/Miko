@@ -92,7 +92,7 @@ namespace ContextMap
 				throw Exception::exception("Unknown context mode");
 		}
 	}
-};
+}
 class State
 {
 	public:
@@ -118,7 +118,7 @@ class State
 class Huffman
 {
 	public:
-	Huffman *children[2]{NULL, NULL};
+	Huffman *children[2]{nullptr, nullptr};
 	QWORD value = 0;
 	~Huffman()
 	{
@@ -185,7 +185,7 @@ WORD ReadVarByte(Compression::NibbleReader &br)
 	return br.read(bits) + (1 << bits) + 1;
 }
 
-Huffman *CreateHuffman(BYTE *clens, QWORD alphabetSize)
+Huffman *CreateHuffman(const BYTE *clens, QWORD alphabetSize)
 {
 	QWORD count[16]{0};
 	QWORD numsym = 0;
@@ -201,7 +201,7 @@ Huffman *CreateHuffman(BYTE *clens, QWORD alphabetSize)
 	}
 	if (numsym == 1)
 	{
-		return new Huffman{{NULL, NULL}, last};
+		return new Huffman{{nullptr, nullptr}, last};
 	}
 	else
 	{
@@ -404,13 +404,13 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 		 *               /  \
 		 *              1    5
 		 */
-		static Huffman *_00 = new Huffman{{NULL, NULL}, 0};
-		static Huffman *_01 = new Huffman{{NULL, NULL}, 3};
+		static Huffman *_00 = new Huffman{{nullptr, nullptr}, 0};
+		static Huffman *_01 = new Huffman{{nullptr, nullptr}, 3};
 		static Huffman *_0 = new Huffman{{_00, _01}, 0};
-		static Huffman *_10 = new Huffman{{NULL, NULL}, 4};
-		static Huffman *_110 = new Huffman{{NULL, NULL}, 2};
-		static Huffman *_1110 = new Huffman{{NULL, NULL}, 1};
-		static Huffman *_1111 = new Huffman{{NULL, NULL}, 5};
+		static Huffman *_10 = new Huffman{{nullptr, nullptr}, 4};
+		static Huffman *_110 = new Huffman{{nullptr, nullptr}, 2};
+		static Huffman *_1110 = new Huffman{{nullptr, nullptr}, 1};
+		static Huffman *_1111 = new Huffman{{nullptr, nullptr}, 5};
 		static Huffman *_111 = new Huffman{{_1110, _1111}, 0};
 		static Huffman *_11 = new Huffman{{_110, _111}, 0};
 		static Huffman *_1 = new Huffman{{_10, _11}, 0};
@@ -437,7 +437,7 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 
 		Huffman *codes = CreateHuffman(symbolLength, 18);
 		Memory::string codeLength(alphabetSize);
-		Memory::fill(codeLength, 0, codeLength.length);
+		Memory::fill(codeLength.address, 0, codeLength.length);
 		space = 1 << 15;
 		QWORD repeat = 0;
 		WORD prevclen = 8;
@@ -465,7 +465,7 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 				{
 					throw Exception::exception("Symbol overflow");
 				}
-				Memory::fill(codeLength + i, repclen, delta);
+				Memory::fill(codeLength.address + i, repclen, delta);
 				if (repclen)
 				{
 					space -= delta << (15 - repclen);
@@ -474,7 +474,7 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 			}
 		}
 		delete codes;
-		return CreateHuffman(codeLength.address, codeLength.length);
+		return CreateHuffman((BYTE *) codeLength.address, codeLength.length);
 	}
 }
 
@@ -502,7 +502,7 @@ Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapS
 				{
 					throw Exception::exception("Corrupted context map");
 				}
-				Memory::fill(context + i, 0, rep);
+				Memory::fill(context.address + i, 0, rep);
 				i += rep;
 			}
 		}
@@ -513,7 +513,7 @@ Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapS
 	}
 	else
 	{
-		Memory::fill(context, 0, context.length);
+		Memory::fill(context.address, 0, context.length);
 	}
 	return context;
 }
@@ -719,7 +719,7 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 			{
 				if (dcode)
 					s.updateLastDistance(distance);
-				Memory::copy(output + length, output + (length - distance), clength);
+				Memory::copy(output.address + length, output.address + (length - distance), clength);
 				length += clength;
 			}
 		}
@@ -758,7 +758,7 @@ bool DecodeMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &ou
 			{
 				if (br.boundary())
 					throw Exception::exception("Wrong data format");
-				Memory::copy(output + length, br.stream + (br.position >> 3), MLEN);
+				Memory::copy(output.address + length, br.stream.address + (br.position >> 3), MLEN);
 				br.skip(MLEN * 8);
 				length += MLEN;
 			}

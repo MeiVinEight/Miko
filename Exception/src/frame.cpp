@@ -20,7 +20,7 @@ int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
 		case DLL_PROCESS_ATTACH:
 		{
 			SymSetOptions(SYMOPT_LOAD_LINES);
-			return SymInitialize(process, 0, 1);
+			return SymInitialize(process, nullptr, 1);
 		}
 		case DLL_PROCESS_DETACH:
 		{
@@ -36,7 +36,7 @@ void backtrace(Exception::exception &exec)
 	DWORD count = 0;
 	void **arr = (void **)Memory::allocate(max);
 	void *retAddr;
-	while (RtlCaptureStackBackTrace(count + 2, 1, &retAddr, NULL))
+	while (RtlCaptureStackBackTrace(count + 2, 1, &retAddr, nullptr))
 	{
 		if (count >= max)
 		{
@@ -79,8 +79,8 @@ Exception::exception::frame::frame(void *returnAddress)
 	*/
 
 	QWORD len = strlen(syminfo->Name);
-	this->function.resize(len + 1);
-	Memory::copy(this->function, syminfo->Name, len + 1);
+	this->function.resize(len);
+	Memory::copy(this->function.address, syminfo->Name, len);
 
 	this->address = (void *)syminfo->Address;
 	this->module = (void *)syminfo->ModBase;
@@ -88,8 +88,8 @@ Exception::exception::frame::frame(void *returnAddress)
 	char modname[MAX_SYM_NAME * sizeof(CHAR)]{0};
 	K32GetModuleBaseNameA(process, (HMODULE) this->module, modname, MAX_SYM_NAME);
 	len = strlen(modname);
-	this->library.resize(len + 1);
-	Memory::copy(this->library, modname, len + 1);
+	this->library.resize(len);
+	Memory::copy(this->library.address, modname, len);
 }
 
 Exception::exception::frame::frame(const Exception::exception::frame &copy)
@@ -101,23 +101,23 @@ Exception::exception::frame::frame(const Exception::exception::frame &copy)
 	this->library = copy.library;
 }
 
-Exception::exception::frame::frame(Exception::exception::frame &&move):
+Exception::exception::frame::frame(Exception::exception::frame &&move) noexcept:
 	address(move.address),
 	offset(move.offset),
 	module(move.module),
-	function((Memory::string &&)move.function),
-	library((Memory::string &&)move.library)
+	function((Memory::string &&) move.function),
+	library((Memory::string &&) move.library)
 {
-	move.address = 0;
-	move.offset = 0;
-	move.module = 0;
+	move.address = nullptr;
+	move.offset = nullptr;
+	move.module = nullptr;
 }
 
 Exception::exception::frame::~frame()
 {
-	this->address = 0;
-	this->offset = 0;
-	this->module = 0;
+	this->address = nullptr;
+	this->offset = nullptr;
+	this->module = nullptr;
 }
 
 Exception::exception::frame &Exception::exception::frame::operator=(Exception::exception::frame const &copy)
@@ -129,18 +129,18 @@ Exception::exception::frame &Exception::exception::frame::operator=(Exception::e
 	return *this;
 }
 
-Exception::exception::frame& Exception::exception::frame::operator=(Exception::exception::frame &&move)
+Exception::exception::frame& Exception::exception::frame::operator=(Exception::exception::frame &&move) noexcept
 {
 	if (&move != this)
 	{
 		this->address = move.address;
 		this->offset = move.offset;
 		this->module = move.module;
-		this->function = (Memory::string &&)move.function;
-		this->library = (Memory::string &&)move.library;
-		move.address = 0;
-		move.offset = 0;
-		move.module = 0;
+		this->function = (Memory::string &&) move.function;
+		this->library = (Memory::string &&) move.library;
+		move.address = nullptr;
+		move.offset = nullptr;
+		move.module = nullptr;
 	}
 	return *this;
 }

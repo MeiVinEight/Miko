@@ -2,9 +2,9 @@
 #define CWS_H
 
 #ifdef CWS_SHARED
-	#define CWS_API __declspec(dllexport)
+	#define CWSAPI __declspec(dllexport)
 #else
-	#define CWS_API
+	#define CWSAPI
 #endif
 
 #include <memory.h>
@@ -45,19 +45,19 @@ namespace CWS
 		WebSocket(const WebSocket &) = delete;
 		CWS::WebSocket &operator=(const WebSocket &) = delete;
 
-		CWS_API
+		CWSAPI
 		WebSocket(const WSA::SocketAddress &, const String::string &);
-		CWS_API
-		WebSocket(CWS::WebSocket &&);
-		CWS_API
+		CWSAPI
+		WebSocket(CWS::WebSocket &&) noexcept;
+		CWSAPI
 		~WebSocket();
-		CWS_API
-		CWS::WebSocket &operator=(WebSocket &&);
-		CWS_API
+		CWSAPI
+		CWS::WebSocket &operator=(WebSocket &&) noexcept;
+		CWSAPI
 		Memory::string accept();
-		CWS_API
+		CWSAPI
 		void send(const Memory::string &);
-		CWS_API
+		CWSAPI
 		void close();
 	};
 }

@@ -2,9 +2,9 @@
 #define EXCEPTION_H
 
 #ifdef EXCEPTION_SHARED
-	#define EXCEPTION_API __declspec(dllexport)
+	#define EXCEPTIONAPI __declspec(dllexport)
 #else
-	#define EXCEPTION_API
+	#define EXCEPTIONAPI
 #endif
 
 #include <memory.h>
@@ -15,7 +15,7 @@ typedef unsigned long		DWORD;
 
 namespace Exception
 {
-	EXCEPTION_API
+	EXCEPTIONAPI
 	Memory::string message(DWORD);
 
 	class exception
@@ -24,46 +24,44 @@ namespace Exception
 		class frame // Needs PDB file
 		{
 			public:
-			void *address = 0;
-			void *offset = 0;
-			void *module = 0;
+			void *address = nullptr;
+			void *offset = nullptr;
+			void *module = nullptr;
 			Memory::string function = Memory::string(0);
 			Memory::string library = Memory::string(0);
 
 			frame() = delete;
-			EXCEPTION_API
+			EXCEPTIONAPI
 			frame(void *);
-			EXCEPTION_API
+			EXCEPTIONAPI
 			frame(const Exception::exception::frame &);
-			EXCEPTION_API
-			frame(Exception::exception::frame &&);
-			EXCEPTION_API
+			EXCEPTIONAPI
+			frame(Exception::exception::frame &&) noexcept;
+			EXCEPTIONAPI
 			~frame();
-			EXCEPTION_API
+			EXCEPTIONAPI
 			Exception::exception::frame &operator=(const Exception::exception::frame&);
-			EXCEPTION_API
-			Exception::exception::frame &operator=(Exception::exception::frame &&);
+			EXCEPTIONAPI
+			Exception::exception::frame &operator=(Exception::exception::frame &&) noexcept;
 		};
 
-		static const BYTE INTERNAL = 0;
-		static const BYTE EXTERNAL = 1;
-		Exception::exception::frame *stack = 0;
+		Exception::exception::frame *stack = nullptr;
 		DWORD count = 0;
 		Memory::string message = Memory::string(0);
-		EXCEPTION_API
-		exception(const void *);
-		EXCEPTION_API
-		exception(const Memory::string &);
-		EXCEPTION_API
+		EXCEPTIONAPI
+		exception(const char *);
+		EXCEPTIONAPI
+		exception(Memory::string );
+		EXCEPTIONAPI
 		exception(const Exception::exception &);
-		EXCEPTION_API
-		exception(Exception::exception &&);
-		EXCEPTION_API
+		EXCEPTIONAPI
+		exception(Exception::exception &&) noexcept;
+		EXCEPTIONAPI
 		~exception();
-		EXCEPTION_API
+		EXCEPTIONAPI
 		Exception::exception &operator=(const Exception::exception &);
-		EXCEPTION_API
-		Exception::exception &operator=(Exception::exception &&);
+		EXCEPTIONAPI
+		Exception::exception &operator=(Exception::exception &&) noexcept;
 	};
 }
 

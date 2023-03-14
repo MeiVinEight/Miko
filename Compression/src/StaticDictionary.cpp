@@ -148,7 +148,7 @@ void (*(StaticDictionary::transforms[5]))(Memory::string &, WORD) = {
 		idx -= 2;
 		QWORD len = (word.length < idx) ? 0 : (word.length - idx);
 		Memory::string fword(len);
-		Memory::copy(fword, word + idx, len);
+		Memory::copy(fword.address, word.address + idx, len);
 		word = (Memory::string &&)fword;
 	},
 	[](Memory::string &word, WORD idx) -> void
@@ -156,7 +156,7 @@ void (*(StaticDictionary::transforms[5]))(Memory::string &, WORD) = {
 		idx -= 11;
 		QWORD len = (word.length < idx) ? 0 : (word.length - idx);
 		Memory::string fword(len);
-		Memory::copy(fword, word, len);
+		Memory::copy(fword.address, word.address, len);
 		word = (Memory::string &&)fword;
 	}
 };
@@ -193,7 +193,7 @@ void StaticDictionary::dictionary(Memory::string &output, QWORD &length, QWORD a
 	QWORD transformID = wordID >> StaticDictionary::NDBITS[copyLength];
 
 	Memory::string word(copyLength);
-	Memory::copy(word, StaticDictionary::DICT + (StaticDictionary::DOFFSET[copyLength] + index * copyLength), copyLength);
+	Memory::copy(word.address, StaticDictionary::DICT + (StaticDictionary::DOFFSET[copyLength] + index * copyLength), copyLength);
 
 	if (transformID > 120 || copyLength > 24 || copyLength < 4)
 		throw Exception::exception("Wrong data format");
@@ -208,13 +208,13 @@ void StaticDictionary::dictionary(Memory::string &output, QWORD &length, QWORD a
 
 	Memory::string prefix(StaticDictionary::transformation[transformID][0] & 0xFF);
 	Memory::string suffix(StaticDictionary::transformation[transformID][2] & 0xFF);
-	Memory::copy(prefix, StaticDictionary::PREFIX_SUFFIX + (StaticDictionary::transformation[transformID][0] >> 8), prefix.length);
-	Memory::copy(suffix, StaticDictionary::PREFIX_SUFFIX + (StaticDictionary::transformation[transformID][2] >> 8), suffix.length);
+	Memory::copy(prefix.address, StaticDictionary::PREFIX_SUFFIX + (StaticDictionary::transformation[transformID][0] >> 8), prefix.length);
+	Memory::copy(suffix.address, StaticDictionary::PREFIX_SUFFIX + (StaticDictionary::transformation[transformID][2] >> 8), suffix.length);
 	Memory::string tword(prefix.length + word.length + suffix.length);
-	Memory::copy(tword, prefix, prefix.length);
-	Memory::copy(tword + prefix.length, word, word.length);
-	Memory::copy(tword + prefix.length + word.length, suffix, suffix.length);
-	Memory::copy(output + length, tword, tword.length);
+	Memory::copy(tword.address, prefix.address, prefix.length);
+	Memory::copy(tword.address + prefix.length, word.address, word.length);
+	Memory::copy(tword.address + prefix.length + word.length, suffix.address, suffix.length);
+	Memory::copy(output.address + length, tword.address, tword.length);
 	length += tword.length;
 }
 

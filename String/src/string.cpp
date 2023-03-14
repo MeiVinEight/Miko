@@ -1,108 +1,80 @@
 #include "definitions.h"
 
-QWORD String::length(const void *str)
-{
-	const char *s = (const char *)str;
-	while (*s++);
-	return s - (const char *)str - 1;
-}
-
 String::string::string()
 {
 	this->address[0] = 0;
 }
-
-String::string::string(const void *str): String::string::string(str, String::length(str))
+String::string::string(const char *str): string(str, String::length(str))
 {
 }
-
-String::string::string(const void *str, QWORD len): address(len + 1), length(len)
+String::string::string(const char *str, QWORD len): address(len)
 {
-	Memory::copy(this->address, str, len);
-	this->address[len] = 0;
+	Memory::copy(this->address.address, str, len);
 }
-
-String::string::string(const String::string &) = default;
-
-String::string::string(String::string &&move): address((Memory::string &&)move.address), length(move.length)
+String::string::string(const Memory::string &str): string((char *) str.address, str.length)
 {
-	move.length = 0;
 }
-
+String::string::string(const Memory::string &str, QWORD len): string((char *) str.address, len)
+{
+}
+String::string::string(const String::string &str) = default;
+String::string::string(String::string &&move) noexcept = default;
 String::string::~string() = default;
-
-String::string &String::string::operator=(const void *str)
+String::string &String::string::operator=(const char *str)
 {
 	return (*this) = (String::string)str;
 }
-
 String::string &String::string::operator=(const String::string &) & = default;
-
-String::string &String::string::operator=(String::string &&move) &
+String::string &String::string::operator=(String::string &&move) & noexcept = default;
+bool String::string::operator==(const char *str) const
 {
-	if (&move != this)
+	QWORD len = String::length(str);
+	if (len == this->length())
 	{
-		this->address = (Memory::string &&)move.address;
-		this->length = move.length;
+		return Memory::compare(this->address.address, str, len);
 	}
-	return *this;
+	return false;
 }
-
 bool String::string::operator==(const String::string &other) const
 {
 	if (&other != this)
 	{
-		if (this->length == other.length)
+		if (this->length() == other.length())
 		{
-			return Memory::compare(this->address, other.address, this->length);
+			return Memory::compare(this->address.address, other.address.address, this->length());
 		}
 		return false;
 	}
 	return true;
 }
-
-bool String::string::operator==(const void *str) const
-{
-	QWORD len = String::length(str);
-	if (len == this->length)
-	{
-		return Memory::compare(this->address, str, len);
-	}
-	return false;
-}
-
 char &String::string::operator[](QWORD idx) const
 {
 	return (char &)this->address[idx];
 }
-
-String::string &String::string::operator+=(const String::string &str) &
-{
-	this->address.resize(this->length + str.length + 1);
-	Memory::copy(this->address + this->length, str.address, str.length);
-	this->length += str.length;
-	(*this)[this->length] = 0;
-	return *this;
-}
-
-String::string &String::string::operator+=(const void *str) &
+String::string &String::string::operator+=(const char *str) &
 {
 	QWORD len = String::length(str);
-	this->address.resize(this->length + len + 1);
-	Memory::copy(this->address + this->length, str, len);
-	this->length += len;
-	(*this)[this->length] = 0;
+	this->address.resize(this->length() + len);
+	Memory::copy(this->address.address + this->length(), str, len);
 	return *this;
 }
-
+String::string &String::string::operator+=(const String::string &str) &
+{
+	this->address.resize(this->length() + str.length());
+	Memory::copy(this->address.address + this->length(), str.address.address, str.length());
+	return *this;
+}
+String::string String::string::operator+(const char *str) const
+{
+	String::string lval(*this);
+	return lval += str;
+}
 String::string String::string::operator+(const String::string &str) const
 {
 	String::string lval(*this);
 	return lval += str;
 }
-
-String::string String::string::operator+(const void *str) const
+QWORD String::string::length() const
 {
-	String::string lval(*this);
-	return lval += str;
+	return this->address.length;
 }

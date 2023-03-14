@@ -1,16 +1,17 @@
 #include "definitions.h"
 
-bool Filesystem::create(const void *path)
+bool Filesystem::create(const String::string &path)
 {
-	Memory::string canon = Filesystem::canonicalize(path);
+	String::string canon = Filesystem::canonicalize(path);
 	if (!Filesystem::directory(path))
 	{
 		if (!Filesystem::exist(path))
 		{
 			Filesystem::make(Filesystem::parent(path));
+			Memory::string cpath = cstring(path);
 			DWORD desiredAccess = GENERIC_ALL;
 			DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-			HANDLE h = CreateFileA((LPCSTR) path, desiredAccess, shareMode, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+			HANDLE h = CreateFileA(cpath.address, desiredAccess, shareMode, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
 			if (h == INVALID_HANDLE_VALUE)
 			{
 				DWORD err = GetLastError();
@@ -27,22 +28,21 @@ bool Filesystem::create(const void *path)
 	}
 	// path is not a file
 	char append[] = " is not a file";
-	Memory::string msg(canon.length + sizeof(append) - 1);
-	Memory::copy(msg, canon, canon.length - 1);
-	Memory::copy(msg + (canon.length - 1), append, sizeof(append));
-	msg[msg.length - 1] = 0;
+	QWORD appendLen = sizeof(append) - 1;
+	Memory::string msg(canon.length() + appendLen);
+	Memory::copy(msg.address, canon.address.address, canon.length());
+	Memory::copy(msg.address + canon.length(), append, appendLen);
 	throw Exception::exception(msg);
 }
-
-bool Filesystem::make(const void *path)
+bool Filesystem::make(const String::string &path)
 {
-	Memory::string canon = Filesystem::canonicalize(path);
+	String::string canon = Filesystem::canonicalize(path);
 	if (!Filesystem::file(path))
 	{
 		if (!Filesystem::exist(path))
 		{
 			Filesystem::make(Filesystem::parent(path));
-			if (CreateDirectoryA(canon, NULL))
+			if (CreateDirectoryA(cstring(canon).address, nullptr))
 			{
 				return true;
 			}
@@ -52,16 +52,33 @@ bool Filesystem::make(const void *path)
 	}
 	// path is not a directory
 	char append[] = " is not a directory";
-	Memory::string msg(canon.length + sizeof(append) - 1);
-	Memory::copy(msg, canon, canon.length - 1);
-	Memory::copy(msg + (canon.length - 1), append, sizeof(append));
-	msg[msg.length - 1] = 0;
+	QWORD appendLen = sizeof(append) - 1;
+	Memory::string msg(canon.length() + appendLen);
+	Memory::copy(msg.address, canon.address.address, canon.length());
+	Memory::copy(msg.address + canon.length(), append, appendLen);
 	throw Exception::exception(msg);
 }
-
-bool Filesystem::exist(const void *path)
+bool Filesystem::remove(const String::string &path)
 {
-	if (GetFileAttributesA((LPCSTR)path) == INVALID_FILE_ATTRIBUTES)
+	Memory::string cpath = cstring(path);
+	char *cstr = cpath.address;
+	SetFileAttributesA(cstr, FILE_ATTRIBUTE_NORMAL);
+	DWORD attr = GetFileAttributesA(cstr);
+	if (~attr)
+	{
+		if (attr & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			return RemoveDirectoryA(cstr);
+		}
+		return DeleteFileA(cstr);
+	}
+	return false;
+}
+bool Filesystem::exist(const String::string &path)
+{
+	Memory::string cpath = cstring(path);
+	char *cstr = cpath.address;
+	if (GetFileAttributesA(cstr) == INVALID_FILE_ATTRIBUTES)
 	{
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
@@ -72,16 +89,14 @@ bool Filesystem::exist(const void *path)
 	}
 	return true;
 }
-
-bool Filesystem::file(const void *path)
+bool Filesystem::file(const String::string &path)
 {
 	return Filesystem::exist(path) && !Filesystem::directory(path);
 }
-
-bool Filesystem::directory(const void *path)
+bool Filesystem::directory(const String::string &path)
 {
 	WIN32_FILE_ATTRIBUTE_DATA data{0};
-	if (!GetFileAttributesExA((LPCSTR)path, GetFileExInfoStandard, &data))
+	if (!GetFileAttributesExA(cstring(path).address, GetFileExInfoStandard, &data))
 	{
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
@@ -92,94 +107,71 @@ bool Filesystem::directory(const void *path)
 	}
 	return !!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 }
-
-Memory::string Filesystem::parent(const void *path)
+Memory::string Filesystem::parent(const String::string &path)
 {
-	Memory::string canon = Filesystem::canonicalize(path);
-	QWORD length = canon.length - 1;
-	while (length && *(canon + --length) != '\\');
-	length = (canon.length == 4) ? 0 : length;
+	String::string canon = Filesystem::canonicalize(path);
+	QWORD length = canon.length();
+	while (length && *(canon.address.address + --length) != '\\');
+	length = (canon.length() == 3) ? 0 : length;
 	length = (length && (length < 3)) ? 3 : length;
-	Memory::string ret(length + 1);
-	Memory::copy(ret, canon, length);
-	ret[length] = 0;
+	Memory::string ret(length);
+	Memory::copy(ret.address, canon.address.address, length);
 	return ret;
 }
-
-bool Filesystem::remove(const void *path)
+Memory::string Filesystem::canonicalize(const String::string &path)
 {
-	SetFileAttributesA((LPCSTR)path, FILE_ATTRIBUTE_NORMAL);
-	DWORD attr = GetFileAttributesA((LPCSTR)path);
-	if (~attr)
-	{
-		if (attr & FILE_ATTRIBUTE_DIRECTORY)
-		{
-			return RemoveDirectoryA((LPCSTR)path);
-		}
-		return DeleteFileA((LPCSTR)path);
-	}
-	return false;
-}
-
-Memory::string Filesystem::canonicalize(const void *path) // Maybe only GetFullPathName
-{
+	// Maybe only GetFullPathName
 	char buf[MAX_PATH + 1];
-	QWORD len = GetFullPathNameA((LPCSTR) path, MAX_PATH + 1, buf, NULL);
+	QWORD len = GetFullPathNameA(cstring(path).address, MAX_PATH + 1, buf, nullptr);
 	if (len)
 	{
-		Memory::string canon(len + 1);
-		canon[len] = 0;
-		Memory::copy(canon, buf, len);
+		Memory::string canon(len);
+		Memory::copy(canon.address, buf, len);
 		return canon;
 	}
 	throw Exception::exception(Exception::message(GetLastError()));
 }
-
-Filesystem::FD Filesystem::open(const void *path, DWORD mode)
+QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
 	Filesystem::create(path);
 	OFSTRUCT data;
-	HFILE hfVal = OpenFile((LPCSTR)path, &data, mode);
+	HFILE hfVal = OpenFile(cstring(path).address, &data, mode);
 	if (hfVal == HFILE_ERROR)
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return hfVal;
 }
-
-void Filesystem::close(Filesystem::FD fdVal)
+void Filesystem::close(QWORD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}
 }
-
-DWORD Filesystem::read(Filesystem::FD fdVal, void *b, DWORD len)
+DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
 {
 	DWORD readed;
-	if (!ReadFile((HANDLE)fdVal, b, len, &readed, NULL))
+	if (!ReadFile((HANDLE)fdVal, b, len, &readed, nullptr))
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return readed;
 }
-
-DWORD Filesystem::write(Filesystem::FD fdVal, void *b, DWORD len)
+DWORD Filesystem::write(QWORD fdVal, void *b, DWORD len)
 {
 	DWORD written;
-	if (!WriteFile((HANDLE)fdVal, b, len, &written, NULL))
+	if (!WriteFile((HANDLE)fdVal, b, len, &written, nullptr))
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}
 	return written;
 }
-
-void Filesystem::seek(Filesystem::FD fdVal, QWORD offset, DWORD mode)
+void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 {
 	LARGE_INTEGER distance;
 	distance.QuadPart = (long long) offset;
-	if (!SetFilePointerEx((HANDLE)fdVal, distance, NULL, mode))
+	if (!SetFilePointerEx((HANDLE)fdVal, distance, nullptr, mode))
 	{
 		throw Exception::exception(Exception::message(GetLastError()));
 	}

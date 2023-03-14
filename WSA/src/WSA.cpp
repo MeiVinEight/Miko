@@ -2,9 +2,8 @@
 
 WSA::Address WSA::IP(LPCSTR host)
 {
-	ADDRINFOA ai{0};
-	ADDRINFOA *info = NULL;
-	INT err = getaddrinfo(host, NULL, NULL, &info);
+	ADDRINFOA *info = nullptr;
+	INT err = getaddrinfo(host, nullptr, nullptr, &info);
 	if (!err)
 	{
 		if (info)
@@ -22,16 +21,14 @@ WSA::Address WSA::IP(LPCSTR host)
 		char append[] = "Could not find host: ";
 		QWORD applen = sizeof(append) - 1;
 		QWORD hoslen = strlen(host);
-		Memory::string msg(applen + hoslen + 1);
-		Memory::copy(msg, append, applen);
-		Memory::copy(msg + applen, host, hoslen);
-		msg[applen + hoslen] = 0;
+		Memory::string msg(applen + hoslen);
+		Memory::copy(msg.address, append, applen);
+		Memory::copy(msg.address + applen, host, hoslen);
 		throw Exception::exception(msg);
 	}
 	freeaddrinfo(info);
 	throw Exception::exception(Exception::message(err));
 }
-
 SOCKET WSA::socket()
 {
 	SOCKET sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

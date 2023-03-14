@@ -1,11 +1,11 @@
 #include "definitions.h"
 
 
-Filesystem::FileStream::FileStream(const void *path): file(Filesystem::open(path, OF_READWRITE))
+Filesystem::FileStream::FileStream(const void *path): file(Filesystem::open((char *) path, OF_READWRITE))
 {
 }
 
-Filesystem::FileStream::FileStream(Filesystem::FD fdVal): file(fdVal)
+Filesystem::FileStream::FileStream(QWORD fdVal): file(fdVal)
 {
 }
 
@@ -126,7 +126,7 @@ QWORD Filesystem::FileStream::available()
 				{
 					NOSEEK:;
 					DWORD ret = 0;
-					if (!PeekNamedPipe(handle, NULL, 0, NULL, &ret, NULL))
+					if (!PeekNamedPipe(handle, nullptr, 0, nullptr, &ret, nullptr))
 					{
 						DWORD err = GetLastError();
 						if (err != ERROR_BROKEN_PIPE)

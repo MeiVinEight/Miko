@@ -2,12 +2,13 @@
 #define FILESYSTEM_H
 
 #ifdef FS_SHARED
-	#define FS_API __declspec(dllexport)
+	#define FSAPI __declspec(dllexport)
 #else
-	#define FS_API
+	#define FSAPI
 #endif
 
 #include <memory.h>
+#include <sstring.h>
 
 
 #ifndef HFILE_ERROR
@@ -24,45 +25,41 @@ typedef unsigned long long QWORD;
  */
 namespace Filesystem
 {
-	typedef QWORD FD;
-	static const QWORD FILE_EOF = -1;
-	static const DWORD FILE_CLOSED = 3;
-
-	FS_API
-	bool create(const void *);
-	FS_API
-	bool make(const void *);
-	FS_API
-	bool remove(const void *);
-	FS_API
-	bool exist(const void *);
-	FS_API
-	bool file(const void *);
-	FS_API
-	bool directory(const void *);
-	FS_API
-	Memory::string parent(const void *);
-	FS_API
-	Memory::string canonicalize(const void *);
-	FS_API
-	Filesystem::FD open(const void *, DWORD);
-	FS_API
-	void close(Filesystem::FD);
-	FS_API
-	DWORD read(Filesystem::FD, void *, DWORD);
-	FS_API
-	DWORD write(Filesystem::FD, void *, DWORD);
-	FS_API
-	void seek(Filesystem::FD, QWORD, DWORD);
+	FSAPI
+	bool create(const String::string &);
+	FSAPI
+	bool make(const String::string &);
+	FSAPI
+	bool remove(const String::string &);
+	FSAPI
+	bool exist(const String::string &);
+	FSAPI
+	bool file(const String::string &);
+	FSAPI
+	bool directory(const String::string &);
+	FSAPI
+	Memory::string parent(const String::string &);
+	FSAPI
+	Memory::string canonicalize(const String::string &);
+	FSAPI
+	QWORD open(const String::string &, DWORD);
+	FSAPI
+	void close(QWORD);
+	FSAPI
+	DWORD read(QWORD, void *, DWORD);
+	FSAPI
+	DWORD write(QWORD, void *, DWORD);
+	FSAPI
+	void seek(QWORD, QWORD, DWORD);
 
 	class AbstractStream
 	{
 		public:
-		FS_API
+		FSAPI
 		virtual void read(void *, DWORD) = 0;
-		FS_API
+		FSAPI
 		virtual void write(const void *, DWORD) = 0;
-		FS_API
+		FSAPI
 		virtual QWORD available() = 0;
 		/**
 		 * @TODO unread support
@@ -72,27 +69,27 @@ namespace Filesystem
 	class FileStream: public Filesystem::AbstractStream
 	{
 		public:
-		Filesystem::FD file = HFILE_ERROR;
+		QWORD file = HFILE_ERROR;
 
-		FS_API
+		FSAPI
 		explicit FileStream(const void *);
-		FS_API
-		explicit FileStream(Filesystem::FD);
-		FS_API
+		FSAPI
+		explicit FileStream(QWORD);
+		FSAPI
 		FileStream(FileStream &&) noexcept;
-		FS_API
+		FSAPI
 		~FileStream();
-		FS_API
+		FSAPI
 		Filesystem::FileStream &operator=(Filesystem::FileStream &&) noexcept;
-		FS_API
+		FSAPI
 		void read(void *, DWORD) override;
-		FS_API
+		FSAPI
 		void write(const void *, DWORD) override;
-		FS_API
+		FSAPI
 		QWORD available() override;
-		FS_API
+		FSAPI
 		void seek(QWORD) const;
-		FS_API
+		FSAPI
 		void close();
 	};
 }
