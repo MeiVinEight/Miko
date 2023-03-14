@@ -7,6 +7,10 @@
 	#define TIMEAPI
 #endif
 
+// TODO use common type definitions
+typedef unsigned short		WORD;
+typedef unsigned long long	QWORD;
+
 namespace Timestamp
 {
 	/**
