@@ -29,7 +29,6 @@ extern "C"
 
 typedef const char *PCSTR;
 typedef void *HINSTANCE;
-typedef int BOOL;
 typedef char CHAR;
 typedef unsigned long ULONG;
 typedef unsigned __int64 ULONG64;

@@ -7,9 +7,6 @@
 	#define TIMEAPI
 #endif
 
-typedef unsigned short		WORD;
-typedef unsigned long long	QWORD;
-
 namespace Timestamp
 {
 	/**

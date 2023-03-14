@@ -55,7 +55,6 @@ typedef const char	*LPCSTR;
 typedef void		*HANDLE, *PVOID, *LPVOID;
 typedef const void	*LPCVOID;
 typedef DWORD		*LPDWORD;
-typedef int				BOOL;
 typedef char			CHAR;
 typedef unsigned int	UINT;
 typedef long			LONG;

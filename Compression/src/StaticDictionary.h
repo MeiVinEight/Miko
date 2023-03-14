@@ -3,10 +3,6 @@
 #include <memory.h>
 #include "dictionary.h"
 
-typedef unsigned short		WORD;
-typedef unsigned long		DWORD;
-typedef unsigned long long	QWORD;
-
 /* References: RFC7932 - Section 8.  Static Dictionary */
 namespace StaticDictionary
 {

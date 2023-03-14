@@ -9,8 +9,6 @@
 
 #include <sstring.h>
 
-typedef unsigned long long QWORD;
-
 namespace JSON
 {
 	enum type

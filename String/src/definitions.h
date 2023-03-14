@@ -5,8 +5,6 @@
 #include <sstring.h>
 #include <memory.h>
 
-typedef unsigned long DWORD;
-
 int LeadingZeros(QWORD);
 
 #endif //DEFINITIONS_H

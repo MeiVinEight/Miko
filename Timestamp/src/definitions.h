@@ -11,8 +11,6 @@ extern "C"
 #endif
 
 
-typedef unsigned long	DWORD;
-typedef int				BOOL;
 typedef struct
 {
 	DWORD dwLowDateTime;

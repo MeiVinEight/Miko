@@ -16,8 +16,6 @@
 #endif
 
 typedef int HFILE;
-typedef unsigned long DWORD;
-typedef unsigned long long QWORD;
 
 /*
  * TODO Reparse points ?

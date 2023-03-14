@@ -9,10 +9,6 @@
 
 #include <memory.h>
 
-typedef unsigned char		BYTE;
-typedef unsigned short		WORD;
-typedef unsigned long		DWORD;
-
 namespace Exception
 {
 	EXCEPTIONAPI

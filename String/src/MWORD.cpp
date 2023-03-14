@@ -1,7 +1,5 @@
 #include "MWORD.h"
 
-typedef unsigned long DWORD;
-
 constexpr inline QWORD max(QWORD a, QWORD b)
 {
 	return (a > b) ? a : b;

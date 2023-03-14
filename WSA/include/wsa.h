@@ -9,12 +9,6 @@
 
 #include <filesystem.h>
 
-typedef int					BOOL;
-typedef unsigned char		BYTE;
-typedef unsigned short		WORD;
-typedef unsigned long		DWORD;
-typedef unsigned long long	QWORD;
-
 #define INVALID_SOCKET  (SOCKET)(~0)
 
 typedef const char *LPCSTR;

@@ -11,8 +11,11 @@
 #define NULL 0
 #endif
 
-typedef unsigned long long QWORD;
-typedef unsigned char BYTE;
+typedef int					BOOL;
+typedef unsigned char		BYTE;
+typedef unsigned short		WORD;
+typedef unsigned long		DWORD;
+typedef unsigned long long	QWORD;
 
 
 namespace Memory
