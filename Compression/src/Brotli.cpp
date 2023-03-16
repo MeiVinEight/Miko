@@ -89,8 +89,9 @@ namespace ContextMap
 			case 3:
 				return (LOOKUP[(2 << 8) + P1] << 3) | LOOKUP[(2 << 8) + P2];
 			default:
-				throw Exception::exception("Unknown context mode");
+				Memory::violation();
 		}
+		return 0;
 	}
 }
 class State
@@ -432,7 +433,7 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 		}
 		if (space && (nsym != 1))
 		{
-			throw Exception::exception("Corrupted Huffman code histogram");
+			Memory::violation();
 		}
 
 		Huffman *codes = CreateHuffman(symbolLength, 18);
@@ -463,7 +464,7 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 				prevrepl = repclen;
 				if (i + delta > alphabetSize)
 				{
-					throw Exception::exception("Symbol overflow");
+					Memory::violation();
 				}
 				Memory::fill(codeLength.address + i, repclen, delta);
 				if (repclen)
@@ -500,7 +501,7 @@ Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapS
 				DWORD rep = (1 << code) + br.read(code);
 				if (i + rep > contextMapSize)
 				{
-					throw Exception::exception("Corrupted context map");
+					Memory::violation();
 				}
 				Memory::fill(context.address + i, 0, rep);
 				i += rep;
@@ -525,19 +526,19 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 	s.BLENL = 1 << 24;
 	// TODO NBLTYPESL >= 2
 	if (NBLTYPESL >= 2)
-		throw Exception::exception("Undefined");
+		Memory::violation();
 	WORD NBLTYPESI = ReadVarByte(br);
 	s.BTYPEI = 0;
 	s.BLENI = 1 << 24;
 	// TODO NBLTYPESI >= 2
 	if (NBLTYPESI >= 2)
-		throw Exception::exception("Undefined");
+		Memory::violation();
 	WORD NBLTYPESD = ReadVarByte(br);
 	s.BTYPED = 0;
 	s.BLEND = 1 << 24;
 	// TODO NBLTYPESD >= 2
 	if (NBLTYPESD >= 2)
-		throw Exception::exception("Undefined");
+		Memory::violation();
 
 	BYTE NPOSTFIX = br.read(2);
 	BYTE NDIRECT = br.read(4) << NPOSTFIX;
@@ -562,7 +563,7 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 		// TODO NBLTYPESI >= 2
 		if (!s.BLENI)
 		{
-			throw Exception::exception("Undefined");
+			Memory::violation();
 		}
 		s.BLENI--;
 
@@ -657,7 +658,7 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 			// TODO NBLTYPESL >= 2
 			if (!s.BLENL)
 			{
-				throw Exception::exception("Undefined");
+				Memory::violation();
 			}
 			s.BLENL--;
 
@@ -680,7 +681,7 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 				// TODO NBLTYPESD >= 2
 				if (!s.BLEND)
 				{
-					throw Exception::exception("Undefined");
+					Memory::violation();
 				}
 				s.BLEND--;
 
@@ -691,7 +692,7 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 				{
 					distance = s.distance[DISTANCE_INDEX[dcode]] + DISTANCE_OFFSET[dcode];
 					if (!distance || distance > (1 << 24))
-						throw Exception::exception("Wrong distance");
+						Memory::violation();
 				}
 				else if (dcode < NDIRECT + 16)
 				{
@@ -757,7 +758,7 @@ bool DecodeMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &ou
 			if (uncompressed)
 			{
 				if (br.boundary())
-					throw Exception::exception("Wrong data format");
+					Memory::violation();
 				Memory::copy(output.address + length, br.stream.address + (br.position >> 3), MLEN);
 				br.skip(MLEN * 8);
 				length += MLEN;
@@ -770,7 +771,7 @@ bool DecodeMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &ou
 			BYTE reserved = br.read(1);
 			if (reserved)
 			{
-				throw Exception::exception("Wrong data format");
+				Memory::violation();
 			}
 			BYTE MSKIPBYTES = br.read(2);
 			DWORD skip = br.read(MSKIPBYTES * 8) + 1;

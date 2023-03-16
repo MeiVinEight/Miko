@@ -21,10 +21,10 @@ void Timestamp::calender::convert(QWORD timestamp)
 		if (FileTimeToSystemTime(&lft, &st))
 		{
 			SetCalenderZone(&st, this);
-			return;
 		}
 	}
-	throw Exception::exception(Exception::message(GetLastError()));
+	// DWORD x = GetLastError();
+	// throw Exception::exception(Exception::message(x));
 }
 
 WORD &Timestamp::calender::operator[](WORD idx)

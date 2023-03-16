@@ -8,7 +8,9 @@
 #endif
 
 // TODO use common type definitions
+typedef int					BOOL;
 typedef unsigned short		WORD;
+typedef unsigned long		DWORD;
 typedef unsigned long long	QWORD;
 
 namespace Timestamp

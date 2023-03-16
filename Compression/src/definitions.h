@@ -2,7 +2,6 @@
 #define COMPDEF_H
 
 #define COMPRESSION_SHARED
-#include <exception.h>
 #include <compression.h>
 
 #define DLL_PROCESS_DETACH 0

@@ -3,7 +3,6 @@
 
 #define TIMESTAMP_SHARED
 #include <timestamp.h>
-#include <exception.h>
 
 #ifdef __cplusplus
 extern "C"

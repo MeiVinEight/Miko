@@ -18,7 +18,7 @@ CWS::WebSocket::WebSocket(const WSA::SocketAddress &endpoint, const String::stri
 	if (msg.status != 101) // Switching Protocols
 	{
 		QWORD cl = msg.content.length;
-		throw Exception::exception(cl ? String::string(msg.content, cl).address : HTTP::status(msg.status).address);
+		throw Exception::exception(cl ? String::string(msg.content, cl) : HTTP::status(msg.status));
 	}
 }
 

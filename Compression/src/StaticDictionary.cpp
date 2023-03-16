@@ -196,7 +196,7 @@ void StaticDictionary::dictionary(Memory::string &output, QWORD &length, QWORD a
 	Memory::copy(word.address, StaticDictionary::DICT + (StaticDictionary::DOFFSET[copyLength] + index * copyLength), copyLength);
 
 	if (transformID > 120 || copyLength > 24 || copyLength < 4)
-		throw Exception::exception("Wrong data format");
+		Memory::violation();
 
 	DWORD tt = StaticDictionary::transformation[transformID][1];
 	if (tt < 3)

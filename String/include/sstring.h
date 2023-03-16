@@ -14,7 +14,7 @@ namespace String
 	class string
 	{
 		public:
-		Memory::string address = Memory::string(1);
+		Memory::string address = Memory::string(0);
 
 		STRINGAPI
 		string();
@@ -66,6 +66,8 @@ namespace String
 	String::string stringify(QWORD);
 	STRINGAPI
 	String::string stringify(int);
+	STRINGAPI
+	String::string stringify(void *);
 	STRINGAPI
 	double floating(const String::string &);
 	STRINGAPI

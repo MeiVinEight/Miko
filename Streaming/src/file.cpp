@@ -32,12 +32,26 @@ void Streaming::file::read(void *b, DWORD len)
 		while (len)
 		{
 			DWORD readed = Filesystem::read(this->object, buf, len);
+			if (!readed)
+			{
+				throw Exception::exception("EOF");
+			}
 			buf += readed;
 			len -= readed;
 		}
 		return;
 	}
 	throw Exception::exception("File closed");
+}
+Streaming::file &Streaming::file::operator>>(const Memory::string &str)
+{
+	this->read(str.address, str.length);
+	return *this;
+}
+Streaming::file &Streaming::file::operator>>(const String::string &str)
+{
+	this->read(str.address.address, str.length());
+	return *this;
 }
 void Streaming::file::write(const void *b, DWORD len)
 {
@@ -53,6 +67,16 @@ void Streaming::file::write(const void *b, DWORD len)
 		return;
 	}
 	throw Exception::exception("File closed");
+}
+Streaming::file &Streaming::file::operator<<(const Memory::string &str)
+{
+	this->write(str.address, str.length);
+	return *this;
+}
+Streaming::file &Streaming::file::operator<<(const String::string &str)
+{
+	this->write(str.address.address, str.length());
+	return *this;
 }
 void Streaming::file::flush()
 {

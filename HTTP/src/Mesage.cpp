@@ -98,7 +98,7 @@ String::string &HTTP::Message::operator[](const String::string &key)
 		}
 	}
 
-	throw Exception::exception(((String::string)"Cannot found: " + key).address);
+	throw Exception::exception(((String::string)"Cannot found: " + key));
 }
 
 String::string *HTTP::Message::operator[](QWORD idx) const

@@ -1,11 +1,21 @@
-#include <sstring.h>
-#include <filesystem.h>
+#include <iostream>
 #include <streaming.h>
+
+void func()
+{
+	int x = 1;
+	Streaming::cout << &x << Streaming::LF;
+	std::cout << &x << std::endl;
+}
 
 int main()
 {
-	Streaming::file file = Streaming::file("sample.txt");
-	file.write("Hello World", 11);
-	file.flush();
-	file.close();
+	try
+	{
+		func();
+	}
+	catch (Exception::exception &exec)
+	{
+		Streaming::cout << exec.message;
+	}
 }

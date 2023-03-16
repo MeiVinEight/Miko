@@ -1,6 +1,6 @@
 #include "definitions.h"
 
-Memory::string Exception::message(DWORD errcode)
+String::string Exception::message(DWORD errcode)
 {
 	char buf[256]{0};
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
@@ -9,7 +9,6 @@ Memory::string Exception::message(DWORD errcode)
 	{
 		len -= 2;
 	}
-	Memory::string msg(len);
-	Memory::copy(msg.address, buf, len);
-	return msg;
+	buf[len] = 0;
+	return buf;
 }

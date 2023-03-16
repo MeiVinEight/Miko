@@ -353,6 +353,14 @@ String::string String::stringify(int val)
 {
 	return String::stringify(val, true);
 }
+String::string String::stringify(void *p)
+{
+	static const char hex[] = "0123456789ABCDEF";
+	QWORD addr = (QWORD) p;
+	char buf[16];
+	for (QWORD x = 16; x--; buf[15 - x] = hex[(addr >> (4 * x)) & 0xF]);
+	return String::string(buf, 16);
+}
 double String::floating(const String::string &str)
 {
 	bool negative = false;

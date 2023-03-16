@@ -1,11 +1,6 @@
 #include "definitions.h"
 
-Exception::exception::exception(const char *message): message(strlen(message))
-{
-	Memory::copy(this->message.address, message, this->message.length);
-	backtrace(*this);
-}
-Exception::exception::exception(Memory::string str): message((Memory::string &&) str)
+Exception::exception::exception(String::string str): message((Memory::string &&) str)
 {
 	backtrace(*this);
 }

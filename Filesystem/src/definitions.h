@@ -39,6 +39,10 @@ extern "C"
 #define ERROR_PATH_NOT_FOUND		3L
 #define ERROR_FILE_EXISTS			80L
 
+#define STD_INPUT_HANDLE    ((DWORD)-10)
+#define STD_OUTPUT_HANDLE   ((DWORD)-11)
+#define STD_ERROR_HANDLE    ((DWORD)-12)
+
 typedef int			HFILE;
 typedef char		*LPSTR;
 typedef const char	*LPCSTR;
@@ -181,6 +185,7 @@ DWORD WINAPI GetFullPathNameA(LPCSTR, DWORD, LPSTR, LPSTR *);
 BOOL WINAPI GetFileAttributesExA(LPCSTR, GET_FILEEX_INFO_LEVELS, LPVOID);
 BOOL WINAPI CreateDirectoryA(LPCSTR, LPSECURITY_ATTRIBUTES);
 BOOL WINAPI FlushFileBuffers(HANDLE);
+HANDLE WINAPI GetStdHandle(DWORD);
 
 #ifdef __cplusplus
 }

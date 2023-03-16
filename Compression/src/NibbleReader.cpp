@@ -5,29 +5,26 @@ Compression::NibbleReader::NibbleReader(Memory::string stream): stream((Memory::
 }
 QWORD Compression::NibbleReader::read(BYTE bits)
 {
-	if (bits <= 64)
+	if (bits <= 64 && (this->position + bits <= this->stream.length * 8))
 	{
-		if (this->position + bits <= this->stream.length * 8)
+		QWORD ret = 0;
+		QWORD mov = 64;
+		while (bits)
 		{
-			QWORD ret = 0;
-			QWORD mov = 64;
-			while (bits)
-			{
-				QWORD idx = this->position >> 3;
-				QWORD btx = this->position & 0x7;
+			QWORD idx = this->position >> 3;
+			QWORD btx = this->position & 0x7;
 
-				ret >>= 1;
-				ret |= ((this->stream[idx] >> btx) & 1ULL) << 63;
+			ret >>= 1;
+			ret |= ((this->stream[idx] >> btx) & 1ULL) << 63;
 
-				this->position++;
-				mov--;
-				bits--;
-			}
-			return ret >> mov;
+			this->position++;
+			mov--;
+			bits--;
 		}
-		throw Exception::exception("EOF");
+		return ret >> mov;
 	}
-	throw Exception::exception("Bitwise count is too large");
+	Memory::violation();
+	return 0;
 }
 BYTE Compression::NibbleReader::boundary()
 {
@@ -45,7 +42,7 @@ void Compression::NibbleReader::seek(QWORD pos)
 {
 	if (pos > this->stream.length * 8)
 	{
-		throw Exception::exception("EOF");
+		Memory::violation();
 	}
 	this->position = pos;
 }
@@ -53,7 +50,7 @@ void Compression::NibbleReader::skip(QWORD len)
 {
 	if (this->position + len > this->stream.length * 8)
 	{
-		throw Exception::exception("EOF");
+		Memory::violation();
 	}
 	this->position += len;
 }

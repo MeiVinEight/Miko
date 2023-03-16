@@ -30,10 +30,6 @@ namespace Compression
 		void skip(QWORD);
 	};
 
-	namespace LZ77
-	{
-	}
-
 	namespace Brotli
 	{
 		COMPRESSIONAPI

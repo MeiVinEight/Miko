@@ -14,7 +14,7 @@
 #define FILE_CURRENT				1
 
 typedef long			LONG;
-typedef void			*HANDLE;
+typedef void			*HANDLE, *HINSTANCE;
 typedef __int64 		LONGLONG;
 typedef union
 {

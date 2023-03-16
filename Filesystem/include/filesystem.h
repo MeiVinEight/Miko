@@ -4,7 +4,7 @@
 #ifdef FS_SHARED
 	#define FSAPI __declspec(dllexport)
 #else
-	#define FSAPI
+	#define FSAPI __declspec(dllimport)
 #endif
 
 #include <memory.h>
@@ -32,6 +32,8 @@ namespace Filesystem
 	const static DWORD OF_PROMPT           = 0x00002000;
 	const static DWORD OF_EXIST            = 0x00004000;
 	const static DWORD OF_REOPEN           = 0x00008000;
+	extern FSAPI const QWORD STDIN;
+	extern FSAPI const QWORD STDOUT;
 
 	FSAPI
 	bool create(const String::string &);

@@ -8,11 +8,12 @@
 #endif
 
 #include <memory.h>
+#include <sstring.h>
 
 namespace Exception
 {
 	EXCEPTIONAPI
-	Memory::string message(DWORD);
+	String::string message(DWORD);
 
 	class exception
 	{
@@ -23,8 +24,8 @@ namespace Exception
 			void *address = nullptr;
 			void *offset = nullptr;
 			void *module = nullptr;
-			Memory::string function = Memory::string(0);
-			Memory::string library = Memory::string(0);
+			String::string function = Memory::string(0);
+			String::string library = Memory::string(0);
 
 			frame() = delete;
 			EXCEPTIONAPI
@@ -43,11 +44,9 @@ namespace Exception
 
 		Exception::exception::frame *stack = nullptr;
 		DWORD count = 0;
-		Memory::string message = Memory::string(0);
+		String::string message;
 		EXCEPTIONAPI
-		exception(const char *);
-		EXCEPTIONAPI
-		exception(Memory::string );
+		exception(String::string);
 		EXCEPTIONAPI
 		exception(const Exception::exception &);
 		EXCEPTIONAPI

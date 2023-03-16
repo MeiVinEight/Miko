@@ -1,5 +1,8 @@
 #include "definitions.h"
 
+const QWORD Filesystem::STDIN = (QWORD) GetStdHandle(STD_INPUT_HANDLE);
+const QWORD Filesystem::STDOUT = (QWORD) GetStdHandle(STD_OUTPUT_HANDLE);
+
 bool Filesystem::create(const String::string &path)
 {
 	String::string canon = Filesystem::canonicalize(path);
