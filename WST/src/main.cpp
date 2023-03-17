@@ -1,11 +1,13 @@
-#include <iostream>
 #include <streaming.h>
+#include <crypto.h>
 
 void func()
 {
-	int x = 1;
-	Streaming::cout << &x << Streaming::LF;
-	std::cout << &x << std::endl;
+	String::string text = "https://github.com/MeiVinEight/Miko";
+	Streaming::cout << text << Streaming::LF;
+	Memory::string base64 = Crypto::BASE64::encode(text.address);
+	Streaming::cout << String::string(base64) << Streaming::LF;
+	Streaming::cout << String::string(Crypto::BASE64::decode(base64));
 }
 
 int main()
