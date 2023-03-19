@@ -3,10 +3,7 @@
 
 void func()
 {
-	String::string text = "https://github.com/MeiVinEight/Miko";
-	Crypto::CRC crc(Crypto::CRC::CRC64_ECMA);
-	crc.update(text.address.address, text.length());
-	Streaming::cout << crc.value();
+	Streaming::cout << (DWORD) Memory::BENDIAN << ' ' << (DWORD) Memory::LENDIAN;
 }
 
 int main()

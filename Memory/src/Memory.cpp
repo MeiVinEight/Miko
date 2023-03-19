@@ -1,5 +1,10 @@
 #include "definitions.h"
 
+DWORD x = 1;
+char *s = (char *) &x;
+const BYTE Memory::BENDIAN = s[0] == 0;
+const BYTE Memory::LENDIAN = s[0] == 1;
+
 void *Memory::allocate(QWORD size)
 {
 	return malloc(size);

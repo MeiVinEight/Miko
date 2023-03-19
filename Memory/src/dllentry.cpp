@@ -2,9 +2,9 @@
 
 HANDLE heap;
 
-int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
+int __stdcall DllMain(HINSTANCE *, unsigned int reason, void *)
 {
-	heap = 0;
+	heap = nullptr;
 	switch (reason)
 	{
 		case DLL_PROCESS_ATTACH:

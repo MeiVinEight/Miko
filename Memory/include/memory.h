@@ -4,7 +4,7 @@
 #ifdef MEMORY_SHARED
 	#define MEMORYAPI __declspec(dllexport)
 #else
-	#define MEMORYAPI
+	#define MEMORYAPI __declspec(dllimport)
 #endif
 
 #ifndef NULL
@@ -59,6 +59,9 @@ namespace Memory
 		MEMORYAPI
 		void resize(QWORD);
 	};
+
+	extern MEMORYAPI const BYTE BENDIAN;
+	extern MEMORYAPI const BYTE LENDIAN;
 }
 
 #endif //MEMORY_MEMORY_H
