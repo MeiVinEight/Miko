@@ -73,5 +73,9 @@ namespace String
 	STRINGAPI
 	QWORD integer(const String::string &);
 }
+namespace Hexadecimal
+{
+	STRINGAPI String::string format(const Memory::string &);
+}
 
 #endif //MIKO_SSTRING_H
