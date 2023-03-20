@@ -1,6 +1,6 @@
 #include "definitions.h"
 
-BYTE K[][16] = {
+BYTE MD5K[][16] = {
 	/* Round 1. */
 	 0,  1,  2,  3,  4,  5,  6,  7,
 	 8,  9, 10, 11, 12, 13, 14, 15,
@@ -14,13 +14,13 @@ BYTE K[][16] = {
 	 0,  7, 14,  5, 12,  3, 10,  1,
 	 8, 15,  6, 13,  4, 11,  2,  9
 };
-BYTE S[][4] = {
+BYTE MD5S[][4] = {
 	{ 7, 12, 17, 22},
 	{ 5,  9, 14, 20},
 	{ 4, 11, 16, 23},
 	{ 6, 10, 15, 21}
 };
-DWORD T[64] = {
+DWORD MD5T[64] = {
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
 	0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
 	0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -39,52 +39,38 @@ DWORD T[64] = {
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-DWORD GetAsLittleEndian(const BYTE *addr)
-{
-	DWORD x = 0;
-	for (int i = 4; i--;)
-	{
-		x <<= 8;
-		x |= addr[i];
-	}
-	return x;
-}
-constexpr DWORD F(DWORD X, DWORD Y, DWORD Z)
+constexpr DWORD MD5F(DWORD X, DWORD Y, DWORD Z)
 {
 	return (X & Y) | (~X & Z);
 }
-constexpr DWORD G(DWORD X, DWORD Y, DWORD Z)
+constexpr DWORD MD5G(DWORD X, DWORD Y, DWORD Z)
 {
 	return (X & Z) | (Y & ~Z);
 }
-constexpr DWORD H(DWORD X, DWORD Y, DWORD Z)
+constexpr DWORD MD5H(DWORD X, DWORD Y, DWORD Z)
 {
 	return X ^ Y ^ Z;
 }
-constexpr DWORD I(DWORD X, DWORD Y, DWORD Z)
+constexpr DWORD MD5I(DWORD X, DWORD Y, DWORD Z)
 {
 	return Y ^ (X | ~Z);
 }
-constexpr DWORD SS(DWORD X, BYTE n)
-{
-	return (X << n) | (X >> (32 - n));
-}
-void Calculate(const BYTE *X, DWORD ABCD[4])
+void CalculateMD5(const BYTE *X, DWORD ABCD[4])
 {
 	DWORD AA = ABCD[0];
 	DWORD BB = ABCD[1];
 	DWORD CC = ABCD[2];
 	DWORD DD = ABCD[3];
-	DWORD (*(func[4]))(DWORD, DWORD, DWORD) = {F, G, H, I};
+	DWORD (*(func[4]))(DWORD, DWORD, DWORD) = {MD5F, MD5G, MD5H, MD5I};
 	for (DWORD i = 0; i < 4; i++)
 	{
 		for (DWORD j = 0; j < 16; j++)
 		{
 			QWORD idx = (4 - (j % 4)) % 4;
 			ABCD[(idx + 0) % 4] += func[i](ABCD[(idx + 1) % 4], ABCD[(idx + 2) % 4], ABCD[(idx + 3) % 4]);
-			ABCD[(idx + 0) % 4] += GetAsLittleEndian(X + (K[i][j] << 2));
-			ABCD[(idx + 0) % 4] += T[i * 16 + j];
-			ABCD[(idx + 0) % 4] = SS(ABCD[(idx + 0) % 4], S[i][j & 0x3]);
+			ABCD[(idx + 0) % 4] += GetAsLittleEndian(X + (MD5K[i][j] << 2));
+			ABCD[(idx + 0) % 4] += MD5T[i * 16 + j];
+			ABCD[(idx + 0) % 4] = CircularLSH(ABCD[(idx + 0) % 4], MD5S[i][j & 0x3]);
 			ABCD[(idx + 0) % 4] += ABCD[(idx + 1) % 4];
 		}
 	}
@@ -109,7 +95,7 @@ void Crypto::MD5::update(const void *b, QWORD len)
 		if (this->position >= 64)
 		{
 			this->position = 0;
-			Calculate(this->block, this->ABCD);
+			CalculateMD5(this->block, this->ABCD);
 		}
 	}
 }
@@ -123,12 +109,12 @@ Memory::string Crypto::MD5::value() const
 	if (64 - pos < 8)
 	{
 		Memory::fill(blk + pos, 0, 64 - pos);
-		Calculate(blk, abcd);
+		CalculateMD5(blk, abcd);
 		pos = 0;
 	}
 	Memory::fill(blk + pos, 0, 56 - pos);
 	Memory::copy(blk + 56, &this->length, 8);
-	Calculate(blk, abcd);
+	CalculateMD5(blk, abcd);
 	Memory::string output(16);
 	abcd[0] = GetAsLittleEndian((BYTE *) (abcd + 0));
 	abcd[1] = GetAsLittleEndian((BYTE *) (abcd + 1));
