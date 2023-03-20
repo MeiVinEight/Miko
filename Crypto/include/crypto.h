@@ -52,6 +52,17 @@ namespace Crypto
 		CRYPTOAPI void update(const void *, QWORD);
 		CRYPTOAPI QWORD value() const;
 	};
+	class MD5
+	{
+		private:
+		DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
+		BYTE block[64] = {0};
+		QWORD position = 0;
+		QWORD length = 0;
+		public:
+		CRYPTOAPI void update(const void *, QWORD);
+		CRYPTOAPI Memory::string value() const;
+	};
 }
 
 #endif //CRYPTO_H
