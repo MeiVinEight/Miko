@@ -1,5 +1,9 @@
 #include "definitions.h"
 
+/*
+ * References: RFC1320 - The MD4 Message-Digest Algorithm
+ */
+
 BYTE MD4K[][16] = {
 	/* Round 1. */
 	 0,  1,  2,  3,  4,  5,  6,  7,

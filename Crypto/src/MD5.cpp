@@ -1,5 +1,9 @@
 #include "definitions.h"
 
+/*
+ * References: RFC1321 - The MD5 Message-Digest Algorithm
+ */
+
 BYTE MD5K[][16] = {
 	/* Round 1. */
 	 0,  1,  2,  3,  4,  5,  6,  7,
