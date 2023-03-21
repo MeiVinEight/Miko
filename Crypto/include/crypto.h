@@ -43,8 +43,9 @@ namespace Crypto
 		static const BYTE CRC32_C           = 0x15;
 		static const BYTE CRC32_KOOPMAN     = 0x16;
 		static const BYTE CRC32_MPEG_2      = 0x17;
-		static const BYTE CRC64_ISO         = 0x18;
-		static const BYTE CRC64_ECMA        = 0x19;
+		static const BYTE CRC64             = 0x18; // Hashtab's CRC64 in OpenHashTab is CRC64-WE
+		static const BYTE CRC64_ISO         = 0x19;
+		static const BYTE CRC64_ECMA        = 0x1A;
 		const BYTE type = 0;
 		QWORD crc = 0;
 
