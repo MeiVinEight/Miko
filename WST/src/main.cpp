@@ -4,10 +4,10 @@
 
 void func()
 {
-	String::string text = "123456789";
-	Crypto::MD5 md5;
-	md5.update(text.address.address, text.length());
-	Streaming::cout << Hexadecimal::format(md5.value());
+	String::string text = "00000000000000000000000000000000000000000000000000000000";
+	Crypto::SHA1 sha;
+	sha.update(text.address.address, text.length());
+	Streaming::cout << Hexadecimal::format(sha.value());
 }
 
 int main()

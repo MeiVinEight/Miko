@@ -75,6 +75,17 @@ namespace Crypto
 		CRYPTOAPI void update(const void *, QWORD);
 		CRYPTOAPI Memory::string value() const;
 	};
+	class SHA1
+	{
+		private:
+		DWORD H[5] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0};
+		BYTE block[64] = {0};
+		QWORD position = 0;
+		QWORD length = 0;
+		public:
+		CRYPTOAPI void update(const void *, QWORD);
+		CRYPTOAPI Memory::string value() const;
+	};
 }
 
 #endif //CRYPTO_H
