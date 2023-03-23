@@ -4,10 +4,10 @@
 
 void func()
 {
-	Crypto::MD4 md4;
-	String::string text = "https://github.com/MeiVinEight/Mikohttps://github.com/MeiVinEight/Miko";
-	md4.update(text.address.address, text.length());
-	Streaming::cout << Hexadecimal::format(md4.value());
+	String::string text = "123456789";
+	Crypto::MD5 md5;
+	md5.update(text.address.address, text.length());
+	Streaming::cout << Hexadecimal::format(md5.value());
 }
 
 int main()

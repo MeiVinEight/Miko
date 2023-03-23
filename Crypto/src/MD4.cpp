@@ -47,7 +47,7 @@ void CalculateMD4(const BYTE *X, DWORD ABCD[4])
 		{
 			DWORD idx = (4 - (j % 4)) % 4;
 			ABCD[(idx + 0) % 4] += func[i](ABCD[(idx + 1) % 4], ABCD[(idx + 2) % 4], ABCD[(idx + 3) % 4]);
-			ABCD[(idx + 0) % 4] += GetAsLittleEndian(X + (MD4K[i][j] << 2));
+			ABCD[(idx + 0) % 4] += GetAsLEndian(X + (MD4K[i][j] << 2));
 			ABCD[(idx + 0) % 4] += MD4CONSTANT[i];
 			ABCD[(idx + 0) % 4] = CircularLSH(ABCD[(idx + 0) % 4], MD4S[i][j & 0x3]);
 		}
@@ -94,10 +94,9 @@ Memory::string Crypto::MD4::value() const
 	Memory::copy(blk + 56, &this->length, 8);
 	CalculateMD4(blk, abcd);
 	Memory::string output(16);
-	abcd[0] = GetAsLittleEndian((BYTE *) (abcd + 0));
-	abcd[1] = GetAsLittleEndian((BYTE *) (abcd + 1));
-	abcd[2] = GetAsLittleEndian((BYTE *) (abcd + 2));
-	abcd[3] = GetAsLittleEndian((BYTE *) (abcd + 3));
-	Memory::copy(output.address, abcd, 16);
+	SaveAsLEndian(abcd[0], output.address + 0x0);
+	SaveAsLEndian(abcd[1], output.address + 0x4);
+	SaveAsLEndian(abcd[2], output.address + 0x8);
+	SaveAsLEndian(abcd[3], output.address + 0xC);
 	return output;
 }
