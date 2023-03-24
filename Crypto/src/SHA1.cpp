@@ -6,27 +6,23 @@
  * [2] FIPS 180-4
  */
 
-DWORD SHA1_K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6};
+DWORD SHA1K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6};
 
-DWORD F1(DWORD A, DWORD B, DWORD C)
+DWORD SHA1F1(DWORD A, DWORD B, DWORD C)
 {
 	return (A & B) | (~A & C);
 }
-DWORD F2(DWORD A, DWORD B, DWORD C)
+DWORD SHA1F2(DWORD A, DWORD B, DWORD C)
 {
 	return A ^ B ^ C;
 }
-DWORD F3(DWORD A, DWORD B, DWORD C)
+DWORD SHA1F3(DWORD A, DWORD B, DWORD C)
 {
 	return (A & B) | (A & C) | (B & C);
 }
-DWORD F4(DWORD A, DWORD B, DWORD C)
-{
-	return F2(A, B, C);
-}
 void CalculateSHA1(DWORD H[5], const BYTE *block)
 {
-	static DWORD (*(func[4]))(DWORD, DWORD, DWORD) = {F1, F2, F3, F4};
+	static DWORD (*(func[4]))(DWORD, DWORD, DWORD) = {SHA1F1, SHA1F2, SHA1F3, SHA1F2};
 	DWORD W[80];
 	DWORD A = H[0];
 	DWORD B = H[1];
@@ -40,7 +36,7 @@ void CalculateSHA1(DWORD H[5], const BYTE *block)
 		{
 			W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
 		}
-		DWORD TEMP = ROTL(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1_K[t / 20];
+		DWORD TEMP = ROTL(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1K[t / 20];
 		E = D;
 		D = C;
 		C = ROTL(B, 30);
