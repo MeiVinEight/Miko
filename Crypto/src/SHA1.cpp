@@ -1,7 +1,9 @@
 #include "definitions.h"
 
 /*
- * References: RFC3174 - US Secure Hash Algorithm 1 (SHA1)
+ * References:
+ * [1] RFC3174 - US Secure Hash Algorithm 1 (SHA1)
+ * [2] FIPS 180-4
  */
 
 DWORD SHA1_K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6};
