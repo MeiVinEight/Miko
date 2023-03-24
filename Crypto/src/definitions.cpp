@@ -1,47 +1,51 @@
 #include "definitions.h"
 
-DWORD GetAsLEndian(const void *p)
+QWORD GetAsLEndian(BYTE n, const void *p)
 {
 	const BYTE *addr = (const BYTE *) p;
 	DWORD x = 0;
-	for (int i = 4; i--;)
+	for (int i = n; i--;)
 	{
 		x <<= 8;
 		x |= addr[i];
 	}
 	return x;
 }
-DWORD GetAsBEndian(const void *p)
+QWORD GetAsBEndian(BYTE n, const void *p)
 {
 	const BYTE *addr = (const BYTE *) p;
 	DWORD x = 0;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < n; i++)
 	{
 		x <<= 8;
 		x |= addr[i];
 	}
 	return x;
 }
-void SaveAsLEndian(DWORD x, void *p)
+void SaveAsLEndian(QWORD x, BYTE n, void *p)
 {
 	BYTE *addr = (BYTE *) p;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < n; i++)
 	{
 		*addr++ = x & 0xFF;
 		x >>= 8;
 	}
 }
-void SaveAsBEndian(DWORD x, void *p)
+void SaveAsBEndian(QWORD x, BYTE n, void *p)
 {
 	BYTE *addr = (BYTE *) p;
-	addr += 4;
-	for (int i = 0; i < 4; i++)
+	addr += n;
+	for (int i = 0; i < n; i++)
 	{
 		*--addr = x & 0xFF;
 		x >>= 8;
 	}
 }
-DWORD CircularLSH(DWORD X, BYTE n)
+QWORD ROTL(QWORD X, BYTE n)
 {
 	return (X << n) | (X >> (32 - n));
+}
+QWORD ROTR(QWORD X, BYTE n)
+{
+	return (X >> n) | (X << (32 - n));
 }

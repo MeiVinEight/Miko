@@ -72,9 +72,9 @@ void CalculateMD5(const BYTE *X, DWORD ABCD[4])
 		{
 			QWORD idx = (4 - (j % 4)) % 4;
 			ABCD[(idx + 0) % 4] += func[i](ABCD[(idx + 1) % 4], ABCD[(idx + 2) % 4], ABCD[(idx + 3) % 4]);
-			ABCD[(idx + 0) % 4] += GetAsLEndian(X + (MD5K[i][j] << 2));
+			ABCD[(idx + 0) % 4] += GetAsLEndian(4, X + (MD5K[i][j] << 2));
 			ABCD[(idx + 0) % 4] += MD5T[i * 16 + j];
-			ABCD[(idx + 0) % 4] = CircularLSH(ABCD[(idx + 0) % 4], MD5S[i][j & 0x3]);
+			ABCD[(idx + 0) % 4] = ROTL(ABCD[(idx + 0) % 4], MD5S[i][j & 0x3]);
 			ABCD[(idx + 0) % 4] += ABCD[(idx + 1) % 4];
 		}
 	}
@@ -120,9 +120,9 @@ Memory::string Crypto::MD5::value() const
 	Memory::copy(blk + 56, &this->length, 8);
 	CalculateMD5(blk, abcd);
 	Memory::string output(16);
-	SaveAsLEndian(abcd[0], output.address + 0x0);
-	SaveAsLEndian(abcd[1], output.address + 0x4);
-	SaveAsLEndian(abcd[2], output.address + 0x8);
-	SaveAsLEndian(abcd[3], output.address + 0xC);
+	SaveAsLEndian(abcd[0], 4, output.address + 0x0);
+	SaveAsLEndian(abcd[1], 4, output.address + 0x4);
+	SaveAsLEndian(abcd[2], 4, output.address + 0x8);
+	SaveAsLEndian(abcd[3], 4, output.address + 0xC);
 	return output;
 }

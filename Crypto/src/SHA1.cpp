@@ -35,15 +35,15 @@ void CalculateSHA1(DWORD H[5], const BYTE *block)
 	DWORD E = H[4];
 	for (DWORD t = 0; t < 80; t++)
 	{
-		W[t] = GetAsBEndian(block + 4 * (t & 0xF));
+		W[t] = GetAsBEndian(4, block + 4 * (t & 0xF));
 		if (t > 15)
 		{
-			W[t] = CircularLSH(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+			W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
 		}
-		DWORD TEMP = CircularLSH(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1_K[t / 20];
+		DWORD TEMP = ROTL(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1_K[t / 20];
 		E = D;
 		D = C;
-		C = CircularLSH(B, 30);
+		C = ROTL(B, 30);
 		B = A;
 		A = TEMP;
 	}
@@ -87,14 +87,14 @@ Memory::string Crypto::SHA1::value() const
 		pos = 0;
 	}
 	Memory::fill(blk +pos, 0, 56 - pos);
-	SaveAsBEndian((this->length >> 32) & 0xFFFFFFFFU, blk + 56);
-	SaveAsBEndian((this->length >>  0) & 0xFFFFFFFFU, blk + 60);
+	SaveAsBEndian((this->length >> 32) & 0xFFFFFFFFU, 4, blk + 56);
+	SaveAsBEndian((this->length >>  0) & 0xFFFFFFFFU, 4, blk + 60);
 	CalculateSHA1(h, blk);
 	Memory::string output(20);
-	SaveAsBEndian(h[0], output.address + 0x00);
-	SaveAsBEndian(h[1], output.address + 0x04);
-	SaveAsBEndian(h[2], output.address + 0x08);
-	SaveAsBEndian(h[3], output.address + 0x0C);
-	SaveAsBEndian(h[4], output.address + 0x10);
+	SaveAsBEndian(h[0], 4, output.address + 0x00);
+	SaveAsBEndian(h[1], 4, output.address + 0x04);
+	SaveAsBEndian(h[2], 4, output.address + 0x08);
+	SaveAsBEndian(h[3], 4, output.address + 0x0C);
+	SaveAsBEndian(h[4], 4, output.address + 0x10);
 	return output;
 }
