@@ -108,7 +108,7 @@ Streaming::format &Streaming::format::operator<<(char x)
 }
 Streaming::format &Streaming::format::operator<<(int x)
 {
-	(*this).Streaming::file::operator<<(String::stringify(x));
+	(*this) << String::stringify(x);
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(DWORD x)
@@ -118,17 +118,22 @@ Streaming::format &Streaming::format::operator<<(DWORD x)
 }
 Streaming::format &Streaming::format::operator<<(QWORD x)
 {
-	(*this).Streaming::file::operator<<(String::stringify(x));
+	(*this) << String::stringify(x);
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(void *x)
 {
-	(*this).Streaming::file::operator<<(String::stringify(x));
+	(*this) << String::stringify(x);
+	return *this;
+}
+Streaming::format &Streaming::format::operator<<(const char *str)
+{
+	this->write(str, String::length(str));
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(const String::string &str)
 {
-	(*this).Streaming::file::operator<<(str);
+	(*this).Streaming::file::operator<<(str.address);
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(void (*f)(Streaming::stream *))

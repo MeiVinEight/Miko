@@ -38,10 +38,8 @@ namespace Streaming
 		STREAMINGAPI Streaming::file &operator=(Streaming::file &&) noexcept;
 		STREAMINGAPI void read(void *, DWORD) override;
 		STREAMINGAPI virtual Streaming::file &operator>>(const Memory::string &);
-		STREAMINGAPI virtual Streaming::file &operator>>(const String::string &);
 		STREAMINGAPI void write(const void *, DWORD) override;
 		STREAMINGAPI virtual Streaming::file &operator<<(const Memory::string &);
-		STREAMINGAPI virtual Streaming::file &operator<<(const String::string &);
 		STREAMINGAPI void flush() override;
 		STREAMINGAPI QWORD available() override;
 		STREAMINGAPI virtual void seek(QWORD) const;
@@ -64,7 +62,8 @@ namespace Streaming
 		STREAMINGAPI Streaming::format &operator<<(DWORD);
 		STREAMINGAPI Streaming::format &operator<<(QWORD);
 		STREAMINGAPI Streaming::format &operator<<(void *);
-		STREAMINGAPI Streaming::format &operator<<(const String::string &) override;
+		STREAMINGAPI Streaming::format &operator<<(const char *);
+		STREAMINGAPI Streaming::format &operator<<(const String::string &);
 		STREAMINGAPI Streaming::format &operator<<(void (*)(Streaming::stream *));
 	};
 	extern STREAMINGAPI Streaming::format cin;

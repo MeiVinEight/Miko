@@ -12,7 +12,7 @@ Streaming::file::file(Streaming::file &&move) noexcept: object(move.object)
 }
 Streaming::file::~file()
 {
-	this->close();
+	this->Streaming::file::close();
 }
 Streaming::file &Streaming::file::operator=(Streaming::file &&move) noexcept
 {
@@ -48,11 +48,6 @@ Streaming::file &Streaming::file::operator>>(const Memory::string &str)
 	this->read(str.address, str.length);
 	return *this;
 }
-Streaming::file &Streaming::file::operator>>(const String::string &str)
-{
-	this->read(str.address.address, str.length());
-	return *this;
-}
 void Streaming::file::write(const void *b, DWORD len)
 {
 	if (~this->object)
@@ -71,11 +66,6 @@ void Streaming::file::write(const void *b, DWORD len)
 Streaming::file &Streaming::file::operator<<(const Memory::string &str)
 {
 	this->write(str.address, str.length);
-	return *this;
-}
-Streaming::file &Streaming::file::operator<<(const String::string &str)
-{
-	this->write(str.address.address, str.length());
 	return *this;
 }
 void Streaming::file::flush()
