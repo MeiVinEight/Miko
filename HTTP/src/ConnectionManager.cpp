@@ -103,7 +103,7 @@ HTTP::Message HTTP::ConnectionManager::accept()
 			len = 0;
 			idx = 0;
 			type = 0;
-			message[str[0].address] = str[1].address;
+			message[(char *) str[0].address] = (char *) str[1].address;
 		}
 		else if (ch == ':')
 		{

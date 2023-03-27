@@ -39,7 +39,7 @@ namespace Memory
 	{
 		public:
 		QWORD length = 0;
-		char *address = nullptr;
+		BYTE *address = nullptr;
 
 		string() = delete;
 		MEMORYAPI

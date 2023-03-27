@@ -14,7 +14,7 @@ bool Filesystem::create(const String::string &path)
 			Memory::string cpath = cstring(path);
 			DWORD desiredAccess = GENERIC_ALL;
 			DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-			HANDLE h = CreateFileA(cpath.address, desiredAccess, shareMode, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+			HANDLE h = CreateFileA((LPCSTR) cpath.address, desiredAccess, shareMode, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
 			if (h == INVALID_HANDLE_VALUE)
 			{
 				DWORD err = GetLastError();
@@ -45,7 +45,7 @@ bool Filesystem::make(const String::string &path)
 		if (!Filesystem::exist(path))
 		{
 			Filesystem::make(Filesystem::parent(path));
-			if (CreateDirectoryA(cstring(canon).address, nullptr))
+			if (CreateDirectoryA((LPCSTR) cstring(canon).address, nullptr))
 			{
 				return true;
 			}
@@ -64,7 +64,7 @@ bool Filesystem::make(const String::string &path)
 bool Filesystem::remove(const String::string &path)
 {
 	Memory::string cpath = cstring(path);
-	char *cstr = cpath.address;
+	char *cstr = (char *) cpath.address;
 	SetFileAttributesA(cstr, FILE_ATTRIBUTE_NORMAL);
 	DWORD attr = GetFileAttributesA(cstr);
 	if (~attr)
@@ -80,7 +80,7 @@ bool Filesystem::remove(const String::string &path)
 bool Filesystem::exist(const String::string &path)
 {
 	Memory::string cpath = cstring(path);
-	char *cstr = cpath.address;
+	char *cstr = (char *) cpath.address;
 	if (GetFileAttributesA(cstr) == INVALID_FILE_ATTRIBUTES)
 	{
 		DWORD err = GetLastError();
@@ -99,7 +99,7 @@ bool Filesystem::file(const String::string &path)
 bool Filesystem::directory(const String::string &path)
 {
 	WIN32_FILE_ATTRIBUTE_DATA data{0};
-	if (!GetFileAttributesExA(cstring(path).address, GetFileExInfoStandard, &data))
+	if (!GetFileAttributesExA((char *) cstring(path).address, GetFileExInfoStandard, &data))
 	{
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
@@ -125,7 +125,7 @@ Memory::string Filesystem::canonicalize(const String::string &path)
 {
 	// Maybe only GetFullPathName
 	char buf[MAX_PATH + 1];
-	QWORD len = GetFullPathNameA(cstring(path).address, MAX_PATH + 1, buf, nullptr);
+	QWORD len = GetFullPathNameA((char *) cstring(path).address, MAX_PATH + 1, buf, nullptr);
 	if (len)
 	{
 		Memory::string canon(len);
@@ -138,7 +138,7 @@ QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
 	Filesystem::create(path);
 	OFSTRUCT data;
-	HFILE hfVal = OpenFile(cstring(path).address, &data, mode);
+	HFILE hfVal = OpenFile((char *) cstring(path).address, &data, mode);
 	if (hfVal == Filesystem::FILE_ERROR)
 	{
 		throw Exception::exception(Exception::message(GetLastError()));

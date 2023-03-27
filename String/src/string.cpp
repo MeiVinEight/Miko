@@ -7,7 +7,7 @@ String::string::string()
 String::string::string(const char *str): string(str, String::length(str))
 {
 }
-String::string::string(const char *str, QWORD len): address(len)
+String::string::string(const void *str, QWORD len): address(len)
 {
 	Memory::copy(this->address.address, str, len);
 }

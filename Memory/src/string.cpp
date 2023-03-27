@@ -1,6 +1,6 @@
 #include "definitions.h"
 
-Memory::string::string(QWORD size): address((char *) Memory::allocate(size)), length(size)
+Memory::string::string(QWORD size): address((BYTE *) Memory::allocate(size)), length(size)
 {
 }
 Memory::string::string(const Memory::string &copy): string(copy.length)
@@ -42,7 +42,7 @@ BYTE &Memory::string::operator[](QWORD off) const
 {
 	if (off < this->length)
 	{
-		return ((BYTE *) this->address)[off];
+		return this->address[off];
 	}
 	Memory::violation();
 	return *(BYTE *) (this->address); // unreachable
@@ -51,7 +51,7 @@ void Memory::string::resize(QWORD size)
 {
 	if (this->length != size)
 	{
-		this->address = (char *) Memory::reallocate(this->address, size);
+		this->address = (BYTE *) Memory::reallocate(this->address, size);
 		this->length = size;
 	}
 }

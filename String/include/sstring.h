@@ -21,7 +21,7 @@ namespace String
 		STRINGAPI
 		string(const char *);
 		STRINGAPI
-		string(const char *, QWORD);
+		string(const void *, QWORD);
 		STRINGAPI
 		string(const Memory::string &);
 		STRINGAPI
