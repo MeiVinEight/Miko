@@ -1,6 +1,6 @@
 #include "definitions.h"
 
-Streaming::format::format(QWORD fdVal): file(fdVal)
+Streaming::format::format(Streaming::stream *stream): stream(stream)
 {
 }
 void Streaming::format::read(void *b, DWORD len)
@@ -8,15 +8,37 @@ void Streaming::format::read(void *b, DWORD len)
 	if (len)
 	{
 		char *buf = (char *) b;
-		if (this->temporary)
+		if (~this->temporary)
 		{
 			char temp = (char) (this->temporary & 0xFF);
 			Memory::copy(buf, &temp, 1);
 			len--;
 			this->temporary = 0xFFFFFFFF;
 		}
-		this->Streaming::file::read(buf, len);
+		this->stream->read(buf, len);
 	}
+}
+void Streaming::format::write(const void *b, DWORD len)
+{
+	this->stream->write(b, len);
+}
+void Streaming::format::flush()
+{
+	this->stream->flush();
+}
+QWORD Streaming::format::available()
+{
+	return this->stream->available();
+}
+Streaming::format &Streaming::format::operator>>(const Memory::string &data)
+{
+	this->stream->read(data.address, data.length);
+	return *this;
+}
+Streaming::format &Streaming::format::operator<<(const Memory::string &data)
+{
+	this->stream->write(data.address, data.length);
+	return *this;
 }
 Streaming::format &Streaming::format::operator>>(char &x)
 {
@@ -133,7 +155,7 @@ Streaming::format &Streaming::format::operator<<(const char *str)
 }
 Streaming::format &Streaming::format::operator<<(const String::string &str)
 {
-	(*this).Streaming::file::operator<<(str.address);
+	(*this) << str.address;
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(void (*f)(Streaming::stream *))

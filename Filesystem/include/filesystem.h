@@ -9,6 +9,7 @@
 
 #include <memory.h>
 #include <sstring.h>
+#include <streaming.h>
 
 /*
  * TODO UNC ?
@@ -63,6 +64,33 @@ namespace Filesystem
 	void seek(QWORD, QWORD, DWORD);
 	FSAPI
 	void flush(QWORD);
+}
+
+namespace Streaming
+{
+	class file: public Streaming::stream
+	{
+		public:
+		QWORD object = Filesystem::FILE_ERROR;
+
+		FSAPI file(QWORD);
+		FSAPI file(const String::string &);
+		FSAPI file(Streaming::file &&) noexcept;
+		FSAPI virtual ~file();
+		FSAPI void read(void *, DWORD) override;
+		FSAPI void write(const void *, DWORD) override;
+		FSAPI void flush() override;
+		FSAPI QWORD available() override;
+		FSAPI Streaming::file &operator=(Streaming::file &&) noexcept;
+		FSAPI virtual Streaming::file &operator>>(const Memory::string &);
+		FSAPI virtual Streaming::file &operator<<(const Memory::string &);
+		FSAPI virtual void seek(QWORD) const;
+		FSAPI virtual void close();
+	};
+	extern FSAPI Streaming::file input;
+	extern FSAPI Streaming::file output;
+	extern FSAPI Streaming::format cin;
+	extern FSAPI Streaming::format cout;
 }
 
 #endif //FILESYSTEM_H

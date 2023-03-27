@@ -8,8 +8,7 @@
 #endif
 
 #include <memory.h>
-#include <filesystem.h>
-#include <exception.h>
+#include <sstring.h>
 
 namespace Streaming
 {
@@ -26,32 +25,19 @@ namespace Streaming
 		STREAMINGAPI virtual QWORD available() = 0;
 		// TODO undo support
 	};
-	class file: public Streaming::stream
-	{
-		public:
-		QWORD object = Filesystem::FILE_ERROR;
-
-		STREAMINGAPI file(QWORD);
-		STREAMINGAPI file(const String::string &);
-		STREAMINGAPI file(Streaming::file &&) noexcept;
-		STREAMINGAPI virtual ~file();
-		STREAMINGAPI Streaming::file &operator=(Streaming::file &&) noexcept;
-		STREAMINGAPI void read(void *, DWORD) override;
-		STREAMINGAPI virtual Streaming::file &operator>>(const Memory::string &);
-		STREAMINGAPI void write(const void *, DWORD) override;
-		STREAMINGAPI virtual Streaming::file &operator<<(const Memory::string &);
-		STREAMINGAPI void flush() override;
-		STREAMINGAPI QWORD available() override;
-		STREAMINGAPI virtual void seek(QWORD) const;
-		STREAMINGAPI virtual void close();
-	};
-	class format: public Streaming::file
+	class format: public Streaming::stream
 	{
 		private:
 		DWORD temporary = 0xFFFFFFFF;
 		public:
-		STREAMINGAPI format(QWORD);
+		Streaming::stream *stream;
+		STREAMINGAPI format(Streaming::stream *);
 		STREAMINGAPI void read(void *, DWORD) override;
+		STREAMINGAPI void write(const void *, DWORD) override;
+		STREAMINGAPI void flush() override;
+		STREAMINGAPI QWORD available() override;
+		STREAMINGAPI virtual Streaming::format &operator>>(const Memory::string &);
+		STREAMINGAPI virtual Streaming::format &operator<<(const Memory::string &);
 		STREAMINGAPI Streaming::format &operator>>(char &);
 		STREAMINGAPI Streaming::format &operator>>(int &);
 		STREAMINGAPI Streaming::format &operator>>(DWORD &);
@@ -66,8 +52,6 @@ namespace Streaming
 		STREAMINGAPI Streaming::format &operator<<(const String::string &);
 		STREAMINGAPI Streaming::format &operator<<(void (*)(Streaming::stream *));
 	};
-	extern STREAMINGAPI Streaming::format cin;
-	extern STREAMINGAPI Streaming::format cout;
 	STREAMINGAPI void LF(Streaming::stream *);
 }
 

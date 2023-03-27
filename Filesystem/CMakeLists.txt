@@ -5,6 +5,7 @@ include_directories(
 	../Memory/include
 	../Exception/include
 	../String/include
+	../Streaming/include
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)
@@ -15,4 +16,5 @@ target_link_libraries(Filesystem PUBLIC
 	Memory
 	String
 	Exception
+	Streaming
 )
