@@ -34,8 +34,9 @@ constexpr DWORD MD4H(DWORD X, DWORD Y, DWORD Z)
 {
 	return X ^ Y ^ Z;
 }
-void CalculateMD4(const BYTE *X, DWORD ABCD[4])
+void CalculateMD4(BYTE *X, BYTE *dig)
 {
+	DWORD *ABCD = (DWORD *) dig;
 	DWORD AA = ABCD[0];
 	DWORD BB = ABCD[1];
 	DWORD CC = ABCD[2];
@@ -58,45 +59,16 @@ void CalculateMD4(const BYTE *X, DWORD ABCD[4])
 	ABCD[3] += DD;
 }
 
-void Crypto::MD4::update(const void *b, QWORD len)
+Crypto::MD4::MD4(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_32, 16, &CalculateMD4)
 {
-	this->length += len << 3;
-	const char *buf = (const char *) b;
-	while (len)
-	{
-		QWORD copy = 64 - this->position;
-		copy = len < copy ? len : copy;
-		Memory::copy(this->block + this->position, buf, copy);
-		buf += copy;
-		this->position += copy;
-		len -= copy;
-		if (this->position >= 64)
-		{
-			this->position = 0;
-			CalculateMD4(this->block, this->ABCD);
-		}
-	}
+	DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
+	Memory::copy(this->digest.address, ABCD, this->digest.length);
 }
-Memory::string Crypto::MD4::value() const
+bool Crypto::MD4::appendix(Memory::string &block, QWORD &position)
 {
-	DWORD abcd[4] = {this->ABCD[0], this->ABCD[1], this->ABCD[2], this->ABCD[3]};
-	BYTE blk[64];
-	QWORD pos = this->position;
-	Memory::copy(blk, this->block, pos);
-	blk[pos++] = 0x80;
-	if (64 - pos < 8)
-	{
-		Memory::fill(blk + pos, 0, 64 - pos);
-		CalculateMD4(blk, abcd);
-		pos = 0;
-	}
-	Memory::fill(blk + pos, 0, 56 - pos);
-	Memory::copy(blk + 56, &this->length, 8);
-	CalculateMD4(blk, abcd);
-	Memory::string output(16);
-	SaveAsLEndian(abcd[0], 4, output.address + 0x0);
-	SaveAsLEndian(abcd[1], 4, output.address + 0x4);
-	SaveAsLEndian(abcd[2], 4, output.address + 0x8);
-	SaveAsLEndian(abcd[3], 4, output.address + 0xC);
-	return output;
+	return Appendix32(this->length, block, position, &SaveAsLEndian);
+}
+void Crypto::MD4::transform(Memory::string &digest)
+{
+	Transform32(digest, &SaveAsLEndian);
 }

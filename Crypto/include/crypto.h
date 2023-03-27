@@ -53,38 +53,44 @@ namespace Crypto
 		CRYPTOAPI void update(const void *, QWORD);
 		CRYPTOAPI QWORD value() const;
 	};
-	class MD4
+	class MessageDigest
 	{
-		private:
-		DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
-		BYTE block[64] = {0};
+		protected:
+		Memory::string block;
 		QWORD position = 0;
+		Memory::string digest;
 		QWORD length = 0;
+		void (*computation)(BYTE *, BYTE *);
 		public:
-		CRYPTOAPI void update(const void *, QWORD);
-		CRYPTOAPI Memory::string value() const;
+		static const DWORD BLOCK_SIZE_32 = 64;
+		static const DWORD BLOCK_SIZE_64 = 128;
+		CRYPTOAPI MessageDigest(QWORD, QWORD, void (*)(BYTE *, BYTE *));
+		CRYPTOAPI virtual bool appendix(Memory::string &, QWORD &) = 0;
+		CRYPTOAPI virtual void transform(Memory::string &) = 0;
+		CRYPTOAPI virtual void update(const void *, QWORD);
+		CRYPTOAPI virtual Memory::string value();
+
 	};
-	class MD5
+	class MD4: public MessageDigest
 	{
-		private:
-		DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
-		BYTE block[64] = {0};
-		QWORD position = 0;
-		QWORD length = 0;
 		public:
-		CRYPTOAPI void update(const void *, QWORD);
-		CRYPTOAPI Memory::string value() const;
+		CRYPTOAPI MD4();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
 	};
-	class SHA1
+	class MD5: public MessageDigest
 	{
-		private:
-		DWORD H[5] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0};
-		BYTE block[64] = {0};
-		QWORD position = 0;
-		QWORD length = 0;
 		public:
-		CRYPTOAPI void update(const void *, QWORD);
-		CRYPTOAPI Memory::string value() const;
+		CRYPTOAPI MD5();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+	};
+	class SHA1: public MessageDigest
+	{
+		public:
+		CRYPTOAPI SHA1();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
 	};
 }
 

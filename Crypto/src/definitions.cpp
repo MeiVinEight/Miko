@@ -41,11 +41,41 @@ void SaveAsBEndian(QWORD x, BYTE n, void *p)
 		x >>= 8;
 	}
 }
-QWORD ROTL(QWORD X, BYTE n)
+bool Appendix32(QWORD length, Memory::string &block, QWORD &position, void (*save)(QWORD, BYTE, void *))
 {
-	return (X << n) | (X >> (32 - n));
+	if (block.length - position < 8)
+	{
+		Memory::fill(block.address + position, 0, block.length - position);
+		position = 0;
+		return true;
+	}
+	Memory::fill(block.address + position, 0, block.length - 8 - position);
+	position = block.length - 8;
+	save(length, 8, block.address + position);
+	position += 8;
+	return false;
 }
-QWORD ROTR(QWORD X, BYTE n)
+void Transform32(Memory::string &digest, void (*save)(QWORD, BYTE, void *))
 {
-	return (X >> n) | (X << (32 - n));
+	DWORD *buf = (DWORD *) digest.address;
+	for (QWORD i = 0; i < digest.length >> 2; i++)
+	{
+		save(buf[i], 4, buf + i);
+	}
 }
+void TransformLE32(Memory::string &digest)
+{
+	DWORD *buf = (DWORD *) digest.address;
+	for (QWORD i = 0; i < digest.length >> 2; i++)
+	{
+		SaveAsLEndian(buf[i], 4, buf + i);
+	}
+}
+QWORD ROTL(QWORD X, BYTE n) { return (X << n) | (X >> (32 - n)); }
+QWORD ROTR(QWORD X, BYTE n) { return (X >> n) | (X << (32 - n)); }
+QWORD Ch(QWORD x, QWORD y, QWORD z) { return (x & y) ^ (~x & z); }
+QWORD Maj(QWORD x, QWORD y, QWORD z) { return (x & y) ^ (x & z) ^ (y & z); }
+QWORD SIGMA0256(QWORD x) { return ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22); }
+QWORD SIGMA1256(QWORD x) { return ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25); }
+QWORD Sigma0256(QWORD x) { return ROTR(x, 7) ^ ROTR(x, 18) ^ ROTR(x, 3); }
+QWORD Sigma1256(QWORD x) { return ROTR(x, 17) ^ ROTR(x, 19) ^ ROTR(x, 10); }

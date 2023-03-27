@@ -20,8 +20,9 @@ DWORD SHA1F3(DWORD A, DWORD B, DWORD C)
 {
 	return (A & B) | (A & C) | (B & C);
 }
-void CalculateSHA1(DWORD H[5], const BYTE *block)
+void CalculateSHA1(BYTE *block, BYTE *digest)
 {
+	DWORD *H = (DWORD *) digest;
 	static DWORD (*(func[4]))(DWORD, DWORD, DWORD) = {SHA1F1, SHA1F2, SHA1F3, SHA1F2};
 	DWORD W[80];
 	DWORD A = H[0];
@@ -50,47 +51,16 @@ void CalculateSHA1(DWORD H[5], const BYTE *block)
 	H[4] += E;
 }
 
-void Crypto::SHA1::update(const void *b, QWORD len)
+Crypto::SHA1::SHA1(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_32, 20, &CalculateSHA1)
 {
-	this->length += len << 3;
-	const BYTE *buf = (const BYTE *) b;
-	while (len)
-	{
-		QWORD copy = 64 - this->position;
-		copy = copy < len ? copy : len;
-		Memory::copy(this->block + this->position, buf, copy);
-		buf += copy;
-		this->position += copy;
-		len -= copy;
-		if (this->position >= 64)
-		{
-			this->position = 0;
-			CalculateSHA1(this->H, this->block);
-		}
-	}
+	DWORD H[5] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0};
+	Memory::copy(this->digest.address, H, this->digest.length);
 }
-Memory::string Crypto::SHA1::value() const
+bool Crypto::SHA1::appendix(Memory::string &block, QWORD &position)
 {
-	DWORD h[5] = {this->H[0], this->H[1], this->H[2], this->H[3], this->H[4]};
-	BYTE blk[64];
-	QWORD pos = this->position;
-	Memory::copy(blk, this->block, pos);
-	blk[pos++] = 0x80;
-	if (64 - pos < 8)
-	{
-		Memory::fill(blk + pos, 0, 64 - pos);
-		CalculateSHA1(h, blk);
-		pos = 0;
-	}
-	Memory::fill(blk +pos, 0, 56 - pos);
-	SaveAsBEndian((this->length >> 32) & 0xFFFFFFFFU, 4, blk + 56);
-	SaveAsBEndian((this->length >>  0) & 0xFFFFFFFFU, 4, blk + 60);
-	CalculateSHA1(h, blk);
-	Memory::string output(20);
-	SaveAsBEndian(h[0], 4, output.address + 0x00);
-	SaveAsBEndian(h[1], 4, output.address + 0x04);
-	SaveAsBEndian(h[2], 4, output.address + 0x08);
-	SaveAsBEndian(h[3], 4, output.address + 0x0C);
-	SaveAsBEndian(h[4], 4, output.address + 0x10);
-	return output;
+	return Appendix32(this->length, block, position, &SaveAsBEndian);
+}
+void Crypto::SHA1::transform(Memory::string &digest)
+{
+	Transform32(digest, &SaveAsBEndian);
 }
