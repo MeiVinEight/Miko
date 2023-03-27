@@ -33,6 +33,8 @@ namespace Memory
 	MEMORYAPI
 	bool compare(const void *, const void *, QWORD);
 	MEMORYAPI
+	void reverse(void *, QWORD);
+	MEMORYAPI
 	void violation();
 
 	class string
@@ -59,6 +61,7 @@ namespace Memory
 		MEMORYAPI
 		void resize(QWORD);
 	};
+	// TODO Memory order
 
 	extern MEMORYAPI const BYTE BENDIAN;
 	extern MEMORYAPI const BYTE LENDIAN;
