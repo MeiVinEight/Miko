@@ -3,13 +3,16 @@
 #include <crypto.h>
 #include <filesystem.h>
 #include <exception.h>
+#include <timestamp.h>
 
 void func()
 {
-	String::string text = "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F";
-	Cryptography::SHA512 digest;
-	digest.update(text.address.address, text.length());
-	Streaming::cout << Hexadecimal::format(digest.finally());
+	Cryptography::MersenneTwister mt;
+	mt.seed(Timestamp::current());
+	for (int i = 0; i < 20; i++)
+	{
+		Streaming::cout << mt.random(10) << Streaming::LF;
+	}
 }
 
 int main()

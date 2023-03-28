@@ -120,6 +120,37 @@ namespace Cryptography
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
+	class MersenneTwister
+	{
+		private:
+		static const int W = 64;
+		static const int N = 312;
+		static const int M = 156;
+		static const int R = 31;
+		static const int U = 29;
+		static const int S = 17;
+		static const int T = 37;
+		static const int L = 43;
+		static const QWORD A = 0XB5026F5AA96619E9ULL;
+		static const QWORD F = 0X5851F42D4C957F2DULL;
+		static const QWORD D = 0X5555555555555555ULL;
+		static const QWORD B = 0X71D67FFFEDA60000ULL;
+		static const QWORD C = 0XFFF7EEE000000000ULL;
+		static const QWORD LOWER_MASK = (1ULL << R) - 1;
+		static const QWORD UPPER_MASK = (~LOWER_MASK);
+		QWORD MT[N]{0};
+		QWORD K = 0;
+		public:
+		CRYPTOAPI void seed(QWORD);
+		CRYPTOAPI void twist();
+		CRYPTOAPI QWORD random();
+		/**
+		* @param max
+		*
+		* Generate random number in [0, max - 1]
+		*/
+		CRYPTOAPI QWORD random(QWORD);
+	};
 }
 
 #endif //CRYPTO_H
