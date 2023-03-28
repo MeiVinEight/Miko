@@ -35,12 +35,12 @@ void CalculateSHA1(BYTE *block, BYTE *digest)
 		W[t] = GetAsBEndian(4, block + 4 * (t & 0xF));
 		if (t > 15)
 		{
-			W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+			W[t] = ROTL32(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
 		}
-		DWORD TEMP = ROTL(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1K[t / 20];
+		DWORD TEMP = ROTL32(A, 5) + func[t / 20](B, C, D) + E + W[t] + SHA1K[t / 20];
 		E = D;
 		D = C;
-		C = ROTL(B, 30);
+		C = ROTL32(B, 30);
 		B = A;
 		A = TEMP;
 	}

@@ -62,8 +62,8 @@ namespace Crypto
 		QWORD length = 0;
 		void (*computation)(BYTE *, BYTE *);
 		public:
-		static const DWORD BLOCK_SIZE_32 = 64;
-		static const DWORD BLOCK_SIZE_64 = 128;
+		static const DWORD BLOCK_SIZE_32 = 0x40;
+		static const DWORD BLOCK_SIZE_64 = 0x80;
 		CRYPTOAPI MessageDigest(QWORD, QWORD, void (*)(BYTE *, BYTE *));
 		CRYPTOAPI virtual bool appendix(Memory::string &, QWORD &) = 0;
 		CRYPTOAPI virtual void transform(Memory::string &) = 0;
@@ -103,6 +103,20 @@ namespace Crypto
 	{
 		public:
 		CRYPTOAPI SHA256();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+	};
+	class SHA384: public MessageDigest
+	{
+		public:
+		CRYPTOAPI SHA384();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+	};
+	class SHA512: public MessageDigest
+	{
+		public:
+		CRYPTOAPI SHA512();
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};

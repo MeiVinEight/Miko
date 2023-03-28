@@ -75,7 +75,7 @@ void CalculateMD5(BYTE *X, BYTE *digest)
 			ABCD[(idx + 0) % 4] += func[i](ABCD[(idx + 1) % 4], ABCD[(idx + 2) % 4], ABCD[(idx + 3) % 4]);
 			ABCD[(idx + 0) % 4] += GetAsLEndian(4, X + (MD5K[i][j] << 2));
 			ABCD[(idx + 0) % 4] += MD5T[i * 16 + j];
-			ABCD[(idx + 0) % 4] = ROTL(ABCD[(idx + 0) % 4], MD5S[i][j & 0x3]);
+			ABCD[(idx + 0) % 4] = ROTL32(ABCD[(idx + 0) % 4], MD5S[i][j & 0x3]);
 			ABCD[(idx + 0) % 4] += ABCD[(idx + 1) % 4];
 		}
 	}

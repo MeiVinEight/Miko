@@ -12,5 +12,5 @@ bool Crypto::SHA224::appendix(Memory::string &block, QWORD &position)
 void Crypto::SHA224::transform(Memory::string &digest)
 {
 	Transform32(digest, &SaveAsBEndian);
-	digest.resize(224 >> 3);
+	digest.resize(28);
 }
