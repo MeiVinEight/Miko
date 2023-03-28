@@ -68,7 +68,7 @@ namespace Cryptography
 		CRYPTOAPI virtual bool appendix(Memory::string &, QWORD &) = 0;
 		CRYPTOAPI virtual void transform(Memory::string &) = 0;
 		CRYPTOAPI virtual void update(const void *, QWORD);
-		CRYPTOAPI virtual Memory::string value();
+		CRYPTOAPI virtual Memory::string finally();
 
 	};
 	class MD4: public MessageDigest

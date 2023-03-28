@@ -23,7 +23,7 @@ void Cryptography::MessageDigest::update(const void *data, QWORD len)
 		}
 	}
 }
-Memory::string Cryptography::MessageDigest::value()
+Memory::string Cryptography::MessageDigest::finally()
 {
 	Memory::string dig = this->digest;
 	Memory::string blk = this->block;
