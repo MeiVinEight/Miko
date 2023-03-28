@@ -21,5 +21,5 @@ aux_source_directory(src WST_SOURCE)
 
 add_executable(WST ${WST_SOURCE})
 target_link_libraries(WST
-	Timestamp String Exception Filesystem WSA CWS HTTP Compression JSON Streaming Crypto
+	Timestamp String Exception Filesystem WSA CWS HTTP Compression JSON Streaming Cryptography
 )
