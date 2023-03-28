@@ -59,16 +59,16 @@ void CalculateMD4(BYTE *X, BYTE *dig)
 	ABCD[3] += DD;
 }
 
-Crypto::MD4::MD4(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_32, 16, &CalculateMD4)
+Cryptography::MD4::MD4(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_32, 16, &CalculateMD4)
 {
 	DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
 	Memory::copy(this->digest.address, ABCD, this->digest.length);
 }
-bool Crypto::MD4::appendix(Memory::string &block, QWORD &position)
+bool Cryptography::MD4::appendix(Memory::string &block, QWORD &position)
 {
 	return Appendix32(this->length, block, position, &SaveAsLEndian);
 }
-void Crypto::MD4::transform(Memory::string &digest)
+void Cryptography::MD4::transform(Memory::string &digest)
 {
 	Transform32(digest, &SaveAsLEndian);
 }

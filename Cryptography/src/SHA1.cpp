@@ -51,16 +51,16 @@ void CalculateSHA1(BYTE *block, BYTE *digest)
 	H[4] += E;
 }
 
-Crypto::SHA1::SHA1(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_32, 20, &CalculateSHA1)
+Cryptography::SHA1::SHA1(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_32, 20, &CalculateSHA1)
 {
 	DWORD H[5] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0};
 	Memory::copy(this->digest.address, H, this->digest.length);
 }
-bool Crypto::SHA1::appendix(Memory::string &block, QWORD &position)
+bool Cryptography::SHA1::appendix(Memory::string &block, QWORD &position)
 {
 	return Appendix32(this->length, block, position, &SaveAsBEndian);
 }
-void Crypto::SHA1::transform(Memory::string &digest)
+void Cryptography::SHA1::transform(Memory::string &digest)
 {
 	Transform32(digest, &SaveAsBEndian);
 }

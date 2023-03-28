@@ -1,6 +1,6 @@
 #include "SHA512.h"
 
-Crypto::SHA384::SHA384(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
+Cryptography::SHA384::SHA384(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
 {
 	QWORD H[8] = {
 		0xcbbb9d5dc1059ed8,
@@ -14,11 +14,11 @@ Crypto::SHA384::SHA384(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_64, 64
 	};
 	Memory::copy(this->digest.address, H, this->digest.length);
 }
-bool Crypto::SHA384::appendix(Memory::string &block, QWORD &position)
+bool Cryptography::SHA384::appendix(Memory::string &block, QWORD &position)
 {
 	return Appendix64(this->length, block, position, &SaveAsBEndian);
 }
-void Crypto::SHA384::transform(Memory::string &digest)
+void Cryptography::SHA384::transform(Memory::string &digest)
 {
 	Transform64(digest, &SaveAsBEndian);
 	digest.resize(48);

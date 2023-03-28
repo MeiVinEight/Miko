@@ -85,16 +85,16 @@ void CalculateMD5(BYTE *X, BYTE *digest)
 	ABCD[3] += DD;
 }
 
-Crypto::MD5::MD5(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_32, 16, &CalculateMD5)
+Cryptography::MD5::MD5(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_32, 16, &CalculateMD5)
 {
 	DWORD ABCD[4] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
 	Memory::copy(this->digest.address, ABCD, this->digest.length);
 }
-bool Crypto::MD5::appendix(Memory::string &block, QWORD &position)
+bool Cryptography::MD5::appendix(Memory::string &block, QWORD &position)
 {
 	return Appendix32(this->length, block, position, &SaveAsLEndian);
 }
-void Crypto::MD5::transform(Memory::string &digest)
+void Cryptography::MD5::transform(Memory::string &digest)
 {
 	Transform32(digest, &SaveAsLEndian);
 }

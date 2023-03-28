@@ -49,10 +49,10 @@ BYTE REF(BYTE x)
 	}
 	return y;
 }
-Crypto::CRC::CRC(BYTE algorithm): type(algorithm), crc(ARGUMENT[algorithm][INIT])
+Cryptography::CRC::CRC(BYTE algorithm): type(algorithm), crc(ARGUMENT[algorithm][INIT])
 {
 }
-void Crypto::CRC::update(const void *b, QWORD length)
+void Cryptography::CRC::update(const void *b, QWORD length)
 {
 	const char *buf = (const char *) b;
 	for (QWORD i = 0; i < length; i++)
@@ -70,7 +70,7 @@ void Crypto::CRC::update(const void *b, QWORD length)
 		}
 	}
 }
-QWORD Crypto::CRC::value() const
+QWORD Cryptography::CRC::value() const
 {
 	QWORD res = this->crc;
 	if (ARGUMENT[this->type][REFO])

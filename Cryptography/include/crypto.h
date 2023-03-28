@@ -9,7 +9,7 @@
 
 #include <memory.h>
 
-namespace Crypto
+namespace Cryptography
 {
 	namespace BASE64
 	{

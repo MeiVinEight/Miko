@@ -80,7 +80,7 @@ BYTE B64[64] = {
 	'4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-Memory::string Crypto::BASE64::encode(const Memory::string &data)
+Memory::string Cryptography::BASE64::encode(const Memory::string &data)
 {
 	QWORD length = (data.length / 3) + !!(data.length % 3);
 	length <<= 2;
@@ -134,7 +134,7 @@ Memory::string Crypto::BASE64::encode(const Memory::string &data)
 	Memory::fill(output.address + i, '=', padding);
 	return output;
 }
-Memory::string Crypto::BASE64::decode(const Memory::string &data)
+Memory::string Cryptography::BASE64::decode(const Memory::string &data)
 {
 	if (data.length & 3)
 	{

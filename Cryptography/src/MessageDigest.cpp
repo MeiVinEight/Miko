@@ -1,10 +1,10 @@
 #include "definitions.h"
 
-Crypto::MessageDigest::MessageDigest(QWORD block, QWORD digest, void (*computation)(BYTE *, BYTE *)):
+Cryptography::MessageDigest::MessageDigest(QWORD block, QWORD digest, void (*computation)(BYTE *, BYTE *)):
 block(block), digest(digest), computation(computation)
 {
 }
-void Crypto::MessageDigest::update(const void *data, QWORD len)
+void Cryptography::MessageDigest::update(const void *data, QWORD len)
 {
 	this->length += len << 3;
 	const char *buf = (const char *) data;
@@ -23,7 +23,7 @@ void Crypto::MessageDigest::update(const void *data, QWORD len)
 		}
 	}
 }
-Memory::string Crypto::MessageDigest::value()
+Memory::string Cryptography::MessageDigest::value()
 {
 	Memory::string dig = this->digest;
 	Memory::string blk = this->block;

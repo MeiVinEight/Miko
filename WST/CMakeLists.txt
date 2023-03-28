@@ -13,7 +13,7 @@ include_directories(
 	../Compression/include
 	../JSON/include
 	../Streaming/include
-	../Crypto/include
+	../Cryptography/include
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)

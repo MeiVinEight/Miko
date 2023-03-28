@@ -63,7 +63,7 @@ void CalculateSHA512(BYTE *block, BYTE *digest)
 	HH[7] += H;
 }
 
-Crypto::SHA512::SHA512(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
+Cryptography::SHA512::SHA512(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
 {
 	QWORD H[8] = {
 		0x6a09e667f3bcc908,
@@ -77,11 +77,11 @@ Crypto::SHA512::SHA512(): MessageDigest(Crypto::MessageDigest::BLOCK_SIZE_64, 64
 	};
 	Memory::copy(this->digest.address, H, this->digest.length);
 }
-bool Crypto::SHA512::appendix(Memory::string &block, QWORD &position)
+bool Cryptography::SHA512::appendix(Memory::string &block, QWORD &position)
 {
 	return Appendix64(this->length, block, position, &SaveAsBEndian);
 }
-void Crypto::SHA512::transform(Memory::string &digest)
+void Cryptography::SHA512::transform(Memory::string &digest)
 {
 	Transform64(digest, &SaveAsBEndian);
 }
