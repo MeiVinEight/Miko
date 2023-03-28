@@ -6,8 +6,8 @@
 
 void func()
 {
-	String::string text = "https://github.com/MeiVinEight/Miko/commit/f960fe9cb3f803d5ee9aef414e21aa2dc9ec48e0";
-	Crypto::SHA1 digest;
+	String::string text = "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F";
+	Crypto::SHA256 digest;
 	digest.update(text.address.address, text.length());
 	Streaming::cout << Hexadecimal::format(digest.value());
 }

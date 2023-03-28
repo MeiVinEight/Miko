@@ -92,6 +92,20 @@ namespace Crypto
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
+	class SHA224: public MessageDigest
+	{
+		public:
+		CRYPTOAPI SHA224();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+	};
+	class SHA256: public MessageDigest
+	{
+		public:
+		CRYPTOAPI SHA256();
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+	};
 }
 
 #endif //CRYPTO_H

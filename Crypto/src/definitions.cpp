@@ -77,5 +77,5 @@ QWORD Ch(QWORD x, QWORD y, QWORD z) { return (x & y) ^ (~x & z); }
 QWORD Maj(QWORD x, QWORD y, QWORD z) { return (x & y) ^ (x & z) ^ (y & z); }
 QWORD SIGMA0256(QWORD x) { return ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22); }
 QWORD SIGMA1256(QWORD x) { return ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25); }
-QWORD Sigma0256(QWORD x) { return ROTR(x, 7) ^ ROTR(x, 18) ^ ROTR(x, 3); }
-QWORD Sigma1256(QWORD x) { return ROTR(x, 17) ^ ROTR(x, 19) ^ ROTR(x, 10); }
+QWORD Sigma0256(QWORD x) { return ROTR(x, 7) ^ ROTR(x, 18) ^ (x >> 3); }
+QWORD Sigma1256(QWORD x) { return ROTR(x, 17) ^ ROTR(x, 19) ^ (x >> 10); }
