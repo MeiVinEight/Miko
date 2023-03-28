@@ -120,6 +120,9 @@ namespace Cryptography
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
+	/**
+	* MT19937-64 engine, generate random number in [0, 2<sup>64</sup>-1].
+	*/
 	class MersenneTwister
 	{
 		private:
@@ -147,7 +150,13 @@ namespace Cryptography
 		/**
 		* @param max
 		*
-		* Generate random number in [0, max - 1]
+		* Generate random number in [0, max - 1].
+		* <br/>
+		* Assume <code>r</code> is a random number in [0, 2<sup>64</sup>-1],
+		* this works looks like: <code>r * (max/2<sup>64</sup>)</code>.
+		* <br/>
+		* Make x as a 128-bit unsigned number, and x = r * max,
+		* finally, return x's highest 64 bits.
 		*/
 		CRYPTOAPI QWORD random(QWORD);
 	};
