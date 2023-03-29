@@ -4,7 +4,7 @@
 #ifdef WSA_SHARED
 	#define WSA_API __declspec(dllexport)
 #else
-	#define WSA_API
+	#define WSA_API __declspec(dllimport)
 #endif
 
 #include <streaming.h>
@@ -26,10 +26,8 @@ namespace WSA
 	class ServerSocket;
 	class Socket;
 
-	WSA_API
-	WSA::Address IP(LPCSTR host);
-	WSA_API
-	SOCKET socket();
+	WSA_API WSA::Address IP(LPCSTR host);
+	WSA_API SOCKET socket();
 
 	// TODO IPv6
 	class Address
@@ -37,12 +35,9 @@ namespace WSA
 		public:
 		BYTE address[4]{0};
 
-		WSA_API
-		DWORD make() const;
-		WSA_API
-		void take(DWORD);
-		WSA_API
-		Memory::string string() const;
+		WSA_API DWORD make() const;
+		WSA_API void take(DWORD);
+		WSA_API Memory::string string() const;
 	};
 	class SocketAddress
 	{
@@ -61,22 +56,14 @@ namespace WSA
 
 		ServerSocket(const WSA::ServerSocket &) = delete;
 		WSA::ServerSocket &operator=(const WSA::ServerSocket &) = delete;
-		WSA_API
-		ServerSocket();
-		WSA_API
-		ServerSocket(WSA::ServerSocket &&) noexcept;
-		WSA_API
-		~ServerSocket();
-		WSA_API
-		WSA::ServerSocket &operator=(WSA::ServerSocket &&) noexcept;
-		WSA_API
-		void bind(const WSA::SocketAddress &);
-		WSA_API
-		WSA::Socket accept() const;
-		WSA_API
-		BOOL opening() const;
-		WSA_API
-		void close();
+		WSA_API ServerSocket();
+		WSA_API ServerSocket(WSA::ServerSocket &&) noexcept;
+		WSA_API ~ServerSocket();
+		WSA_API WSA::ServerSocket &operator=(WSA::ServerSocket &&) noexcept;
+		WSA_API void bind(const WSA::SocketAddress &);
+		WSA_API WSA::Socket accept() const;
+		WSA_API BOOL opening() const;
+		WSA_API void close();
 	};
 
 	class Socket: public Streaming::stream
@@ -89,26 +76,16 @@ namespace WSA
 
 		Socket(const WSA::Socket &) = delete;
 		WSA::Socket &operator=(const WSA::Socket &) = delete;
-		WSA_API
-		Socket();
-		WSA_API
-		Socket(WSA::Socket &&) noexcept;
-		WSA_API
-		WSA::Socket &operator=(WSA::Socket &&) noexcept;
-		WSA_API
-		void connect(WSA::SocketAddress addr);
-		WSA_API
-		void read(void *, DWORD) override;
-		WSA_API
-		void write(const void *, DWORD) override;
-		WSA_API
-		void flush() override;
-		WSA_API
-		QWORD available() override;
-		WSA_API
-		BOOL opening() const;
-		WSA_API
-		void close();
+		WSA_API Socket();
+		WSA_API Socket(WSA::Socket &&) noexcept;
+		WSA_API WSA::Socket &operator=(WSA::Socket &&) noexcept;
+		WSA_API void connect(WSA::SocketAddress addr);
+		WSA_API void read(void *, DWORD) override;
+		WSA_API void write(const void *, DWORD) override;
+		WSA_API void flush() override;
+		WSA_API QWORD available() override;
+		WSA_API BOOL opening() const;
+		WSA_API void close();
 	};
 }
 

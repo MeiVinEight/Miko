@@ -33,37 +33,23 @@ namespace Filesystem
 	const static DWORD OF_PROMPT           = 0x00002000;
 	const static DWORD OF_EXIST            = 0x00004000;
 	const static DWORD OF_REOPEN           = 0x00008000;
-	extern FSAPI const QWORD STDIN;
-	extern FSAPI const QWORD STDOUT;
+	FSAPI extern const QWORD STDIN;
+	FSAPI extern const QWORD STDOUT;
 
-	FSAPI
-	bool create(const String::string &);
-	FSAPI
-	bool make(const String::string &);
-	FSAPI
-	bool remove(const String::string &);
-	FSAPI
-	bool exist(const String::string &);
-	FSAPI
-	bool file(const String::string &);
-	FSAPI
-	bool directory(const String::string &);
-	FSAPI
-	Memory::string parent(const String::string &);
-	FSAPI
-	Memory::string canonicalize(const String::string &);
-	FSAPI
-	QWORD open(const String::string &, DWORD);
-	FSAPI
-	void close(QWORD);
-	FSAPI
-	DWORD read(QWORD, void *, DWORD);
-	FSAPI
-	DWORD write(QWORD, const void *, DWORD);
-	FSAPI
-	void seek(QWORD, QWORD, DWORD);
-	FSAPI
-	void flush(QWORD);
+	FSAPI bool create(const String::string &);
+	FSAPI bool make(const String::string &);
+	FSAPI bool remove(const String::string &);
+	FSAPI bool exist(const String::string &);
+	FSAPI bool file(const String::string &);
+	FSAPI bool directory(const String::string &);
+	FSAPI Memory::string parent(const String::string &);
+	FSAPI Memory::string canonicalize(const String::string &);
+	FSAPI QWORD open(const String::string &, DWORD);
+	FSAPI void close(QWORD);
+	FSAPI DWORD read(QWORD, void *, DWORD);
+	FSAPI DWORD write(QWORD, const void *, DWORD);
+	FSAPI void seek(QWORD, QWORD, DWORD);
+	FSAPI void flush(QWORD);
 }
 
 namespace Streaming
@@ -87,10 +73,10 @@ namespace Streaming
 		FSAPI virtual void seek(QWORD) const;
 		FSAPI virtual void close();
 	};
-	extern FSAPI Streaming::file input;
-	extern FSAPI Streaming::file output;
-	extern FSAPI Streaming::format cin;
-	extern FSAPI Streaming::format cout;
+	FSAPI extern Streaming::file input;
+	FSAPI extern Streaming::file output;
+	FSAPI extern Streaming::format cin;
+	FSAPI extern Streaming::format cout;
 }
 
 #endif //FILESYSTEM_H

@@ -4,7 +4,7 @@
 #ifdef COMPRESSION_SHARED
 	#define COMPRESSIONAPI __declspec(dllexport)
 #else
-	#define COMPRESSIONAPI
+	#define COMPRESSIONAPI __declspec(dllimport)
 #endif
 
 #include <memory.h>
@@ -18,24 +18,17 @@ namespace Compression
 		QWORD position = 0;
 
 		NibbleReader() = delete;
-		COMPRESSIONAPI
-		NibbleReader(Memory::string);
-		COMPRESSIONAPI
-		QWORD read(BYTE);
-		COMPRESSIONAPI
-		BYTE boundary();
-		COMPRESSIONAPI
-		void seek(QWORD);
-		COMPRESSIONAPI
-		void skip(QWORD);
+		COMPRESSIONAPI NibbleReader(Memory::string);
+		COMPRESSIONAPI QWORD read(BYTE);
+		COMPRESSIONAPI BYTE boundary();
+		COMPRESSIONAPI void seek(QWORD);
+		COMPRESSIONAPI void skip(QWORD);
 	};
 
 	namespace Brotli
 	{
-		COMPRESSIONAPI
-		Memory::string encoding(const Memory::string &);
-		COMPRESSIONAPI
-		Memory::string decoding(const Memory::string &);
+		COMPRESSIONAPI Memory::string encoding(const Memory::string &);
+		COMPRESSIONAPI Memory::string decoding(const Memory::string &);
 	}
 }
 

@@ -4,7 +4,7 @@
 #ifdef TIMESTAMP_SHARED
 	#define TIMEAPI __declspec(dllexport)
 #else
-	#define TIMEAPI
+	#define TIMEAPI __declspec(dllimport)
 #endif
 
 // TODO use common type definitions
@@ -25,8 +25,7 @@ namespace Timestamp
 	 * This function will convert this value to millis since
 	 * 00:00:00 A.M. January 1, 1970 (1970/01/01 00:00:00)
 	 */
-	TIMEAPI
-	QWORD current();
+	TIMEAPI QWORD current();
 
 	class calender
 	{
@@ -41,12 +40,9 @@ namespace Timestamp
 		static const WORD MILLISECOND	= 7;
 		WORD zone[8]{0};
 
-		TIMEAPI
-		void convert();
-		TIMEAPI
-		void convert(QWORD);
-		TIMEAPI
-		WORD &operator[](WORD);
+		TIMEAPI void convert();
+		TIMEAPI void convert(QWORD);
+		TIMEAPI WORD &operator[](WORD);
 	};
 }
 

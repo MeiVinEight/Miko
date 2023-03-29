@@ -4,7 +4,7 @@
 #ifdef EXCEPTION_SHARED
 	#define EXCEPTIONAPI __declspec(dllexport)
 #else
-	#define EXCEPTIONAPI
+	#define EXCEPTIONAPI __declspec(dllimport)
 #endif
 
 #include <memory.h>
@@ -12,8 +12,7 @@
 
 namespace Exception
 {
-	EXCEPTIONAPI
-	String::string message(DWORD);
+	EXCEPTIONAPI String::string message(DWORD);
 
 	class exception
 	{
@@ -28,35 +27,23 @@ namespace Exception
 			String::string library = Memory::string(0);
 
 			frame() = delete;
-			EXCEPTIONAPI
-			frame(void *);
-			EXCEPTIONAPI
-			frame(const Exception::exception::frame &);
-			EXCEPTIONAPI
-			frame(Exception::exception::frame &&) noexcept;
-			EXCEPTIONAPI
-			~frame();
-			EXCEPTIONAPI
-			Exception::exception::frame &operator=(const Exception::exception::frame&);
-			EXCEPTIONAPI
-			Exception::exception::frame &operator=(Exception::exception::frame &&) noexcept;
+			EXCEPTIONAPI frame(void *);
+			EXCEPTIONAPI frame(const Exception::exception::frame &);
+			EXCEPTIONAPI frame(Exception::exception::frame &&) noexcept;
+			EXCEPTIONAPI ~frame();
+			EXCEPTIONAPI Exception::exception::frame &operator=(const Exception::exception::frame&);
+			EXCEPTIONAPI Exception::exception::frame &operator=(Exception::exception::frame &&) noexcept;
 		};
 
 		Exception::exception::frame *stack = nullptr;
 		DWORD count = 0;
 		String::string message;
-		EXCEPTIONAPI
-		exception(String::string);
-		EXCEPTIONAPI
-		exception(const Exception::exception &);
-		EXCEPTIONAPI
-		exception(Exception::exception &&) noexcept;
-		EXCEPTIONAPI
-		~exception();
-		EXCEPTIONAPI
-		Exception::exception &operator=(const Exception::exception &);
-		EXCEPTIONAPI
-		Exception::exception &operator=(Exception::exception &&) noexcept;
+		EXCEPTIONAPI exception(String::string);
+		EXCEPTIONAPI exception(const Exception::exception &);
+		EXCEPTIONAPI exception(Exception::exception &&) noexcept;
+		EXCEPTIONAPI ~exception();
+		EXCEPTIONAPI Exception::exception &operator=(const Exception::exception &);
+		EXCEPTIONAPI Exception::exception &operator=(Exception::exception &&) noexcept;
 	};
 }
 
