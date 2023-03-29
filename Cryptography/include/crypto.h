@@ -120,6 +120,7 @@ namespace Cryptography
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
+	// TODO SHA512/224 SHA512/256 SHA3
 	/**
 	* MT19937-64 engine, generate random number in [0, 2<sup>64</sup>-1].
 	*/
@@ -141,7 +142,7 @@ namespace Cryptography
 		static const QWORD C = 0XFFF7EEE000000000ULL;
 		static const QWORD LOWER_MASK = (1ULL << R) - 1;
 		static const QWORD UPPER_MASK = (~LOWER_MASK);
-		QWORD MT[N]{0};
+		QWORD MT[Cryptography::MersenneTwister::N]{0};
 		QWORD K = 0;
 		public:
 		CRYPTOAPI void seed(QWORD);
