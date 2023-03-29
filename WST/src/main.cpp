@@ -7,12 +7,9 @@
 
 void func()
 {
-	Cryptography::MersenneTwister mt;
-	mt.seed(Timestamp::current());
-	for (int i = 0; i < 20; i++)
-	{
-		Streaming::cout << mt.random(10) << Streaming::LF;
-	}
+	String::string base64 = "x3JJHMbDL1EzLkh9GBhXDw==";
+	Memory::string data = Cryptography::BASE64::decode(base64.address);
+	Streaming::cout << data.length;
 }
 
 int main()

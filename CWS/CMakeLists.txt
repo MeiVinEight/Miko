@@ -9,6 +9,8 @@ include_directories(
 	../Streaming/include
 	../WSA/include
 	../HTTP/include
+	../Cryptography/include
+	../Timestamp/include
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)
@@ -19,4 +21,6 @@ target_link_libraries(CWS PUBLIC
 	WSA
 	HTTP
 	Exception
+	Cryptography
+	Timestamp
 )

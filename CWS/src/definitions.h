@@ -4,5 +4,7 @@
 #define CWS_SHARED
 #include <cws.h>
 #include <exception.h>
+#include <crypto.h>
+#include <timestamp.h>
 
 #endif //CWSDEF_H

@@ -2,9 +2,9 @@
 #define HTTP_H
 
 #ifdef HTTP_SHARED
-	#define HTTP_API __declspec(dllexport)
+	#define HTTPAPI __declspec(dllexport)
 #else
-	#define HTTP_API
+	#define HTTPAPI __declspec(dllimport)
 #endif
 
 #include <memory.h>
@@ -13,25 +13,23 @@
 
 namespace HTTP
 {
-	const WORD RM_GET		= 1;
-	const WORD RM_HEAD		= 2;
-	const WORD RM_POST		= 3;
-	const WORD RM_PUT		= 4;
-	const WORD RM_DELETE	= 5;
-	const WORD RM_CONNECT	= 6;
-	const WORD RM_OPTIONS	= 7;
-	const WORD RM_TRACE		= 8;
-	const WORD RM_PATCH		= 9;
+	HTTPAPI extern const WORD RM_GET;
+	HTTPAPI extern const WORD RM_HEAD;
+	HTTPAPI extern const WORD RM_POST;
+	HTTPAPI extern const WORD RM_PUT;
+	HTTPAPI extern const WORD RM_DELETE;
+	HTTPAPI extern const WORD RM_CONNECT;
+	HTTPAPI extern const WORD RM_OPTIONS;
+	HTTPAPI extern const WORD RM_TRACE;
+	HTTPAPI extern const WORD RM_PATCH;
 
-	const WORD HV_0_9		= ((0 << 8) | 9);
-	const WORD HV_1_0		= ((1 << 8) | 0);
-	const WORD HV_1_1		= ((1 << 8) | 1);
-	const WORD HV_2_0		= ((2 << 8) | 0);
+	HTTPAPI extern const WORD HV_0_9;
+	HTTPAPI extern const WORD HV_1_0;
+	HTTPAPI extern const WORD HV_1_1;
+	HTTPAPI extern const WORD HV_2_0;
 
-	HTTP_API
-	String::string method(WORD);
-	HTTP_API
-	String::string status(WORD);
+	HTTPAPI String::string method(WORD);
+	HTTPAPI String::string status(WORD);
 
 	class Message
 	{
@@ -44,24 +42,15 @@ namespace HTTP
 		QWORD length = 0;
 		Memory::string content = Memory::string(0);
 
-		HTTP_API
-		Message();
-		HTTP_API
-		Message(const HTTP::Message &);
-		HTTP_API
-		Message(HTTP::Message &&) noexcept;
-		HTTP_API
-		~Message();
-		HTTP_API
-		HTTP::Message &operator=(const HTTP::Message &);
-		HTTP_API
-		HTTP::Message &operator=(HTTP::Message &&) noexcept;
-		HTTP_API
-		String::string &operator[](const String::string &);
-		HTTP_API
-		String::string *operator[](QWORD) const;
-		HTTP_API
-		bool contain(const String::string &) const;
+		HTTPAPI Message();
+		HTTPAPI Message(const HTTP::Message &);
+		HTTPAPI Message(HTTP::Message &&) noexcept;
+		HTTPAPI ~Message();
+		HTTPAPI HTTP::Message &operator=(const HTTP::Message &);
+		HTTPAPI HTTP::Message &operator=(HTTP::Message &&) noexcept;
+		HTTPAPI String::string &operator[](const String::string &);
+		HTTPAPI String::string *operator[](QWORD) const;
+		HTTPAPI bool contain(const String::string &) const;
 	};
 
 	class ConnectionManager
@@ -73,20 +62,13 @@ namespace HTTP
 		ConnectionManager(const HTTP::ConnectionManager &) = delete;
 		HTTP::ConnectionManager &operator=(const HTTP::ConnectionManager &) = delete;
 
-		HTTP_API
-		ConnectionManager(const WSA::SocketAddress &);
-		HTTP_API
-		ConnectionManager(HTTP::ConnectionManager &&) noexcept;
-		HTTP_API
-		~ConnectionManager();
-		HTTP_API
-		HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&) noexcept;
-		HTTP_API
-		void send(const HTTP::Message &);
-		HTTP_API
-		HTTP::Message accept();
-		HTTP_API
-		void close();
+		HTTPAPI ConnectionManager(const WSA::SocketAddress &);
+		HTTPAPI ConnectionManager(HTTP::ConnectionManager &&) noexcept;
+		HTTPAPI ~ConnectionManager();
+		HTTPAPI HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&) noexcept;
+		HTTPAPI void send(const HTTP::Message &);
+		HTTPAPI HTTP::Message accept();
+		HTTPAPI void close();
 	};
 }
 

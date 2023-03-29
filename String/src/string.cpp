@@ -47,6 +47,10 @@ bool String::string::operator==(const String::string &other) const
 	}
 	return true;
 }
+bool String::string::operator!=(const String::string &str) const
+{
+	return !((*this) == str);
+}
 char &String::string::operator[](QWORD idx) const
 {
 	return (char &)this->address[idx];

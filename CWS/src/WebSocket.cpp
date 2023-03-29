@@ -2,6 +2,8 @@
 
 CWS::WebSocket::WebSocket(const WSA::SocketAddress &endpoint, const String::string &URL): manager(endpoint)
 {
+	static const String::string secAppend = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
 	HTTP::Message msg;
 	msg.method = HTTP::RM_GET;
 	msg.URL = URL;
@@ -9,17 +11,27 @@ CWS::WebSocket::WebSocket(const WSA::SocketAddress &endpoint, const String::stri
 	msg["Host"] = endpoint.IP.string();
 	msg["Upgrade"] = "websocket";
 	msg["Connection"] = "Upgrade";
-	// TODO random b64 and crypto
-	msg["Sec-WebSocket-Key"] = "x3JJHMbDL1EzLkh9GBhXDw==";
+
+	// Random base64 key
+	Cryptography::MersenneTwister MT;
+	MT.seed(Timestamp::current());
+	Memory::string data(16);
+	*(((QWORD *) data.address) + 0) = MT.random();
+	*(((QWORD *) data.address) + 1) = MT.random();
+	this->key = Cryptography::BASE64::encode(data);
+	msg["Sec-WebSocket-Key"] = this->key;
+
+	// calculate Sec-WebSocket-Accept
+	String::string secKey = this->key + secAppend;
+	Cryptography::SHA1 sha1;
+	sha1.update(secKey.address.address, secKey.length());
+	this->verification = String::string(Cryptography::BASE64::encode(sha1.finally()));
+
+
 	msg["Sec-WebSocket-Protocol"] = "chat, superchat";
 	msg["Sec-WebSocket-Version"] = "13";
 	this->manager.send(msg);
-	msg = this->manager.accept();
-	if (msg.status != 101) // Switching Protocols
-	{
-		QWORD cl = msg.content.length;
-		throw Exception::exception(cl ? String::string(msg.content, cl) : HTTP::status(msg.status));
-	}
+	this->message = this->manager.accept();
 }
 
 CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept: manager((HTTP::ConnectionManager &&)move.manager)
@@ -29,6 +41,10 @@ CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept: manager((HTTP::Connec
 CWS::WebSocket::~WebSocket()
 {
 	this->manager.close();
+}
+bool CWS::WebSocket::alive()
+{
+	return this->connection().opening();
 }
 WSA::Socket &CWS::WebSocket::connection()
 {

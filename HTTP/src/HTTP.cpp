@@ -1,5 +1,19 @@
 #include "definitions.h"
 
+const WORD HTTP::RM_GET        = 1;
+const WORD HTTP::RM_HEAD       = 2;
+const WORD HTTP::RM_POST       = 3;
+const WORD HTTP::RM_PUT        = 4;
+const WORD HTTP::RM_DELETE     = 5;
+const WORD HTTP::RM_CONNECT    = 6;
+const WORD HTTP::RM_OPTIONS    = 7;
+const WORD HTTP::RM_TRACE      = 8;
+const WORD HTTP::RM_PATCH      = 9;
+const WORD HTTP::HV_0_9        = ((0 << 8) | 9);
+const WORD HTTP::HV_1_0        = ((1 << 8) | 0);
+const WORD HTTP::HV_1_1        = ((1 << 8) | 1);
+const WORD HTTP::HV_2_0        = ((2 << 8) | 0);
+
 String::string METHODS[] = {
 	"GET",
 	"HEAD",

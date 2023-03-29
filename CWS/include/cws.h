@@ -39,6 +39,9 @@ namespace CWS
 	{
 		public:
 		HTTP::ConnectionManager manager;
+		HTTP::Message message;
+		String::string key;
+		String::string verification;
 
 		WebSocket() = delete;
 		WebSocket(const WebSocket &) = delete;
@@ -50,6 +53,8 @@ namespace CWS
 		WebSocket(CWS::WebSocket &&) noexcept;
 		CWSAPI
 		~WebSocket();
+		CWSAPI
+		bool alive();
 		CWSAPI
 		WSA::Socket &connection();
 		CWSAPI
