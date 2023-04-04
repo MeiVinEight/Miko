@@ -1,6 +1,6 @@
 #include "Keccak.h"
 
-QWORD SHA3FUNCTIONS[4] = {224, 256, 384, 512};
+const QWORD SHA3FUNCTIONS[4] = {224, 256, 384, 512};
 
 Cryptography::SHA3::SHA3(BYTE type): Cryptography::MessageDigest::MessageDigest(200, 200, nullptr), function(type)
 {

@@ -3,6 +3,7 @@
 
 #include "definitions.h"
 
+void KeccakF(BYTE *);
 void SPONGE(BYTE *, const BYTE *);
 void PAD101(BYTE *, QWORD, QWORD &);
 

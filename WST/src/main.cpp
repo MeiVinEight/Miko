@@ -7,7 +7,7 @@
 void func()
 {
 	String::string text = "74D388250CBE63C03D8A2EDA83D03D2FA0220CC98F0DA3072D973F2374D388250CBE63C";
-	Cryptography::SHA3 md(Cryptography::SHA3::SHA512);
+	Cryptography::SHAKE md(Cryptography::SHAKE::SHAKE128, 127);
 	md.update(text.address.address, text.length());
 	Streaming::cout << Hexadecimal::format(md.finally());
 }

@@ -119,7 +119,7 @@ namespace Cryptography
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
-	// TODO SHA512/224 SHA512/256 SHA3
+	// TODO SHA512/224 SHA512/256
 	class SHA3: public MessageDigest
 	{
 		private:
@@ -130,6 +130,20 @@ namespace Cryptography
 		static const BYTE SHA384 = 2;
 		static const BYTE SHA512 = 3;
 		CRYPTOAPI SHA3(BYTE);
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+		CRYPTOAPI void update(const void *, QWORD) override;
+		CRYPTOAPI Memory::string finally() override;
+	};
+	class SHAKE: public MessageDigest
+	{
+		private:
+		const BYTE function;
+		public:
+		static const BYTE SHAKE128 = 0;
+		static const BYTE SHAKE256 = 1;
+		const QWORD size;
+		CRYPTOAPI SHAKE(BYTE, QWORD);
 		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
 		CRYPTOAPI void transform(Memory::string &) override;
 		CRYPTOAPI void update(const void *, QWORD) override;
