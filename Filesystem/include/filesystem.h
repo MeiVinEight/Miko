@@ -63,8 +63,8 @@ namespace Streaming
 		FSAPI file(const String::string &);
 		FSAPI file(Streaming::file &&) noexcept;
 		FSAPI virtual ~file();
-		FSAPI void read(void *, DWORD) override;
-		FSAPI void write(const void *, DWORD) override;
+		FSAPI DWORD read(void *, DWORD) override;
+		FSAPI DWORD write(const void *, DWORD) override;
 		FSAPI void flush() override;
 		FSAPI QWORD available() override;
 		FSAPI Streaming::file &operator=(Streaming::file &&) noexcept;

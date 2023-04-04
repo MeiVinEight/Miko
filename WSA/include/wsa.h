@@ -80,8 +80,8 @@ namespace WSA
 		WSA_API Socket(WSA::Socket &&) noexcept;
 		WSA_API WSA::Socket &operator=(WSA::Socket &&) noexcept;
 		WSA_API void connect(WSA::SocketAddress addr);
-		WSA_API void read(void *, DWORD) override;
-		WSA_API void write(const void *, DWORD) override;
+		WSA_API DWORD read(void *, DWORD) override;
+		WSA_API DWORD write(const void *, DWORD) override;
 		WSA_API void flush() override;
 		WSA_API QWORD available() override;
 		WSA_API BOOL opening() const;

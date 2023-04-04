@@ -3,8 +3,9 @@
 Streaming::format::format(Streaming::stream *stream): stream(stream)
 {
 }
-void Streaming::format::read(void *b, DWORD len)
+DWORD Streaming::format::read(void *b, DWORD len)
 {
+	DWORD readed = 0;
 	if (len)
 	{
 		char *buf = (char *) b;
@@ -13,14 +14,17 @@ void Streaming::format::read(void *b, DWORD len)
 			char temp = (char) (this->temporary & 0xFF);
 			Memory::copy(buf, &temp, 1);
 			len--;
+			buf++;
+			readed++;
 			this->temporary = 0xFFFFFFFF;
 		}
-		this->stream->read(buf, len);
+		readed += this->stream->read(buf, len);
 	}
+	return readed;
 }
-void Streaming::format::write(const void *b, DWORD len)
+DWORD Streaming::format::write(const void *b, DWORD len)
 {
-	this->stream->write(b, len);
+	return this->stream->write(b, len);
 }
 void Streaming::format::flush()
 {

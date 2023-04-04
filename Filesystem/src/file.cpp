@@ -24,22 +24,11 @@ Streaming::file &Streaming::file::operator=(Streaming::file &&move) noexcept
 	}
 	return *this;
 }
-void Streaming::file::read(void *b, DWORD len)
+DWORD Streaming::file::read(void *b, DWORD len)
 {
 	if (~this->object)
 	{
-		char *buf = (char *) b;
-		while (len)
-		{
-			DWORD readed = Filesystem::read(this->object, buf, len);
-			if (!readed)
-			{
-				throw Exception::exception("EOF");
-			}
-			buf += readed;
-			len -= readed;
-		}
-		return;
+		return Filesystem::read(this->object, (char *) b, len);
 	}
 	throw Exception::exception("File closed");
 }
@@ -48,18 +37,11 @@ Streaming::file &Streaming::file::operator>>(const Memory::string &str)
 	this->read(str.address, str.length);
 	return *this;
 }
-void Streaming::file::write(const void *b, DWORD len)
+DWORD Streaming::file::write(const void *b, DWORD len)
 {
 	if (~this->object)
 	{
-		const char *buf = (const char *) b;
-		while (len)
-		{
-			DWORD written = Filesystem::write(this->object, buf, len);
-			buf += written;
-			len -= written;
-		}
-		return;
+		return Filesystem::write(this->object, (const char *) b, len);
 	}
 	throw Exception::exception("File closed");
 }

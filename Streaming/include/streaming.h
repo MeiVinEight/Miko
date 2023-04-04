@@ -15,12 +15,12 @@ namespace Streaming
 	class stream
 	{
 		public:
-		STREAMINGAPI virtual void read(void *, DWORD) = 0;
-		STREAMINGAPI virtual void read(const Memory::string &);
-		STREAMINGAPI virtual void read(const Memory::string &, DWORD);
-		STREAMINGAPI virtual void write(const void *, DWORD) = 0;
-		STREAMINGAPI virtual void write(const Memory::string &);
-		STREAMINGAPI virtual void write(const Memory::string &, DWORD);
+		STREAMINGAPI virtual DWORD read(void *, DWORD) = 0;
+		STREAMINGAPI virtual DWORD read(const Memory::string &);
+		STREAMINGAPI virtual DWORD read(const Memory::string &, DWORD);
+		STREAMINGAPI virtual DWORD write(const void *, DWORD) = 0;
+		STREAMINGAPI virtual DWORD write(const Memory::string &);
+		STREAMINGAPI virtual DWORD write(const Memory::string &, DWORD);
 		STREAMINGAPI virtual void flush() = 0;
 		STREAMINGAPI virtual QWORD available() = 0;
 		// TODO undo support
@@ -32,8 +32,8 @@ namespace Streaming
 		public:
 		Streaming::stream *stream;
 		STREAMINGAPI format(Streaming::stream *);
-		STREAMINGAPI void read(void *, DWORD) override;
-		STREAMINGAPI void write(const void *, DWORD) override;
+		STREAMINGAPI DWORD read(void *, DWORD) override;
+		STREAMINGAPI DWORD write(const void *, DWORD) override;
 		STREAMINGAPI void flush() override;
 		STREAMINGAPI QWORD available() override;
 		STREAMINGAPI virtual Streaming::format &operator>>(const Memory::string &);

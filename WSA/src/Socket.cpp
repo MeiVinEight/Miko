@@ -51,53 +51,40 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 	}
 	throw Exception::exception("Already connected");
 }
-void WSA::Socket::read(void *b, DWORD len)
-{
-	char *buf = (char *) b;
-	while (len)
-	{
-		if (~this->connection)
-		{
-			DWORD readed = recv(this->connection, buf, (int) len, 0);
-			if (readed)
-			{
-				if (readed == SOCKET_ERROR)
-				{
-					DWORD err = WSAGetLastError();
-					this->close();
-					throw Exception::exception(Exception::message(err));
-				}
-				buf += readed;
-				len -= readed;
-				continue;
-			}
-			this->close();
-		}
-		throw Exception::exception("Socket closed");
-	}
-}
-void WSA::Socket::write(const void *b, DWORD len)
+DWORD WSA::Socket::read(void *b, DWORD len)
 {
 	if (~this->connection)
 	{
-		char *buf = (char *)b;
-		while (len)
+		DWORD readed = recv(this->connection, (char *) b, (int) len, 0);
+		if (readed)
 		{
-			DWORD sended = send(this->connection, buf, (int) len, 0);
-			if (sended == SOCKET_ERROR)
+			if (readed == SOCKET_ERROR)
 			{
 				DWORD err = WSAGetLastError();
-				if (err != WSAECONNABORTED)
-				{
-					throw Exception::exception(Exception::message(err));
-				}
 				this->close();
-				throw Exception::exception("Socket closed");
+				throw Exception::exception(Exception::message(err));
 			}
-			buf += sended;
-			len -= sended;
 		}
-		return;
+		return readed;
+	}
+	throw Exception::exception("Socket closed");
+}
+DWORD WSA::Socket::write(const void *b, DWORD len)
+{
+	if (~this->connection)
+	{
+		DWORD sended = send(this->connection, (const char *) b, (int) len, 0);
+		if (sended == SOCKET_ERROR)
+		{
+			DWORD err = WSAGetLastError();
+			if (err != WSAECONNABORTED)
+			{
+				throw Exception::exception(Exception::message(err));
+			}
+			this->close();
+			throw Exception::exception("Socket closed");
+		}
+		return sended;
 	}
 	throw Exception::exception("Socket closed");
 }
