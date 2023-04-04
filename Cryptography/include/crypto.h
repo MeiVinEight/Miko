@@ -69,7 +69,6 @@ namespace Cryptography
 		CRYPTOAPI virtual void transform(Memory::string &) = 0;
 		CRYPTOAPI virtual void update(const void *, QWORD);
 		CRYPTOAPI virtual Memory::string finally();
-
 	};
 	class MD4: public MessageDigest
 	{
@@ -121,6 +120,21 @@ namespace Cryptography
 		CRYPTOAPI void transform(Memory::string &) override;
 	};
 	// TODO SHA512/224 SHA512/256 SHA3
+	class SHA3: public MessageDigest
+	{
+		private:
+		const BYTE function;
+		public:
+		static const BYTE SHA224 = 0;
+		static const BYTE SHA256 = 1;
+		static const BYTE SHA384 = 2;
+		static const BYTE SHA512 = 3;
+		CRYPTOAPI SHA3(BYTE);
+		CRYPTOAPI bool appendix(Memory::string &, QWORD &) override;
+		CRYPTOAPI void transform(Memory::string &) override;
+		CRYPTOAPI void update(const void *, QWORD) override;
+		CRYPTOAPI Memory::string finally() override;
+	};
 	/**
 	* MT19937-64 engine, generate random number in [0, 2<sup>64</sup>-1].
 	*/

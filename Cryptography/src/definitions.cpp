@@ -3,7 +3,7 @@
 QWORD GetAsLEndian(BYTE n, const void *p)
 {
 	const BYTE *addr = (const BYTE *) p;
-	DWORD x = 0;
+	QWORD x = 0;
 	for (int i = n; i--;)
 	{
 		x <<= 8;

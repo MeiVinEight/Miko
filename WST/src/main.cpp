@@ -3,13 +3,13 @@
 #include <crypto.h>
 #include <filesystem.h>
 #include <exception.h>
-#include <timestamp.h>
 
 void func()
 {
-	String::string base64 = "x3JJHMbDL1EzLkh9GBhXDw==";
-	Memory::string data = Cryptography::BASE64::decode(base64.address);
-	Streaming::cout << data.length;
+	String::string text = "74D388250CBE63C03D8A2EDA83D03D2FA0220CC98F0DA3072D973F2374D388250CBE63C";
+	Cryptography::SHA3 md(Cryptography::SHA3::SHA512);
+	md.update(text.address.address, text.length());
+	Streaming::cout << Hexadecimal::format(md.finally());
 }
 
 int main()
