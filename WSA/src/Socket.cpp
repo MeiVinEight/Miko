@@ -64,8 +64,9 @@ DWORD WSA::Socket::read(void *b, DWORD len)
 				this->close();
 				throw Exception::exception(Exception::message(err));
 			}
+			return readed;
 		}
-		return readed;
+		this->close();
 	}
 	throw Exception::exception("Socket closed");
 }
@@ -77,12 +78,8 @@ DWORD WSA::Socket::write(const void *b, DWORD len)
 		if (sended == SOCKET_ERROR)
 		{
 			DWORD err = WSAGetLastError();
-			if (err != WSAECONNABORTED)
-			{
-				throw Exception::exception(Exception::message(err));
-			}
 			this->close();
-			throw Exception::exception("Socket closed");
+			throw Exception::exception(Exception::message(err));
 		}
 		return sended;
 	}

@@ -25,12 +25,23 @@ namespace Streaming
 		STREAMINGAPI virtual QWORD available() = 0;
 		// TODO undo support
 	};
+	class fully: public Streaming::stream
+	{
+		private:
+		Streaming::stream *stream;
+		public:
+		STREAMINGAPI fully(Streaming::stream *);
+		STREAMINGAPI DWORD read(void *, DWORD) override;
+		STREAMINGAPI DWORD write(const void *, DWORD) override;
+		STREAMINGAPI void flush() override;
+		STREAMINGAPI QWORD available() override;
+	};
 	class format: public Streaming::stream
 	{
 		private:
 		DWORD temporary = 0xFFFFFFFF;
-		public:
 		Streaming::stream *stream;
+		public:
 		STREAMINGAPI format(Streaming::stream *);
 		STREAMINGAPI DWORD read(void *, DWORD) override;
 		STREAMINGAPI DWORD write(const void *, DWORD) override;
