@@ -82,3 +82,27 @@ QWORD String::string::length() const
 {
 	return this->address.length;
 }
+String::string String::string::lower() const
+{
+	String::string ret = *this;
+	for (QWORD i = 0; i < ret.length(); i++)
+	{
+		if (ret[i] >= 'A' && ret[i] <= 'Z')
+		{
+			ret[i] += 0x20;
+		}
+	}
+	return ret;
+}
+String::string String::string::upper() const
+{
+	String::string ret = *this;
+	for (QWORD i = 0; i < ret.length(); i++)
+	{
+		if (ret[i] >= 'a' && ret[i] <= 'z')
+		{
+			ret[i] -= 0x20;
+		}
+	}
+	return ret;
+}
