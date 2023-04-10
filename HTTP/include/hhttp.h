@@ -28,9 +28,15 @@ namespace HTTP
 	HTTPAPI extern const WORD HV_1_1;
 	HTTPAPI extern const WORD HV_2_0;
 
-	HTTPAPI String::string method(WORD);
-	HTTPAPI String::string status(WORD);
+	class URL: public String::URL
+	{
+		public:
+		String::string host;
+		WORD port = 80;
+		String::string path;
 
+		HTTPAPI URL(const String::string &);
+	};
 	class Message
 	{
 		public:
@@ -70,6 +76,9 @@ namespace HTTP
 		HTTPAPI HTTP::Message accept();
 		HTTPAPI void close();
 	};
+
+	HTTPAPI String::string method(WORD);
+	HTTPAPI String::string status(WORD);
 }
 
 #endif //HTTP_H
