@@ -1,9 +1,14 @@
 #include "definitions.h"
 
+const BYTE Memory::INTERNAL = 0;
+const BYTE Memory::EXTERNAL = 1;
+
 DWORD order_value = 1;
 char *order_point = (char *) &order_value;
 const BYTE Memory::BENDIAN = order_point[0] == 0;
 const BYTE Memory::LENDIAN = order_point[0] == 1;
+const DWORD Memory::ERRNO_SUCCESS = Memory::registry("");
+const DWORD Memory::ERRNO_ACCESS_VIOLATION = Memory::registry("Memory access violation");
 
 void *Memory::allocate(QWORD size)
 {
@@ -19,9 +24,7 @@ void Memory::free(void *p)
 }
 void Memory::copy(void *dst, const void *src, QWORD len)
 {
-	BYTE *bdst = (BYTE *)dst;
-	BYTE *bsrc = (BYTE *)src;
-	for (; len--; (*bdst++) = (*bsrc++));
+	memcpy(dst, src, len);
 }
 void Memory::fill(void *p, BYTE x, QWORD size)
 {
@@ -51,4 +54,48 @@ void Memory::reverse(void *b, QWORD len)
 void Memory::violation()
 {
 	*((BYTE *)1) = 0; // Access violation
+}
+DWORD Memory::registry(const char *msg)
+{
+	DWORD len = 0;
+	while (msg[len++]);
+	len--;
+	Memory::string *newErrMsg = new Memory::string[ErrorCode + 1];
+	for (DWORD i = 0; i < ErrorCode; i++)
+	{
+		newErrMsg[i] = (Memory::string &&) ErrorMessage[i];
+	}
+	delete[] ErrorMessage;
+	ErrorMessage = newErrMsg;
+	ErrorMessage[ErrorCode].resize(len);
+	Memory::copy(ErrorMessage[ErrorCode].address, msg, len);
+	return ErrorCode++;
+}
+Memory::string Memory::message(DWORD errcode, BYTE type)
+{
+	Memory::string msg;
+	switch (type)
+	{
+		case Memory::INTERNAL:
+		{
+			char buf[256]{0};
+			DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+			DWORD len = FormatMessageA(flags, nullptr, errcode, 0, buf, sizeof(buf), nullptr);
+			// trialing blanks
+			while (len && (buf[--len] <= 0x20));
+			len++;
+			msg.resize(len);
+			Memory::copy(msg.address, buf, len);
+			break;
+		}
+		case Memory::EXTERNAL:
+		{
+			break;
+		}
+		default:
+		{
+			// INVALID_PARAMETER
+		}
+	}
+	return msg;
 }
