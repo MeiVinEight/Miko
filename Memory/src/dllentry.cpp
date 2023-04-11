@@ -18,6 +18,7 @@ int __stdcall DllMain(HINSTANCE *, unsigned int reason, void *)
 		}
 		case DLL_PROCESS_DETACH:
 		{
+			delete[] ErrorMessage;
 			return HeapDestroy(heap);
 		}
 	}
