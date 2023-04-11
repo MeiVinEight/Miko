@@ -35,7 +35,7 @@ namespace Memory
 		QWORD length = 0;
 		BYTE *address = nullptr;
 
-		string() = delete;
+		MEMORYAPI string();
 		MEMORYAPI explicit string(QWORD);
 		MEMORYAPI string(const Memory::string &);
 		MEMORYAPI string(Memory::string &&) noexcept;
@@ -44,6 +44,11 @@ namespace Memory
 		MEMORYAPI Memory::string &operator=(Memory::string &&) noexcept;
 		MEMORYAPI BYTE &operator[](QWORD) const;
 		MEMORYAPI void resize(QWORD);
+	};
+	namespace errno
+	{
+		MEMORYAPI DWORD registry(const char *);
+		MEMORYAPI Memory::string message(DWORD);
 	};
 	// TODO Memory order
 

@@ -1,5 +1,8 @@
 #include "definitions.h"
 
+Memory::string::string(): string(0)
+{
+}
 Memory::string::string(QWORD size): address((BYTE *) Memory::allocate(size)), length(size)
 {
 }

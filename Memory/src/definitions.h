@@ -18,6 +18,9 @@ extern "C"
 typedef void *HANDLE, *HINSTANCE, *LPVOID;
 typedef unsigned __int64 ULONG_PTR, SIZE_T;
 
+extern Memory::string *ErrorMessage;
+extern DWORD ErrorCount;
+
 HANDLE __stdcall GetProcessHeap(void);
 LPVOID __stdcall HeapAlloc(HANDLE, DWORD, SIZE_T);
 LPVOID __stdcall HeapReAlloc(HANDLE, DWORD, LPVOID, SIZE_T);
