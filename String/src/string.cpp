@@ -78,6 +78,10 @@ String::string String::string::operator+(const String::string &str) const
 	String::string lval(*this);
 	return lval += str;
 }
+String::string::operator bool() const
+{
+	return this->length();
+}
 QWORD String::string::length() const
 {
 	return this->address.length;

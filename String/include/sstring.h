@@ -35,10 +35,7 @@ namespace String
 		STRINGAPI String::string &operator+=(const String::string &) &;
 		STRINGAPI String::string operator+(const char *) const;
 		STRINGAPI String::string operator+(const String::string &) const;
-		STRINGAPI operator bool() const
-		{
-			return this->length();
-		}
+		STRINGAPI operator bool() const;
 		STRINGAPI QWORD length() const;
 		STRINGAPI String::string lower() const;
 		STRINGAPI String::string upper() const;
