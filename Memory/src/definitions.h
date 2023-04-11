@@ -76,7 +76,7 @@ BOOL __declspec(dllimport) __stdcall SymFromAddr(HANDLE, DWORD64, PDWORD64, PSYM
 DWORD __stdcall K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 DWORD __stdcall GetModuleFileNameA(HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
-inline __cdecl void *operator new(size_t, void *) noexcept;
+inline void *__cdecl operator new(size_t, void *) noexcept;
 void backtrace(Memory::exception &);
 QWORD strlen(const void *);
 

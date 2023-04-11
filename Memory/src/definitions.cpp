@@ -4,7 +4,7 @@
 Memory::string *ErrorMessage = nullptr;
 DWORD ErrorCode = 0;
 
-inline __cdecl void *operator new(size_t size, void *where) noexcept
+inline void *__cdecl operator new(size_t size, void *where) noexcept
 {
 	(void) size;
 	return where;
