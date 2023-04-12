@@ -9,27 +9,6 @@ QWORD strlen(const void *str)
 	return s - ((const char *)str) - 1;
 }
 
-int __stdcall DllMain(HINSTANCE *instance, unsigned int reason, void *reserved)
-{
-	(void)&DllMain;
-	(void)instance;
-	(void)reserved;
-
-	switch (reason)
-	{
-		case DLL_PROCESS_ATTACH:
-		{
-			SymSetOptions(SYMOPT_LOAD_LINES);
-			return SymInitialize(process, nullptr, 1);
-		}
-		case DLL_PROCESS_DETACH:
-		{
-			return SymCleanup(process);
-		}
-	}
-	return 1;
-}
-
 void backtrace(Exception::exception &exec)
 {
 	DWORD max = 64 * sizeof(void *);

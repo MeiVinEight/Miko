@@ -58,6 +58,7 @@ namespace Memory
 
 			frame() = delete;
 			MEMORYAPI frame(void *);
+			MEMORYAPI frame(const Memory::exception::frame &);
 			MEMORYAPI ~frame();
 		};
 
@@ -68,6 +69,7 @@ namespace Memory
 		DWORD count = 0;
 		MEMORYAPI exception(DWORD, BYTE);
 		MEMORYAPI exception(DWORD);
+		MEMORYAPI exception(const Memory::exception &) noexcept;
 		MEMORYAPI ~exception();
 	};
 	// TODO Memory order
@@ -76,6 +78,7 @@ namespace Memory
 	MEMORYAPI extern const BYTE LENDIAN;
 	MEMORYAPI extern const DWORD ERRNO_SUCCESS;
 	MEMORYAPI extern const DWORD ERRNO_ACCESS_VIOLATION;
+	MEMORYAPI extern const DWORD ERRNO_INVALID_PARAMETER;
 
 	MEMORYAPI DWORD registry(const char *);
 	MEMORYAPI Memory::string message(DWORD, BYTE);

@@ -11,11 +11,15 @@ Memory::exception::frame::frame(void *returnAddress)
 	QWORD disp = 0;
 	SymFromAddr(GetCurrentProcess(), (QWORD) returnAddress, &disp, syminfo);
 
-	this->function.resize(strlen(syminfo->Name));
+	this->function.resize(StringLength(syminfo->Name));
 	Memory::copy(this->function.address, syminfo->Name, this->function.length);
 
 	this->address = (void *) syminfo->Address;
-	this->module = (void *) syminfo->ModBase;
+
+	MEMORY_BASIC_INFORMATION memoryInfo = {0};
+	VirtualQuery(returnAddress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+	// this->address = (void *) memoryInfo.BaseAddress;
+	this->module = (void *) memoryInfo.AllocationBase;
 
 	char modname[MAX_SYM_NAME + 1]{0};
 	// K32GetModuleBaseNameA(GetCurrentProcess(), (HMODULE) this->module, modname, MAX_SYM_NAME);
@@ -26,4 +30,5 @@ Memory::exception::frame::frame(void *returnAddress)
 	this->library.resize(len - idx);
 	Memory::copy(this->library.address, modname + idx, this->library.length);
 }
+Memory::exception::frame::frame(const Memory::exception::frame &copy) = default;
 Memory::exception::frame::~frame() = default;

@@ -7,8 +7,9 @@ DWORD order_value = 1;
 char *order_point = (char *) &order_value;
 const BYTE Memory::BENDIAN = order_point[0] == 0;
 const BYTE Memory::LENDIAN = order_point[0] == 1;
-const DWORD Memory::ERRNO_SUCCESS = Memory::registry("");
+const DWORD Memory::ERRNO_SUCCESS = Memory::registry("The operation completed successfully");
 const DWORD Memory::ERRNO_ACCESS_VIOLATION = Memory::registry("Memory access violation");
+const DWORD Memory::ERRNO_INVALID_PARAMETER = Memory::registry("The parameter is incorrect");
 
 void *Memory::allocate(QWORD size)
 {
@@ -90,11 +91,15 @@ Memory::string Memory::message(DWORD errcode, BYTE type)
 		}
 		case Memory::EXTERNAL:
 		{
-			break;
+			if (errcode < ErrorCode)
+			{
+				msg = ErrorMessage[errcode];
+				break;
+			}
 		}
 		default:
 		{
-			// INVALID_PARAMETER
+			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
 		}
 	}
 	return msg;

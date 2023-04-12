@@ -47,8 +47,7 @@ BYTE &Memory::string::operator[](QWORD off) const
 	{
 		return this->address[off];
 	}
-	Memory::violation();
-	return *(BYTE *) (this->address); // unreachable
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
 void Memory::string::resize(QWORD size)
 {

@@ -4,7 +4,7 @@
 Memory::string *ErrorMessage = nullptr;
 DWORD ErrorCode = 0;
 
-inline void *__cdecl operator new(size_t size, void *where) noexcept
+void *__cdecl operator new(size_t size, void *where) noexcept
 {
 	(void) size;
 	return where;
@@ -31,9 +31,10 @@ void backtrace(Memory::exception &exec)
 
 	Memory::free(arr);
 }
-QWORD strlen(const void *str)
+QWORD StringLength(const void *str)
 {
 	const char *s = (const char *) str;
-	while (*s++);
-	return s - ((const char *)str) - 1;
+	QWORD len = 0;
+	while (s[len++]);
+	return len - 1;
 }

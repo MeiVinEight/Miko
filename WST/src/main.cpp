@@ -3,13 +3,11 @@
 #include <crypto.h>
 #include <filesystem.h>
 #include <exception.h>
+#include <wsa.h>
 
 void func()
 {
-	String::string text = "74D388250CBE63C03D8A2EDA83D03D2FA0220CC98F0DA3072D973F2374D388250CBE63C";
-	Cryptography::SHAKE md(Cryptography::SHAKE::SHAKE128, 127);
-	md.update(text.address.address, text.length());
-	Streaming::cout << Hexadecimal::format(md.finally());
+	Streaming::cout << Memory::message(50, Memory::EXTERNAL);
 }
 
 int main()
@@ -18,8 +16,39 @@ int main()
 	{
 		func();
 	}
-	catch (Exception::exception &exec)
+	catch (Memory::exception &exec)
 	{
-		Streaming::cout << exec.message;
+		Streaming::cout << exec.message << Streaming::LF;
+		for (DWORD i = 0; i < exec.count; i++)
+		{
+			/*
+			Streaming::cout << exec.stack[i].address << ' ';
+			Streaming::cout << exec.stack[i].offset << ' ';
+			Streaming::cout << exec.stack[i].module << ' ';
+			Streaming::cout << exec.stack[i].function << ' ';
+			Streaming::cout << exec.stack[i].library << Streaming::LF;
+			*/
+			Streaming::cout << exec.stack[i].offset << " (";
+			if (exec.stack[i].function.length)
+			{
+				Streaming::cout << exec.stack[i].function << "+";
+				Streaming::cout << Hexadecimal::stringify((QWORD) exec.stack[i].offset - (QWORD) exec.stack[i].address);
+			}
+			else
+			{
+				Streaming::cout << exec.stack[i].offset;
+			}
+			Streaming::cout << ") [";
+			if (exec.stack[i].module)
+			{
+				Streaming::cout << exec.stack[i].library << '+';
+				Streaming::cout << Hexadecimal::stringify(((QWORD) exec.stack[i].offset) - ((QWORD) exec.stack[i].module));
+			}
+			else
+			{
+				Streaming::cout << exec.stack[i].address;
+			}
+			Streaming::cout << ']' << Streaming::LF;
+		}
 	}
 }

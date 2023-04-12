@@ -26,13 +26,14 @@ extern "C"
 
 
 typedef void *HANDLE, *HINSTANCE, *LPVOID, *PVOID, *HMODULE;
-typedef unsigned __int64 ULONG_PTR, SIZE_T;
+typedef unsigned __int64 ULONG_PTR, SIZE_T, ULONGLONG;
 typedef char CHAR, *va_list;
 typedef CHAR *LPSTR;
 typedef const char *PCSTR;
 typedef unsigned __int64 DWORD64, *PDWORD64, ULONG64;
 typedef unsigned long ULONG;
 typedef DWORD *PDWORD;
+typedef const void *LPCVOID;
 typedef struct
 {
 	ULONG       SizeOfStruct;
@@ -51,6 +52,34 @@ typedef struct
 	ULONG       MaxNameLen;
 	CHAR        Name[1];          // Name of symbol
 } SYMBOL_INFO, *PSYMBOL_INFO;
+typedef struct
+{
+	DWORD BaseAddress;
+	DWORD AllocationBase;
+	DWORD AllocationProtect;
+	DWORD RegionSize;
+	DWORD State;
+	DWORD Protect;
+	DWORD Type;
+} MEMORY_BASIC_INFORMATION32, *PMEMORY_BASIC_INFORMATION32;
+typedef struct
+{
+	ULONGLONG BaseAddress;
+	ULONGLONG AllocationBase;
+	DWORD AllocationProtect;
+	DWORD _alignment1;
+	ULONGLONG RegionSize;
+	DWORD State;
+	DWORD Protect;
+	DWORD Type;
+	DWORD _alignment2;
+} MEMORY_BASIC_INFORMATION64, *PMEMORY_BASIC_INFORMATION64;
+
+#ifdef _WIN64
+typedef MEMORY_BASIC_INFORMATION64 MEMORY_BASIC_INFORMATION, *PMEMORY_BASIC_INFORMATION;
+#else
+typedef MEMORY_BASIC_INFORMATION32 MEMORY_BASIC_INFORMATION, *PMEMORY_BASIC_INFORMATION;
+#endif
 
 extern Memory::string *ErrorMessage;
 extern DWORD ErrorCode;
@@ -76,9 +105,10 @@ BOOL __declspec(dllimport) __stdcall SymFromAddr(HANDLE, DWORD64, PDWORD64, PSYM
 DWORD __stdcall K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 DWORD __stdcall GetModuleFileNameA(HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
-inline void *__cdecl operator new(size_t, void *) noexcept;
+SIZE_T VirtualQuery(LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
+void *__cdecl operator new(size_t, void *) noexcept;
 void backtrace(Memory::exception &);
-QWORD strlen(const void *);
+QWORD StringLength(const void *);
 
 #ifdef __cplusplus
 }
