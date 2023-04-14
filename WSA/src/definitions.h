@@ -6,7 +6,6 @@
 #define WSA_SHARED
 
 #include <wsa.h>
-#include <exception.h>
 
 #ifdef __cplusplus
 extern "C"

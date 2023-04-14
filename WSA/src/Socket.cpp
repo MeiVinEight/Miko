@@ -38,7 +38,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		{
 			int err = WSAGetLastError();
 			this->close();
-			throw Exception::exception(Exception::message(err));
+			throw Memory::exception(err, Memory::INTERNAL);
 		}
 		this->IP = addr.IP;
 		this->RP = addr.ID;
@@ -49,7 +49,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 
 		return;
 	}
-	throw Exception::exception("Already connected");
+	throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
 }
 DWORD WSA::Socket::read(void *b, DWORD len)
 {
@@ -62,13 +62,13 @@ DWORD WSA::Socket::read(void *b, DWORD len)
 			{
 				DWORD err = WSAGetLastError();
 				this->close();
-				throw Exception::exception(Exception::message(err));
+				throw Memory::exception(err, Memory::INTERNAL);
 			}
 			return readed;
 		}
 		this->close();
 	}
-	throw Exception::exception("Socket closed");
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 DWORD WSA::Socket::write(const void *b, DWORD len)
 {
@@ -79,11 +79,11 @@ DWORD WSA::Socket::write(const void *b, DWORD len)
 		{
 			DWORD err = WSAGetLastError();
 			this->close();
-			throw Exception::exception(Exception::message(err));
+			throw Memory::exception(err, Memory::INTERNAL);
 		}
 		return sended;
 	}
-	throw Exception::exception("Socket closed");
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 void WSA::Socket::flush()
 {
@@ -91,7 +91,7 @@ void WSA::Socket::flush()
 	{
 		if (!FlushFileBuffers((HANDLE) this->connection))
 		{
-			throw Exception::exception(Exception::message(WSAGetLastError()));
+			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
 		}
 	}
 }
@@ -102,7 +102,7 @@ QWORD WSA::Socket::available()
 	{
 		return ava;
 	}
-	throw Exception::exception(Exception::message(WSAGetLastError()));
+	throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
 }
 BOOL WSA::Socket::opening() const
 {
@@ -118,7 +118,7 @@ void WSA::Socket::close()
 		this->RP = this->LP = 0;
 		if (wrong)
 		{
-			throw Exception::exception(Exception::message(WSAGetLastError()));
+			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #include "definitions.h"
 
+const DWORD Filesystem::ERRNO_WRONG_FILE_TYPE = Memory::registry("Wrong file type");
 const QWORD Filesystem::STDIN = (QWORD) GetStdHandle(STD_INPUT_HANDLE);
 const QWORD Filesystem::STDOUT = (QWORD) GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -20,7 +21,7 @@ bool Filesystem::create(const String::string &path)
 				DWORD err = GetLastError();
 				if (err != ERROR_FILE_EXISTS)
 				{
-					throw Exception::exception(Exception::message(err));
+					throw Memory::exception(err, Memory::INTERNAL);
 				}
 				return false;
 			}
@@ -30,12 +31,7 @@ bool Filesystem::create(const String::string &path)
 		return false;
 	}
 	// path is not a file
-	char append[] = " is not a file";
-	QWORD appendLen = sizeof(append) - 1;
-	Memory::string msg(canon.length() + appendLen);
-	Memory::copy(msg.address, canon.address.address, canon.length());
-	Memory::copy(msg.address + canon.length(), append, appendLen);
-	throw Exception::exception(msg);
+	throw Memory::exception(Filesystem::ERRNO_WRONG_FILE_TYPE);
 }
 bool Filesystem::make(const String::string &path)
 {
@@ -49,17 +45,12 @@ bool Filesystem::make(const String::string &path)
 			{
 				return true;
 			}
-			throw Exception::exception(Exception::message(GetLastError()));
+			throw Memory::exception(GetLastError(), Memory::INTERNAL);
 		}
 		return false;
 	}
 	// path is not a directory
-	char append[] = " is not a directory";
-	QWORD appendLen = sizeof(append) - 1;
-	Memory::string msg(canon.length() + appendLen);
-	Memory::copy(msg.address, canon.address.address, canon.length());
-	Memory::copy(msg.address + canon.length(), append, appendLen);
-	throw Exception::exception(msg);
+	throw Memory::exception(Filesystem::ERRNO_WRONG_FILE_TYPE);
 }
 bool Filesystem::remove(const String::string &path)
 {
@@ -86,7 +77,7 @@ bool Filesystem::exist(const String::string &path)
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
-			throw Exception::exception(Exception::message(err));
+			throw Memory::exception(err, Memory::INTERNAL);
 		}
 		return false;
 	}
@@ -104,7 +95,7 @@ bool Filesystem::directory(const String::string &path)
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
-			throw Exception::exception(Exception::message(err));
+			throw Memory::exception(err, Memory::INTERNAL);
 		}
 		return false;
 	}
@@ -132,7 +123,7 @@ Memory::string Filesystem::canonicalize(const String::string &path)
 		Memory::copy(canon.address, buf, len);
 		return canon;
 	}
-	throw Exception::exception(Exception::message(GetLastError()));
+	throw Memory::exception(GetLastError(), Memory::INTERNAL);
 }
 QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
@@ -141,7 +132,7 @@ QWORD Filesystem::open(const String::string &path, DWORD mode)
 	HFILE hfVal = OpenFile((char *) cstring(path).address, &data, mode);
 	if (hfVal == Filesystem::FILE_ERROR)
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 	return hfVal;
 }
@@ -149,7 +140,7 @@ void Filesystem::close(QWORD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 }
 DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
@@ -157,7 +148,7 @@ DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, nullptr))
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 	return readed;
 }
@@ -166,7 +157,7 @@ DWORD Filesystem::write(QWORD fdVal, const void *b, DWORD len)
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, nullptr))
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 	return written;
 }
@@ -176,13 +167,13 @@ void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 	distance.QuadPart = (long long) offset;
 	if (!SetFilePointerEx((HANDLE)fdVal, distance, nullptr, mode))
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 }
 void Filesystem::flush(QWORD fdVal)
 {
 	if (!FlushFileBuffers((HANDLE) fdVal))
 	{
-		throw Exception::exception(Exception::message(GetLastError()));
+		throw Memory::exception(GetLastError(), Memory::INTERNAL);
 	}
 }

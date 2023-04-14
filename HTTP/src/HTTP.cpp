@@ -14,6 +14,9 @@ const WORD HTTP::HV_1_0        = ((1 << 8) | 0);
 const WORD HTTP::HV_1_1        = ((1 << 8) | 1);
 const WORD HTTP::HV_2_0        = ((2 << 8) | 0);
 
+const DWORD HTTP::ERRNO_UNKNOWN_REQUEST_METHOD = Memory::registry("Unknown request method");
+const DWORD HTTP::ERRNO_UNKNOWN_STATUS_CODE = Memory::registry("Unknown status code");
+
 String::string METHODS[] = {
 	"GET",
 	"HEAD",
@@ -33,9 +36,8 @@ String::string HTTP::method(WORD id)
 	{
 		return METHODS[id];
 	}
-	throw Exception::exception("Unknown request method");
+	throw Memory::exception(HTTP::ERRNO_UNKNOWN_REQUEST_METHOD);
 }
-
 String::string HTTP::status(WORD stat)
 {
 	switch (stat)
@@ -82,5 +84,5 @@ String::string HTTP::status(WORD stat)
 		case 504: return "Gateway Timed-out";
 		case 505: return "HTTP Version not supported";
 	}
-	throw Exception::exception("Unknown status code");
+	throw Memory::exception(HTTP::ERRNO_UNKNOWN_STATUS_CODE);
 }

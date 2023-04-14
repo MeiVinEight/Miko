@@ -2,7 +2,6 @@
 #include <streaming.h>
 #include <crypto.h>
 #include <filesystem.h>
-#include <exception.h>
 #include <wsa.h>
 
 void func()

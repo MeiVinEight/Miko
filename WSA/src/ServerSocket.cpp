@@ -43,11 +43,11 @@ void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 		{
 			err = WSAGetLastError();
 			this->close();
-			throw Exception::exception(Exception::message(err));
+			throw Memory::exception(err, Memory::INTERNAL);
 		}
 		return;
 	}
-	throw Exception::exception("Already bound");
+	throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
 }
 WSA::Socket WSA::ServerSocket::accept() const
 {
@@ -59,7 +59,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 		SOCKET conn = ::accept(this->connection, (SOCKADDR *) &addr, &len);
 		if (conn == INVALID_SOCKET)
 		{
-			throw Exception::exception("Socket closed");
+			throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 		}
 		WSA::Socket sock;
 		sock.connection = conn;
@@ -72,7 +72,7 @@ WSA::Socket WSA::ServerSocket::accept() const
 
 		return sock;
 	}
-	throw Exception::exception("Socket closed");
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 BOOL WSA::ServerSocket::opening() const
 {
@@ -87,7 +87,7 @@ void WSA::ServerSocket::close()
 		this->address = {{0, 0, 0, 0}, 0};
 		if (wrong)
 		{
-			throw Exception::exception(Exception::message(WSAGetLastError()));
+			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
 		}
 	}
 }

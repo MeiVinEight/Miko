@@ -1,7 +1,6 @@
 #include "definitions.h"
 
 HTTP::Message::Message() = default;
-
 HTTP::Message::Message(const HTTP::Message &copy):
 	method(copy.method),
 	URL(copy.URL),
@@ -17,7 +16,6 @@ HTTP::Message::Message(const HTTP::Message &copy):
 		this->context[i][1] = copy[i][1];
 	}
 }
-
 HTTP::Message::Message(HTTP::Message &&move) noexcept:
 	method(move.method),
 	URL((String::string &&)move.URL),
@@ -33,7 +31,6 @@ HTTP::Message::Message(HTTP::Message &&move) noexcept:
 	move.context = nullptr;
 	move.length = 0;
 }
-
 HTTP::Message::~Message()
 {
 	this->method = 0;
@@ -43,7 +40,6 @@ HTTP::Message::~Message()
 	this->context = nullptr;
 	this->length = 0;
 }
-
 HTTP::Message &HTTP::Message::operator=(const HTTP::Message &copy)
 {
 	if (&copy != this)
@@ -52,7 +48,6 @@ HTTP::Message &HTTP::Message::operator=(const HTTP::Message &copy)
 	}
 	return *this;
 }
-
 HTTP::Message &HTTP::Message::operator=(HTTP::Message &&move) noexcept
 {
 	if (&move != this)
@@ -73,7 +68,6 @@ HTTP::Message &HTTP::Message::operator=(HTTP::Message &&move) noexcept
 	}
 	return *this;
 }
-
 String::string &HTTP::Message::operator[](const String::string &key)
 {
 	if (!this->contain(key))
@@ -98,14 +92,12 @@ String::string &HTTP::Message::operator[](const String::string &key)
 		}
 	}
 
-	throw Exception::exception(((String::string)"Cannot found: " + key));
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
-
 String::string *HTTP::Message::operator[](QWORD idx) const
 {
 	return this->context[idx];
 }
-
 bool HTTP::Message::contain(const String::string &key) const
 {
 	for (QWORD i = 0; i < this->length; i++)

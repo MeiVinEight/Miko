@@ -4,7 +4,6 @@ include_directories(
 	include
 	../Memory/include
 	../String/include
-	../Exception/include
 	../Filesystem/include
 	../Streaming/include
 	../WSA/include
@@ -16,6 +15,5 @@ aux_source_directory(src HTTP_SOURCE)
 add_library(HTTP SHARED ${HTTP_SOURCE})
 target_link_libraries(HTTP PUBLIC
 	String
-	Exception
 	WSA
 )

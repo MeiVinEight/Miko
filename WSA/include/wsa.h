@@ -16,8 +16,8 @@ typedef unsigned __int64 SOCKET;
 
 namespace WSA
 {
-	const static WORD SOCKET_CLOSED = 1;
-	const static WORD SOCKET_BOUND  = 2;
+	WSA_API extern const DWORD ERRNO_UNKNOWN_HOST;
+	WSA_API extern const DWORD ERRNO_SOCKET_ALREADY_OCCUPIED;
 
 	class Address;
 	// IPv4 IP and PORT

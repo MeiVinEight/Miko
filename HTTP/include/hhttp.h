@@ -28,6 +28,9 @@ namespace HTTP
 	HTTPAPI extern const WORD HV_1_1;
 	HTTPAPI extern const WORD HV_2_0;
 
+	HTTPAPI extern const DWORD ERRNO_UNKNOWN_REQUEST_METHOD;
+	HTTPAPI extern const DWORD ERRNO_UNKNOWN_STATUS_CODE;
+
 	class URL: public String::URL
 	{
 		public:
@@ -58,7 +61,6 @@ namespace HTTP
 		HTTPAPI String::string *operator[](QWORD) const;
 		HTTPAPI bool contain(const String::string &) const;
 	};
-
 	class ConnectionManager
 	{
 		public:

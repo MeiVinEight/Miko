@@ -3,7 +3,6 @@
 #define JSON_SHARED
 
 #include <json.h>
-#include <exception.h>
 
 void Capacity(BYTE *(&buffer), QWORD &size, QWORD expect);
 

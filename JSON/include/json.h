@@ -11,6 +11,9 @@
 
 namespace JSON
 {
+	JSONAPI extern const DWORD ERRNO_WRONG_OBJECT_TYPE;
+	JSONAPI extern const DWORD ERRNO_WRONG_FORMAT;
+
 	enum type
 	{
 		UNKNOWN,
@@ -57,7 +60,7 @@ namespace JSON
 
 	JSONAPI String::string stringify(const String::string &);
 	JSONAPI String::string stringify(const JSON::object &);
-	JSONAPI JSON::object resolve(const String::string &);
+	JSONAPI JSON::object resolve(const String::string &); // TODO better error message
 }
 
 #endif //JSON_H

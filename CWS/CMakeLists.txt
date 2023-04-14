@@ -4,7 +4,6 @@ include_directories(
 	include
 	../Memory/include
 	../String/include
-	../Exception/include
 	../Filesystem/include
 	../Streaming/include
 	../WSA/include
@@ -20,7 +19,6 @@ add_library(CWS SHARED ${CWS_SOURCE})
 target_link_libraries(CWS PUBLIC
 	WSA
 	HTTP
-	Exception
 	Cryptography
 	Timestamp
 )

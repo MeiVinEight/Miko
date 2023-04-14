@@ -30,7 +30,7 @@ DWORD Streaming::file::read(void *b, DWORD len)
 	{
 		return Filesystem::read(this->object, (char *) b, len);
 	}
-	throw Exception::exception("File closed");
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 Streaming::file &Streaming::file::operator>>(const Memory::string &str)
 {
@@ -43,7 +43,7 @@ DWORD Streaming::file::write(const void *b, DWORD len)
 	{
 		return Filesystem::write(this->object, (const char *) b, len);
 	}
-	throw Exception::exception("File closed");
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 Streaming::file &Streaming::file::operator<<(const Memory::string &str)
 {

@@ -170,7 +170,7 @@ JSON::object &JSON::object::operator[](const String::string &key)
 
 		return *((JSON::object *) this->content[idx][1]);
 	}
-	throw Exception::exception("JSON object is not a component");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 JSON::object &JSON::object::operator[](const char *key)
@@ -204,7 +204,7 @@ JSON::object &JSON::object::operator[](QWORD idx)
 		}
 		return *((JSON::object *) this->content[idx][1]);
 	}
-	throw Exception::exception("JSON object is not an array");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 JSON::object::operator String::string &() const
@@ -213,7 +213,7 @@ JSON::object::operator String::string &() const
 	{
 		return *((String::string *) this->content[0][1]);
 	}
-	throw Exception::exception("JSON object is not a string");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 JSON::object::operator QWORD() const
@@ -222,7 +222,7 @@ JSON::object::operator QWORD() const
 	{
 		return *((QWORD *) this->content[0][1]);
 	}
-	throw Exception::exception("JSON object is not an integer");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 JSON::object::operator int() const
@@ -236,7 +236,7 @@ JSON::object::operator double() const
 	{
 		return *((double *) this->content[0][1]);
 	}
-	throw Exception::exception("JSON object is not a float");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 JSON::object::operator bool() const
@@ -245,7 +245,7 @@ JSON::object::operator bool() const
 	{
 		return *((bool *) this->content[0][1]);
 	}
-	throw Exception::exception("JSON object is not a boolean");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
 
 QWORD JSON::object::length() const
@@ -354,5 +354,5 @@ String::string JSON::object::stringify() const
 			return str;
 		}
 	}
-	throw Exception::exception("Unrecognized json object");
+	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }

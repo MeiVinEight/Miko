@@ -33,6 +33,7 @@ namespace Filesystem
 	const static DWORD OF_PROMPT           = 0x00002000;
 	const static DWORD OF_EXIST            = 0x00004000;
 	const static DWORD OF_REOPEN           = 0x00008000;
+	FSAPI extern const DWORD ERRNO_WRONG_FILE_TYPE;
 	FSAPI extern const QWORD STDIN;
 	FSAPI extern const QWORD STDOUT;
 

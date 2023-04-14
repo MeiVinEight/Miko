@@ -15,6 +15,9 @@ BYTE ESCAPE[256] = {
 	0x00, 0x00, 0x00, 0x00, '\\', 0x00, 0x00, 0x00,
 };
 
+extern const DWORD JSON::ERRNO_WRONG_OBJECT_TYPE = Memory::registry("Wrong object type");
+extern const DWORD JSON::ERRNO_WRONG_FORMAT = Memory::registry("Wrong json format");
+
 BYTE UTF8W(QWORD x)
 {
 	BYTE ret = 0;
@@ -38,7 +41,7 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 	QWORD capacity = 16;
 	BYTE *buffer = new BYTE[capacity];
 	QWORD len = 0;
-	if (str[pos] != '\"') throw Exception::exception("Expected string"); // TODO where
+	if (str[pos] != '\"') throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 	pos++;
 	while (true)
 	{
@@ -113,9 +116,7 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 						}
 						else
 						{
-							char msg[] = "Unknown unicode: \\u0000";
-							Memory::copy(msg + 19, str.address.address + pos, 4);
-							throw Exception::exception(msg);
+							throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 						}
 					}
 					pos += 4;
@@ -123,9 +124,7 @@ String::string ReadEscapeString(const String::string &str, QWORD &pos)
 				}
 				default:
 				{
-					BYTE msg[] = "Invalid escape sequence: \\\0";
-					msg[26] = escaped;
-					throw Exception::exception((char *) msg);
+					throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 				}
 			}
 		}
@@ -171,7 +170,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 						String::string name = ReadEscapeString(str, pos);
 						Whitespace(str, pos);
 						if (str[pos] != ':')
-							throw Exception::exception("Expected \':\'");
+							throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 						pos++;
 						obj[name] = ::resolve(str, pos);
 						Whitespace(str, pos);
@@ -184,7 +183,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 							case ',':
 								break;
 							default:
-								throw Exception::exception("Expected '}'");
+								throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 						}
 					}
 				}
@@ -213,7 +212,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 							case ',':
 								break;
 							default:
-								throw Exception::exception("Expected ']'");
+								throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 						}
 					}
 				}
@@ -238,7 +237,7 @@ JSON::object resolve(const String::string &str, QWORD &pos)
 					digit &= (str[pos + len] >= '0' && str[pos] <= '9');
 					len++;
 				}
-				if (len == 0) throw Exception::exception("Expected value");
+				if (len == 0) throw Memory::exception(JSON::ERRNO_WRONG_FORMAT);
 				String::string value = String::string(str.address.address + pos, len);
 				if (value == "null")
 				{

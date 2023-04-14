@@ -10,6 +10,7 @@ const BYTE Memory::LENDIAN = order_point[0] == 1;
 const DWORD Memory::ERRNO_SUCCESS = Memory::registry("The operation completed successfully");
 const DWORD Memory::ERRNO_ACCESS_VIOLATION = Memory::registry("Memory access violation");
 const DWORD Memory::ERRNO_INVALID_PARAMETER = Memory::registry("The parameter is incorrect");
+const DWORD Memory::ERRNO_OBJECT_CLOSED = Memory::registry("Kernel object has been closed");
 
 void *Memory::allocate(QWORD size)
 {

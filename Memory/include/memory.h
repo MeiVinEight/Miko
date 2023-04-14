@@ -79,6 +79,7 @@ namespace Memory
 	MEMORYAPI extern const DWORD ERRNO_SUCCESS;
 	MEMORYAPI extern const DWORD ERRNO_ACCESS_VIOLATION;
 	MEMORYAPI extern const DWORD ERRNO_INVALID_PARAMETER;
+	MEMORYAPI extern const DWORD ERRNO_OBJECT_CLOSED;
 
 	MEMORYAPI DWORD registry(const char *);
 	MEMORYAPI Memory::string message(DWORD, BYTE);

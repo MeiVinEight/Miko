@@ -3,7 +3,6 @@ project(Filesystem)
 include_directories(
 	include
 	../Memory/include
-	../Exception/include
 	../String/include
 	../Streaming/include
 )
@@ -15,6 +14,5 @@ add_library(Filesystem SHARED ${FS_SOURCE})
 target_link_libraries(Filesystem PUBLIC
 	Memory
 	String
-	Exception
 	Streaming
 )

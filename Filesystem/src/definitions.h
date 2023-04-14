@@ -4,7 +4,6 @@
 #define FS_SHARED
 
 #include <filesystem.h>
-#include <exception.h>
 
 
 #ifdef __cplusplus

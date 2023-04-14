@@ -1,5 +1,8 @@
 #include "definitions.h"
 
+const DWORD WSA::ERRNO_UNKNOWN_HOST = Memory::registry("Cannot find target host");
+const DWORD WSA::ERRNO_SOCKET_ALREADY_OCCUPIED = Memory::registry("Socket already occupied");
+
 WSA::Address WSA::IP(LPCSTR host)
 {
 	ADDRINFOA *info = nullptr;
@@ -18,16 +21,10 @@ WSA::Address WSA::IP(LPCSTR host)
 			freeaddrinfo(info);
 			return address;
 		}
-		char append[] = "Could not find host: ";
-		QWORD applen = sizeof(append) - 1;
-		QWORD hoslen = strlen(host);
-		Memory::string msg(applen + hoslen);
-		Memory::copy(msg.address, append, applen);
-		Memory::copy(msg.address + applen, host, hoslen);
-		throw Exception::exception(msg);
+		throw Memory::exception(WSA::ERRNO_UNKNOWN_HOST);
 	}
 	freeaddrinfo(info);
-	throw Exception::exception(Exception::message(err));
+	throw Memory::exception(err, Memory::INTERNAL);
 }
 SOCKET WSA::socket()
 {
@@ -36,5 +33,5 @@ SOCKET WSA::socket()
 	{
 		return sock;
 	}
-	throw Exception::exception(Exception::message(WSAGetLastError()));
+	throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
 }
