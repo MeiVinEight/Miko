@@ -4,6 +4,7 @@ Cryptography::MessageDigest::MessageDigest(QWORD block, QWORD digest, void (*com
 block(block), digest(digest), computation(computation)
 {
 }
+Cryptography::MessageDigest::~MessageDigest() noexcept = default;
 void Cryptography::MessageDigest::update(const void *data, QWORD len)
 {
 	this->length += len << 3;
