@@ -50,6 +50,7 @@ namespace CWS
 
 		CWSAPI WebSocket(WSA::Socket *);
 		CWSAPI WebSocket(CWS::WebSocket &&) noexcept;
+		CWSAPI ~WebSocket();
 		CWSAPI CWS::WebSocket &operator=(WebSocket &&) noexcept;
 		CWSAPI bool alive() const;
 		CWSAPI Memory::string receive() const;

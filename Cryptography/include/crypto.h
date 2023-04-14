@@ -152,6 +152,7 @@ namespace Cryptography
 	class RNG
 	{
 		public:
+		CRYPTOAPI virtual ~RNG() noexcept;
 		CRYPTOAPI virtual void seed(QWORD) = 0;
 		CRYPTOAPI virtual QWORD random() = 0;
 		/**

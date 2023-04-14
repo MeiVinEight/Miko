@@ -5,6 +5,10 @@ CWS::WebSocket::WebSocket(WSA::Socket *conn): connection(conn), random(new Crypt
 	this->random->seed(Timestamp::current());
 }
 CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept = default;
+CWS::WebSocket::~WebSocket()
+{
+	delete this->random;
+}
 CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept = default;
 bool CWS::WebSocket::alive() const
 {

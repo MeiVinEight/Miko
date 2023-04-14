@@ -1,5 +1,6 @@
 #include "definitions.h"
 
+Cryptography::RNG::~RNG() noexcept = default;
 QWORD Cryptography::RNG::random(QWORD max)
 {
 	QWORD rh = 0;
