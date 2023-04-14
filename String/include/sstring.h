@@ -48,6 +48,7 @@ namespace String
 		String::string specific;
 
 		STRINGAPI URL(const String::string &);
+		STRINGAPI ~URL() noexcept;
 	};
 
 	STRINGAPI QWORD length(const void *);

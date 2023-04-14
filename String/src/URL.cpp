@@ -7,3 +7,4 @@ String::URL::URL(const String::string &url): location(url)
 	this->scheme = String::string(url.address, idx - 1);
 	this->specific = String::string(url.address.address + idx, url.length() - idx);
 }
+String::URL::~URL() noexcept = default;
