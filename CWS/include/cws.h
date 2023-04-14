@@ -9,7 +9,7 @@
 
 #include <memory.h>
 #include <wsa.h>
-#include <hhttp.h>
+#include <crypto.h>
 
 /*
 +---------------------------------------------------------------+
@@ -33,29 +33,28 @@
 +---------------------------------------------------------------+
 */
 // TODO TLS->WSS: OpenSSL
+// TODO WS URL
 namespace CWS
 {
+	bool verify(const Memory::string &, const Memory::string &);
+
 	class WebSocket
 	{
 		public:
-		HTTP::ConnectionManager manager;
-		HTTP::Message message;
-		String::string key;
-		String::string verification;
+		WSA::Socket *connection;
+		Cryptography::RNG *random;
 
 		WebSocket() = delete;
 		WebSocket(const WebSocket &) = delete;
 		CWS::WebSocket &operator=(const WebSocket &) = delete;
 
-		CWSAPI WebSocket(const WSA::SocketAddress &, const String::string &);
+		CWSAPI WebSocket(WSA::Socket *);
 		CWSAPI WebSocket(CWS::WebSocket &&) noexcept;
-		CWSAPI ~WebSocket();
-		CWSAPI bool alive();
-		CWSAPI WSA::Socket &connection();
 		CWSAPI CWS::WebSocket &operator=(WebSocket &&) noexcept;
-		CWSAPI Memory::string accept();
-		CWSAPI void send(const Memory::string &);
-		CWSAPI void close();
+		CWSAPI bool alive() const;
+		CWSAPI Memory::string receive() const;
+		CWSAPI void send(const Memory::string &) const;
+		CWSAPI void close() const;
 	};
 }
 

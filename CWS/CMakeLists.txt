@@ -4,10 +4,8 @@ include_directories(
 	include
 	../Memory/include
 	../String/include
-	../Filesystem/include
 	../Streaming/include
 	../WSA/include
-	../HTTP/include
 	../Cryptography/include
 	../Timestamp/include
 )
@@ -18,7 +16,7 @@ aux_source_directory(src CWS_SOURCE)
 add_library(CWS SHARED ${CWS_SOURCE})
 target_link_libraries(CWS PUBLIC
 	WSA
-	HTTP
 	Cryptography
 	Timestamp
+	String
 )
