@@ -12,20 +12,25 @@ CWS::WebSocket::~WebSocket()
 CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept = default;
 bool CWS::WebSocket::alive() const
 {
-	return this->connection->opening();
+	return this->opening;
 }
-Memory::string CWS::WebSocket::receive() const
+CWS::Message CWS::WebSocket::receive() const
 {
+	CWS::Message msg;
 	Streaming::fully conn(this->connection);
-	Memory::string payload(0);
+	Memory::string &payload = msg.context;
 	BYTE buf[16];
 	BYTE FIN = 0;
+	BYTE rsv = 0xFF;
+	BYTE opc = 0xFF;
 	while (!FIN)
 	{
 		conn.read(buf, 1);
 		FIN = (buf[0] >> 7) & 0x1;
 		BYTE RSV = (buf[0] >> 4) & 0x7;
-		BYTE OPC = buf[0] & 0xF; // TODO ping-pong opcode
+		BYTE OPC = buf[0] & 0xF; // TODO process opcode
+		rsv = (rsv == 0xFF) ? RSV : rsv;
+		opc = (opc == 0xFF) ? OPC : opc;
 
 		conn.read(buf, 1);
 		BYTE MASK = (buf[0] >> 7) & 0x1;
@@ -64,16 +69,19 @@ Memory::string CWS::WebSocket::receive() const
 			}
 		}
 	}
-	return payload;
+	msg.RSV = rsv;
+	msg.OPC = opc;
+	return msg;
 }
-void CWS::WebSocket::send(const Memory::string &payload) const
+void CWS::WebSocket::send(const CWS::Message &msg) const
 {
+	const Memory::string &payload = msg.context;
 	Streaming::fully conn(this->connection);
 	BYTE prefix[14];
-	// FIN = 1
-	// RSV = 0
-	// OPC = 0x2
+
 	prefix[0] = 0x82;
+	prefix[0] |= (msg.RSV & 0x7) << 4;
+	prefix[0] |= (msg.OPC & 0xF);
 
 	// MSK = 1
 	prefix[1] = 0x80;
@@ -111,4 +119,8 @@ void CWS::WebSocket::send(const Memory::string &payload) const
 	conn.write(prefix, offset + 4);
 	conn.write(data.address, data.length);
 	this->connection->flush();
+}
+void CWS::WebSocket::close()
+{
+	this->opening = false;
 }

@@ -36,13 +36,28 @@
 // TODO WS URL
 namespace CWS
 {
-	bool verify(const Memory::string &, const Memory::string &);
+	CWSAPI extern const BYTE OPC_CONTINUATION;
+	CWSAPI extern const BYTE OPC_TEXT;
+	CWSAPI extern const BYTE OPC_BINARY;
+	CWSAPI extern const BYTE OPC_CLOSE;
+	CWSAPI extern const BYTE OPC_PING;
+	CWSAPI extern const BYTE OPC_PONG;
 
+	CWSAPI bool verify(const Memory::string &, const Memory::string &);
+
+	class Message
+	{
+		public:
+		BYTE RSV = 0;
+		BYTE OPC = CWS::OPC_BINARY;
+		Memory::string context;
+	};
 	class WebSocket
 	{
 		public:
 		WSA::Socket *connection;
 		Cryptography::RNG *random;
+		bool opening = true;
 
 		WebSocket() = delete;
 		WebSocket(const WebSocket &) = delete;
@@ -53,9 +68,9 @@ namespace CWS
 		CWSAPI ~WebSocket();
 		CWSAPI CWS::WebSocket &operator=(WebSocket &&) noexcept;
 		CWSAPI bool alive() const;
-		CWSAPI Memory::string receive() const;
-		CWSAPI void send(const Memory::string &) const;
-		CWSAPI void close() const;
+		CWSAPI CWS::Message receive() const;
+		CWSAPI void send(const CWS::Message &) const;
+		CWSAPI void close();
 	};
 }
 
