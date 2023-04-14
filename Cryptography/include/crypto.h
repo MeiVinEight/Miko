@@ -149,10 +149,28 @@ namespace Cryptography
 		CRYPTOAPI void update(const void *, QWORD) override;
 		CRYPTOAPI Memory::string finally() override;
 	};
+	class RNG
+	{
+		public:
+		CRYPTOAPI virtual void seed(QWORD) = 0;
+		CRYPTOAPI virtual QWORD random() = 0;
+		/**
+		* @param max
+		*
+		* Generate random number in [0, max - 1].
+		* <br/>
+		* Assume <code>r</code> is a random number in [0, 2<sup>64</sup>-1],
+		* this works looks like: <code>r * (max/2<sup>64</sup>)</code>.
+		* <br/>
+		* Make x as a 128-bit unsigned number, and x = r * max,
+		* finally, return x's highest 64 bits.
+		*/
+		CRYPTOAPI virtual QWORD random(QWORD);
+	};
 	/**
 	* MT19937-64 engine, generate random number in [0, 2<sup>64</sup>-1].
 	*/
-	class MersenneTwister
+	class MersenneTwister: public RNG
 	{
 		private:
 		static const int W = 64;
@@ -173,21 +191,9 @@ namespace Cryptography
 		QWORD MT[Cryptography::MersenneTwister::N]{0};
 		QWORD K = 0;
 		public:
-		CRYPTOAPI void seed(QWORD);
+		CRYPTOAPI void seed(QWORD) override;
 		CRYPTOAPI void twist();
-		CRYPTOAPI QWORD random();
-		/**
-		* @param max
-		*
-		* Generate random number in [0, max - 1].
-		* <br/>
-		* Assume <code>r</code> is a random number in [0, 2<sup>64</sup>-1],
-		* this works looks like: <code>r * (max/2<sup>64</sup>)</code>.
-		* <br/>
-		* Make x as a 128-bit unsigned number, and x = r * max,
-		* finally, return x's highest 64 bits.
-		*/
-		CRYPTOAPI QWORD random(QWORD);
+		CRYPTOAPI QWORD random() override;
 	};
 }
 
