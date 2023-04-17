@@ -39,6 +39,7 @@ namespace String
 		STRINGAPI QWORD length() const;
 		STRINGAPI String::string lower() const;
 		STRINGAPI String::string upper() const;
+		STRINGAPI QWORD search(char) const;
 	};
 	class URL
 	{
@@ -47,8 +48,9 @@ namespace String
 		String::string scheme;
 		String::string specific;
 
-		STRINGAPI URL(const String::string &);
-		STRINGAPI ~URL() noexcept;
+		STRINGAPI URL();
+		STRINGAPI virtual ~URL() noexcept;
+		STRINGAPI virtual void resolve(const String::string &);
 	};
 
 	STRINGAPI QWORD length(const void *);

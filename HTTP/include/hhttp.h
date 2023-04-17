@@ -36,9 +36,10 @@ namespace HTTP
 		public:
 		String::string host;
 		WORD port = 80;
+		bool special = false;
 		String::string path;
 
-		HTTPAPI URL(const String::string &);
+		HTTPAPI void resolve(const String::string &) override;
 	};
 	class Message
 	{
