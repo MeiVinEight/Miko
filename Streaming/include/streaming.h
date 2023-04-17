@@ -62,7 +62,9 @@ namespace Streaming
 		STREAMINGAPI Streaming::format &operator<<(const String::string &);
 		STREAMINGAPI Streaming::format &operator<<(void (*)(Streaming::stream *));
 	};
+	STREAMINGAPI void CR(Streaming::stream *);
 	STREAMINGAPI void LF(Streaming::stream *);
+	STREAMINGAPI void CRLF(Streaming::stream *);
 }
 
 #endif //STREAMING_H
