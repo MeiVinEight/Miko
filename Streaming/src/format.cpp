@@ -112,7 +112,7 @@ Streaming::format &Streaming::format::operator>>(String::string &str)
 	{
 		char c;
 		(*this) >> c;
-		whitespace |= c > 0x20;
+		whitespace &= c <= 0x20;
 		continu = whitespace || c > 0x20;
 		this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
 		if (c > 0x20)
