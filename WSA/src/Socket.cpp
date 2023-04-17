@@ -87,13 +87,6 @@ DWORD WSA::Socket::write(const void *b, DWORD len)
 }
 void WSA::Socket::flush()
 {
-	if (~this->connection)
-	{
-		if (!FlushFileBuffers((HANDLE) this->connection))
-		{
-			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
-		}
-	}
 }
 QWORD WSA::Socket::available()
 {

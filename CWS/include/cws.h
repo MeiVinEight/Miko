@@ -32,45 +32,58 @@
 |                     Payload Data continued ...                |
 +---------------------------------------------------------------+
 */
-// TODO TLS->WSS: OpenSSL
+// TODO WS + TLS -> WSS
 // TODO WS URL
 namespace CWS
 {
-	CWSAPI extern const BYTE OPC_CONTINUATION;
-	CWSAPI extern const BYTE OPC_TEXT;
-	CWSAPI extern const BYTE OPC_BINARY;
-	CWSAPI extern const BYTE OPC_CLOSE;
-	CWSAPI extern const BYTE OPC_PING;
-	CWSAPI extern const BYTE OPC_PONG;
+	static const BYTE OPC_CONTINUATION = 0x0;
+	static const BYTE OPC_TEXT         = 0x1;
+	static const BYTE OPC_BINARY       = 0x2;
+	static const BYTE OPC_CLOSE        = 0x8;
+	static const BYTE OPC_PING         = 0x9;
+	static const BYTE OPC_PONG         = 0xA;
 
+	static const DWORD CLOSE_NORMAL_CLOSURE      = 1000;
+	static const DWORD CLOSE_GOING_AWAY          = 1001;
+	static const DWORD CLOSE_PROTOCOL_ERROR      = 1002;
+	static const DWORD CLOSE_REJECT              = 1003;
+	static const DWORD CLOSE_TYPE_NOT_CONSISTENT = 1007;
+	static const DWORD CLOSE_VIOLATION_MESSAGE   = 1008;
+	static const DWORD CLOSE_MESSAGE_TOO_BIG     = 1009;
+	static const DWORD CLOSE_EXPECTED_EXTENSION  = 1010;
+	static const DWORD CLOSE_PREVENTED           = 1011;
+
+	CWSAPI Memory::string security(const Memory::string &);
 	CWSAPI bool verify(const Memory::string &, const Memory::string &);
 
 	class Message
 	{
 		public:
+		BYTE FIN = 1;
 		BYTE RSV = 0;
+		BYTE MSK = 1;
 		BYTE OPC = CWS::OPC_BINARY;
 		Memory::string context;
 	};
 	class WebSocket
 	{
 		public:
-		WSA::Socket *connection;
-		Cryptography::RNG *random;
+		WSA::Socket *connection = nullptr;
+		Cryptography::RNG *random = nullptr;
 		bool opening = true;
+		CWS::Message control;
 
-		WebSocket() = delete;
-		WebSocket(const WebSocket &) = delete;
-		CWS::WebSocket &operator=(const WebSocket &) = delete;
-
-		CWSAPI WebSocket(WSA::Socket *);
+		CWSAPI WebSocket();
+		CWSAPI WebSocket(const CWS::WebSocket &);
 		CWSAPI WebSocket(CWS::WebSocket &&) noexcept;
-		CWSAPI ~WebSocket();
-		CWSAPI CWS::WebSocket &operator=(WebSocket &&) noexcept;
+		CWSAPI virtual ~WebSocket();
+		CWSAPI CWS::WebSocket &operator=(const CWS::WebSocket &);
+		CWSAPI CWS::WebSocket &operator=(CWS::WebSocket &&) noexcept;
 		CWSAPI bool alive() const;
-		CWSAPI CWS::Message receive() const;
-		CWSAPI void send(const CWS::Message &) const;
-		CWSAPI void close();
+		CWSAPI CWS::Message frame() const;
+		CWSAPI void frame(const CWS::Message &) const;
+		CWSAPI CWS::Message receive();
+		CWSAPI void transmit(const CWS::Message &);
 	};
 }
 

@@ -1,90 +1,113 @@
 #include "definitions.h"
 
-CWS::WebSocket::WebSocket(WSA::Socket *conn): connection(conn), random(new Cryptography::MersenneTwister)
+CWS::WebSocket::WebSocket(): random(new Cryptography::MersenneTwister)
 {
 	this->random->seed(Timestamp::current());
 }
-CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept = default;
+CWS::WebSocket::WebSocket(const CWS::WebSocket &copy)
+{
+	this->connection = copy.connection;
+	this->random = new Cryptography::MersenneTwister;
+	this->random->seed(Timestamp::current());
+	this->opening = copy.opening;
+	this->control = copy.control;
+}
+CWS::WebSocket::WebSocket(CWS::WebSocket &&move) noexcept: control((CWS::Message &&) move.control)
+{
+	this->connection = move.connection;
+	this->random = move.random;
+	this->opening = move.opening;
+	move.random = nullptr;
+}
 CWS::WebSocket::~WebSocket()
 {
 	delete this->random;
 }
-CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept = default;
+CWS::WebSocket &CWS::WebSocket::operator=(const CWS::WebSocket &copy)
+{
+	if (this != &copy)
+	{
+		(*this) = CWS::WebSocket(copy);
+	}
+	return *this;
+}
+CWS::WebSocket &CWS::WebSocket::operator=(CWS::WebSocket &&move) noexcept
+{
+	if (this != &move)
+	{
+		this->connection = move.connection;
+		this->random = move.random;
+		this->random = move.random;
+		this->opening = move.opening;
+		move.random = nullptr;
+	}
+	return *this;
+}
 bool CWS::WebSocket::alive() const
 {
 	return this->opening;
 }
-CWS::Message CWS::WebSocket::receive() const
+CWS::Message CWS::WebSocket::frame() const
 {
 	CWS::Message msg;
 	Streaming::fully conn(this->connection);
-	Memory::string &payload = msg.context;
 	BYTE buf[16];
-	BYTE FIN = 0;
-	BYTE rsv = 0xFF;
-	BYTE opc = 0xFF;
-	while (!FIN)
+	conn.read(buf, 1);
+	msg.FIN = (buf[0] >> 7) & 0x1;
+	msg.RSV = (buf[0] >> 4) & 0x7;
+	msg.OPC = (buf[0] >> 0) & 0xF;
+
+	conn.read(buf, 1);
+	BYTE MASK = (buf[0] >> 7) & 1;
+
+	QWORD length = buf[0] & 0x7F;
+	if (length == 126)
 	{
-		conn.read(buf, 1);
-		FIN = (buf[0] >> 7) & 0x1;
-		BYTE RSV = (buf[0] >> 4) & 0x7;
-		BYTE OPC = buf[0] & 0xF; // TODO process opcode
-		rsv = (rsv == 0xFF) ? RSV : rsv;
-		opc = (opc == 0xFF) ? OPC : opc;
-
-		conn.read(buf, 1);
-		BYTE MASK = (buf[0] >> 7) & 0x1;
-
-		QWORD length = buf[0] & 0x7F;
-		if (length == 126)
+		conn.read(buf, 2);
+		length = (buf[0] << 8) | buf[1];
+	}
+	else if (length == 127)
+	{
+		conn.read(buf, 8);
+		length = 0;
+		for (WORD i = 0; i < 8; i++)
 		{
-			conn.read(buf, 2);
-			length = (buf[0] << 8) | buf[1];
-		}
-		else if (length == 127)
-		{
-			conn.read(buf, 8);
-			length = 0;
-			for (WORD i = 0; i < 8; i++)
-			{
-				length <<= 8;
-				length |= buf[i];
-			}
-		}
-
-		BYTE maskingKey[4]{0};
-		if (MASK)
-		{
-			conn.read(maskingKey, 4);
-		}
-
-		QWORD offset = payload.length;
-		payload.resize(payload.length + length);
-		conn.read(payload.address + offset, length);
-		if (MASK)
-		{
-			for (QWORD i = 0; i < offset; i++)
-			{
-				payload[offset + i] ^= maskingKey[i % 4];
-			}
+			length <<= 8;
+			length |= buf[i];
 		}
 	}
-	msg.RSV = rsv;
-	msg.OPC = opc;
+
+	BYTE maskingKey[4]{0};
+	if (MASK)
+	{
+		conn.read(maskingKey, 4);
+	}
+	msg.context.resize(length);
+	conn.read(msg.context.address, msg.context.length);
+	if (MASK)
+	{
+		for (QWORD i = 0; i < msg.context.length; i++)
+		{
+			msg.context[i] ^= maskingKey[i % 4];
+		}
+	}
 	return msg;
 }
-void CWS::WebSocket::send(const CWS::Message &msg) const
+void CWS::WebSocket::frame(const CWS::Message &frame) const
 {
-	const Memory::string &payload = msg.context;
+	if (!this->alive())
+		throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+
+	const Memory::string &payload = frame.context;
 	Streaming::fully conn(this->connection);
 	BYTE prefix[14];
 
-	prefix[0] = 0x82;
-	prefix[0] |= (msg.RSV & 0x7) << 4;
-	prefix[0] |= (msg.OPC & 0xF);
+	prefix[0] |= (frame.FIN & 0x1) << 7;
+	prefix[0] |= (frame.RSV & 0x7) << 4;
+	prefix[0] |= (frame.OPC & 0xF) << 0;
 
 	// MSK = 1
-	prefix[1] = 0x80;
+	prefix[1] |= (frame.MSK & 0x1) << 7;
 	WORD offset = 2;
 	if (payload.length < 126)
 	{
@@ -106,9 +129,15 @@ void CWS::WebSocket::send(const CWS::Message &msg) const
 			prefix[2 + i] = (payload.length >> (8 * (7 - i))) & 0xFF;
 		}
 	}
-	DWORD mask = this->random->random();
+	conn.write(prefix, offset);
+
+	DWORD mask = 0;
+	if (frame.MSK)
+	{
+		mask = this->random->random();
+		conn.write(&mask, 4);
+	}
 	BYTE *maskingKey = (BYTE *) &mask;
-	Memory::copy(prefix + offset, &mask, 4);
 
 	Memory::string data(payload.length);
 	Memory::copy(data.address, payload.address, payload.length);
@@ -116,11 +145,47 @@ void CWS::WebSocket::send(const CWS::Message &msg) const
 	{
 		data[i] ^= maskingKey[i % 4];
 	}
-	conn.write(prefix, offset + 4);
 	conn.write(data.address, data.length);
 	this->connection->flush();
 }
-void CWS::WebSocket::close()
+CWS::Message CWS::WebSocket::receive()
 {
-	this->opening = false;
+	CWS::Message msg;
+	Memory::string &payload = msg.context;
+	BYTE FIN = 0;
+	BYTE RSV = 0xFF;
+	BYTE OPC = 0xFF;
+	while (!FIN)
+	{
+		CWS::Message frame = this->frame();
+		if (frame.OPC & 0x80)
+		{
+			if (frame.OPC == CWS::OPC_PING)
+			{
+				CWS::Message pong = frame;
+				pong.OPC = CWS::OPC_PONG;
+				this->transmit(pong);
+			}
+			this->control = frame;
+		}
+		else
+		{
+			FIN = frame.FIN;
+			RSV = (RSV == 0xFF) ? frame.RSV : RSV;
+			OPC = (OPC == 0xFF) ? frame.OPC : OPC;
+
+			QWORD offset = payload.length;
+			payload.resize(payload.length + frame.context.length);
+			Memory::copy(payload.address + offset, frame.context.address, frame.context.length);
+		}
+	}
+	msg.RSV = RSV;
+	msg.OPC = OPC;
+	return msg;
+}
+void CWS::WebSocket::transmit(const CWS::Message &msg)
+{
+	this->frame(msg);
+	if (msg.OPC == CWS::OPC_CLOSE)
+		this->opening = false;
 }
