@@ -48,7 +48,6 @@ namespace String
 		String::string scheme;
 		String::string specific;
 
-		STRINGAPI URL();
 		STRINGAPI virtual ~URL() noexcept;
 		STRINGAPI virtual void resolve(const String::string &);
 	};

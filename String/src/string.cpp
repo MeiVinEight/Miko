@@ -1,9 +1,6 @@
 #include "definitions.h"
 
-String::string::string()
-{
-	this->address[0] = 0;
-}
+String::string::string() = default;
 String::string::string(const char *str): string(str, String::length(str))
 {
 }
