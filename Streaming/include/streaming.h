@@ -27,9 +27,8 @@ namespace Streaming
 	};
 	class fully: public Streaming::stream
 	{
-		private:
-		Streaming::stream *stream;
 		public:
+		Streaming::stream *stream;
 		STREAMINGAPI fully(Streaming::stream *);
 		STREAMINGAPI DWORD read(void *, DWORD) override;
 		STREAMINGAPI DWORD write(const void *, DWORD) override;
