@@ -31,6 +31,9 @@ namespace HTTP
 	HTTPAPI extern const DWORD ERRNO_UNKNOWN_REQUEST_METHOD;
 	HTTPAPI extern const DWORD ERRNO_UNKNOWN_STATUS_CODE;
 
+	static const BYTE HTTP_CLIENT = 0;
+	static const BYTE HTTP_SERVER = 1;
+
 	class URL: public String::URL
 	{
 		public:
@@ -65,22 +68,16 @@ namespace HTTP
 	class ConnectionManager
 	{
 		public:
-		WSA::Socket connection;
+		HTTP::URL URL;
+		WSA::Socket *connection = nullptr;
+		BYTE bound = HTTP::HTTP_CLIENT;
 
-		ConnectionManager() = delete;
-		ConnectionManager(const HTTP::ConnectionManager &) = delete;
-		HTTP::ConnectionManager &operator=(const HTTP::ConnectionManager &) = delete;
-
-		HTTPAPI ConnectionManager(const WSA::SocketAddress &);
-		HTTPAPI ConnectionManager(HTTP::ConnectionManager &&) noexcept;
-		HTTPAPI ~ConnectionManager();
-		HTTPAPI HTTP::ConnectionManager &operator=(HTTP::ConnectionManager &&) noexcept;
-		HTTPAPI void send(const HTTP::Message &);
-		HTTPAPI HTTP::Message accept();
-		HTTPAPI void close();
+		HTTPAPI void transmit(const HTTP::Message &) const;
+		HTTPAPI HTTP::Message receive() const;
 	};
 
 	HTTPAPI String::string method(WORD);
+	HTTPAPI WORD method(const String::string &);
 	HTTPAPI String::string status(WORD);
 }
 

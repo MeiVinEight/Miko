@@ -1,5 +1,7 @@
 #include "definitions.h"
 
+const QWORD RM_TYPE_COUNT = 9;
+
 const WORD HTTP::RM_GET        = 1;
 const WORD HTTP::RM_HEAD       = 2;
 const WORD HTTP::RM_POST       = 3;
@@ -17,7 +19,7 @@ const WORD HTTP::HV_2_0        = ((2 << 8) | 0);
 const DWORD HTTP::ERRNO_UNKNOWN_REQUEST_METHOD = Memory::registry("Unknown request method");
 const DWORD HTTP::ERRNO_UNKNOWN_STATUS_CODE = Memory::registry("Unknown status code");
 
-String::string METHODS[] = {
+String::string METHODS[RM_TYPE_COUNT] = {
 	"GET",
 	"HEAD",
 	"POST",
@@ -32,10 +34,17 @@ String::string METHODS[] = {
 String::string HTTP::method(WORD id)
 {
 	id--;
-	if (id < 9)
+	if (id < RM_TYPE_COUNT)
 	{
 		return METHODS[id];
 	}
+	throw Memory::exception(HTTP::ERRNO_UNKNOWN_REQUEST_METHOD);
+}
+WORD HTTP::method(const String::string &str)
+{
+	for (WORD id = 0; id < RM_TYPE_COUNT; id++)
+		if (METHODS[id] == str)
+			return id + 1;
 	throw Memory::exception(HTTP::ERRNO_UNKNOWN_REQUEST_METHOD);
 }
 String::string HTTP::status(WORD stat)
