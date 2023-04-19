@@ -196,6 +196,14 @@ namespace Cryptography
 		CRYPTOAPI void seed(QWORD) override;
 		CRYPTOAPI void twist();
 		CRYPTOAPI QWORD random() override;
+		CRYPTOAPI QWORD random(QWORD) override;
+	};
+	class SecurityRandom: public RNG
+	{
+		public:
+		CRYPTOAPI void seed(QWORD) override;
+		CRYPTOAPI QWORD random() override;
+		CRYPTOAPI QWORD random(QWORD) override;
 	};
 }
 

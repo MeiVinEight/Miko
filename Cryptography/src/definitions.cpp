@@ -1,4 +1,7 @@
 #include "definitions.h"
+#pragma comment(lib, "bcrypt.lib")
+
+BCRYPT_ALG_HANDLE RNG_HANDLE = nullptr;
 
 QWORD GetAsLEndian(BYTE n, const void *p)
 {

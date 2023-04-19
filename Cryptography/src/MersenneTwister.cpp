@@ -39,3 +39,7 @@ QWORD Cryptography::MersenneTwister::random()
 	this->K++;
 	return z;
 }
+QWORD Cryptography::MersenneTwister::random(QWORD max)
+{
+	return this->Cryptography::RNG::random(max);
+}
