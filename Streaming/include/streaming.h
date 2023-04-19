@@ -31,7 +31,11 @@ namespace Streaming
 		Streaming::stream *stream;
 		STREAMINGAPI fully(Streaming::stream *);
 		STREAMINGAPI DWORD read(void *, DWORD) override;
+		STREAMINGAPI DWORD read(const Memory::string &) override;
+		STREAMINGAPI DWORD read(const Memory::string &, DWORD) override;
 		STREAMINGAPI DWORD write(const void *, DWORD) override;
+		STREAMINGAPI DWORD write(const Memory::string &) override;
+		STREAMINGAPI DWORD write(const Memory::string &, DWORD) override;
 		STREAMINGAPI void flush() override;
 		STREAMINGAPI QWORD available() override;
 	};

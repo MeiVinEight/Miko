@@ -15,6 +15,14 @@ DWORD Streaming::fully::read(void *b, DWORD length)
 	}
 	return ret;
 }
+DWORD Streaming::fully::read(const Memory::string &buf)
+{
+	return this->Streaming::stream::read(buf);
+}
+DWORD Streaming::fully::read(const Memory::string &buf, DWORD len)
+{
+	return this->Streaming::stream::read(buf, len);
+}
 DWORD Streaming::fully::write(const void *b, DWORD length)
 {
 	DWORD ret = length;
@@ -26,6 +34,14 @@ DWORD Streaming::fully::write(const void *b, DWORD length)
 		length -= written;
 	}
 	return ret;
+}
+DWORD Streaming::fully::write(const Memory::string &buf)
+{
+	return this->Streaming::stream::write(buf);
+}
+DWORD Streaming::fully::write(const Memory::string &buf, DWORD len)
+{
+	return this->Streaming::stream::write(buf, len);
 }
 void Streaming::fully::flush()
 {
