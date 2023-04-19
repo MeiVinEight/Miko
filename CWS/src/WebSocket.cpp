@@ -100,7 +100,7 @@ void CWS::WebSocket::frame(const CWS::Message &frame) const
 
 	const Memory::string &payload = frame.context;
 	Streaming::fully conn(this->connection);
-	BYTE prefix[14];
+	BYTE prefix[14] = {0};
 
 	prefix[0] |= (frame.FIN & 0x1) << 7;
 	prefix[0] |= (frame.RSV & 0x7) << 4;
