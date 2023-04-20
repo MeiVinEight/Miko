@@ -3,7 +3,7 @@
 WSA::Socket::Socket() = default;
 WSA::Socket::Socket(WSA::Socket &&move) noexcept: connection(move.connection), IP(move.IP), RP(move.RP), LP(move.LP)
 {
-	move.connection = INVALID_SOCKET;
+	move.connection = WSA::INVALID_SOCKET;
 	move.IP = {0, 0, 0, 0};
 	move.LP = move.RP = 0;
 }
@@ -16,15 +16,67 @@ WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move) noexcept
 		this->IP = move.IP;
 		this->LP = move.LP;
 		this->RP = move.RP;
-		move.connection = INVALID_SOCKET;
+		move.connection = WSA::INVALID_SOCKET;
 		move.IP = {0, 0, 0, 0};
 		move.LP = move.RP = 0;
 	}
 	return *this;
 }
+void WSA::Socket::bind(const WSA::SocketAddress &endpoint)
+{
+	if (this->connection == WSA::INVALID_SOCKET)
+	{
+		this->IP = endpoint.IP;
+		this->LP = endpoint.ID;
+
+		// Create an unbound socket
+		this->connection = WSA::socket();
+
+		// bind this socket to address
+		SOCKADDR_IN addr;
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = htonl(endpoint.IP.make());
+		addr.sin_port = htons(endpoint.ID);
+		int err = ::bind(this->connection, (SOCKADDR *) &addr, sizeof(SOCKADDR_IN));
+		err = err ? err : listen(this->connection, this->suspend);
+		if (err)
+		{
+			err = WSAGetLastError();
+			this->close();
+			throw Memory::exception(err, Memory::DOSERROR);
+		}
+		return;
+	}
+	throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
+}
+WSA::Socket WSA::Socket::accept() const
+{
+	if (~this->connection)
+	{
+		SOCKADDR_IN addr;
+		int len = sizeof(SOCKADDR_IN);
+
+		SOCKET conn = ::accept(this->connection, (SOCKADDR *) &addr, &len);
+		if (conn == WSA::INVALID_SOCKET)
+		{
+			throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+		}
+		WSA::Socket sock;
+		sock.connection = conn;
+		sock.IP.take(htonl(addr.sin_addr.S_un.S_addr));
+		sock.RP = htons(addr.sin_port);
+
+		len = sizeof(SOCKADDR_IN);
+		getsockname(conn, (SOCKADDR *) &addr, &len);
+		sock.LP = htons(addr.sin_port);
+
+		return sock;
+	}
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+}
 void WSA::Socket::connect(WSA::SocketAddress addr)
 {
-	if (this->connection == INVALID_SOCKET)
+	if (this->connection == WSA::INVALID_SOCKET)
 	{
 		// Create an unbound socket
 		this->connection = WSA::socket();
@@ -106,7 +158,7 @@ void WSA::Socket::close()
 	if (~this->connection)
 	{
 		int wrong = closesocket(this->connection);
-		this->connection = INVALID_SOCKET;
+		this->connection = WSA::INVALID_SOCKET;
 		this->IP = {0, 0, 0, 0};
 		this->RP = this->LP = 0;
 		if (wrong)

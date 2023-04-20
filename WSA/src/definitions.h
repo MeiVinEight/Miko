@@ -13,25 +13,24 @@ extern "C"
 #endif
 
 
-#define WSADESCRIPTION_LEN	256
-#define WSASYS_STATUS_LEN	128
-#define SOCKET_ERROR		(-1)
-#define AF_INET				2               /* internetwork: UDP, TCP, etc. */
-#define SOCK_STREAM			1               /* stream socket */
-#define IPPROTO_TCP			6               /* tcp */
-#define WSAECONNABORTED		10053L
-#define FIONREAD			(0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
-#define DLL_PROCESS_DETACH	0
-#define DLL_PROCESS_ATTACH	1
+#define WSADESCRIPTION_LEN  256
+#define WSASYS_STATUS_LEN   128
+#define SOCKET_ERROR        (-1)
+#define AF_INET             2               /* internetwork: UDP, TCP, etc. */
+#define SOCK_STREAM         1               /* stream socket */
+#define IPPROTO_TCP	        6               /* tcp */
+#define FIONREAD            (0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
+#define DLL_PROCESS_DETACH  0
+#define DLL_PROCESS_ATTACH  1
 
-typedef void 				*HANDLE, *HINSTANCE, *LPVOID;
-typedef unsigned long		u_long;
-typedef BYTE 				UCHAR;
-typedef unsigned short		USHORT, u_short;
-typedef DWORD				ULONG;
-typedef unsigned __int64	size_t;
-typedef int					INT;
-typedef const char			*PCSTR;
+typedef void             *HANDLE, *HINSTANCE, *LPVOID;
+typedef unsigned long    u_long;
+typedef BYTE             UCHAR;
+typedef unsigned short   USHORT, u_short;
+typedef DWORD            ULONG;
+typedef unsigned __int64 size_t;
+typedef int              INT;
+typedef const char       *PCSTR;
 typedef struct
 {
 	WORD					wVersion;
@@ -102,7 +101,6 @@ int __stdcall getsockname(SOCKET, SOCKADDR *, int *);
 INT __stdcall getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
 void __stdcall freeaddrinfo(PADDRINFOA);
 char *__stdcall inet_ntoa(IN_ADDR);
-
 
 #ifdef __cplusplus
 }

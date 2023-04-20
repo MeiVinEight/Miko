@@ -3,7 +3,7 @@
 const DWORD WSA::ERRNO_UNKNOWN_HOST = Memory::registry("Cannot find target host");
 const DWORD WSA::ERRNO_SOCKET_ALREADY_OCCUPIED = Memory::registry("Socket already occupied");
 
-WSA::Address WSA::IP(LPCSTR host)
+WSA::Address WSA::IP(const char *host)
 {
 	ADDRINFOA *info = nullptr;
 	INT err = getaddrinfo(host, nullptr, nullptr, &info);
