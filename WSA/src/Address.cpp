@@ -1,10 +1,17 @@
 #include "definitions.h"
 
+WSA::Address::Address() = default;
+WSA::Address::Address(BYTE s0, BYTE s1, BYTE s2, BYTE s3): address{s0, s1, s2, s3}
+{
+}
+WSA::Address::Address(DWORD s)
+{
+	this->take(s);
+}
 DWORD WSA::Address::make() const
 {
 	return (this->address[0] << 24) | (this->address[1] << 16) | (this->address[2] << 8) | (this->address[3]);
 }
-
 void WSA::Address::take(DWORD addr)
 {
 	this->address[0] = (addr >> 24) & 0xFF;
@@ -12,7 +19,6 @@ void WSA::Address::take(DWORD addr)
 	this->address[2] = (addr >> 8) & 0xFF;
 	this->address[3] = addr & 0xFF;
 }
-
 Memory::string WSA::Address::string() const
 {
 	IN_ADDR ia;

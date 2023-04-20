@@ -38,6 +38,9 @@ namespace WSA
 		public:
 		BYTE address[4]{0};
 
+		Address();
+		Address(BYTE, BYTE, BYTE, BYTE);
+		Address(DWORD);
 		WSA_API DWORD make() const;
 		WSA_API void take(DWORD);
 		WSA_API Memory::string string() const;
@@ -47,6 +50,11 @@ namespace WSA
 		public:
 		WSA::Address IP;
 		WORD ID = 0;
+
+		SocketAddress();
+		SocketAddress(BYTE, BYTE, BYTE, BYTE, WORD);
+		SocketAddress(DWORD, WORD);
+		SocketAddress(const WSA::Address &, WORD);
 	};
 	class Socket: public Streaming::stream
 	{
