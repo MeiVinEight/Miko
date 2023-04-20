@@ -7,7 +7,9 @@ QWORD Cryptography::SecurityRandom::random()
 {
 	const QWORD length = sizeof(QWORD);
 	UCHAR buf[length] = {};
-	BCryptGenRandom(RNG_HANDLE, buf, length, 0);
+	NTSTATUS status = BCryptGenRandom(RNG_HANDLE, buf, length, 0);
+	if (status)
+		throw Memory::exception(status, Memory::NTSTATUS);
 	return *((QWORD *) buf);
 }
 QWORD Cryptography::SecurityRandom::random(QWORD max)
