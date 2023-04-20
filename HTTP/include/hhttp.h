@@ -21,7 +21,6 @@ namespace HTTP
 	HTTPAPI extern const WORD RM_CONNECT;
 	HTTPAPI extern const WORD RM_OPTIONS;
 	HTTPAPI extern const WORD RM_TRACE;
-	HTTPAPI extern const WORD RM_PATCH;
 
 	HTTPAPI extern const WORD HV_0_9;
 	HTTPAPI extern const WORD HV_1_0;

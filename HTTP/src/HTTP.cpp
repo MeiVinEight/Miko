@@ -10,7 +10,6 @@ const WORD HTTP::RM_DELETE     = 5;
 const WORD HTTP::RM_CONNECT    = 6;
 const WORD HTTP::RM_OPTIONS    = 7;
 const WORD HTTP::RM_TRACE      = 8;
-const WORD HTTP::RM_PATCH      = 9;
 const WORD HTTP::HV_0_9        = ((0 << 8) | 9);
 const WORD HTTP::HV_1_0        = ((1 << 8) | 0);
 const WORD HTTP::HV_1_1        = ((1 << 8) | 1);
@@ -28,7 +27,6 @@ String::string METHODS[RM_TYPE_COUNT] = {
 	"CONNECT",
 	"OPTIONS",
 	"TRACE",
-	"PATCH"
 };
 
 String::string HTTP::method(WORD id)
