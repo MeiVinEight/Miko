@@ -13,10 +13,6 @@ extern "C"
 #endif
 
 
-#define WINAPI				__stdcall
-#define NULL				0
-#define PASCAL				__stdcall
-#define WSAAPI				PASCAL
 #define WSADESCRIPTION_LEN	256
 #define WSASYS_STATUS_LEN	128
 #define SOCKET_ERROR		(-1)
@@ -87,26 +83,25 @@ typedef struct addrinfo
 	addrinfo	*ai_next;
 } ADDRINFOA, *PADDRINFOA;
 
-int WSAAPI WSAStartup(WORD, LPWSADATA);
-int WSAAPI WSACleanup(void);
-int WSAAPI WSAGetLastError(void);
-HOSTENT *WSAAPI gethostbyname(const char *);
-SOCKET WSAAPI socket(int, int, int);
-u_long WSAAPI htonl(u_long);
-u_short WSAAPI htons(u_short);
-int WSAAPI bind(SOCKET, const SOCKADDR*, int);
-int WSAAPI listen(SOCKET, int);
-SOCKET WSAAPI accept(SOCKET, SOCKADDR*, int *);
-int WSAAPI closesocket(SOCKET);
-int WSAAPI connect(SOCKET, const SOCKADDR *, int);
-int WSAAPI recv(SOCKET, char *, int, int);
-int WSAAPI send(SOCKET, const char *, int, int);
-int WSAAPI ioctlsocket(SOCKET, long, u_long *);
-int WSAAPI getsockname(SOCKET, SOCKADDR *, int *);
-INT WSAAPI getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
-void WSAAPI freeaddrinfo(PADDRINFOA);
-char *WSAAPI inet_ntoa(IN_ADDR);
-BOOL WINAPI FlushFileBuffers(HANDLE);
+int __stdcall WSAStartup(WORD, LPWSADATA);
+int __stdcall WSACleanup(void);
+int __stdcall WSAGetLastError(void);
+HOSTENT *__stdcall gethostbyname(const char *);
+SOCKET __stdcall socket(int, int, int);
+u_long __stdcall htonl(u_long);
+u_short __stdcall htons(u_short);
+int __stdcall bind(SOCKET, const SOCKADDR*, int);
+int __stdcall listen(SOCKET, int);
+SOCKET __stdcall accept(SOCKET, SOCKADDR*, int *);
+int __stdcall closesocket(SOCKET);
+int __stdcall connect(SOCKET, const SOCKADDR *, int);
+int __stdcall recv(SOCKET, char *, int, int);
+int __stdcall send(SOCKET, const char *, int, int);
+int __stdcall ioctlsocket(SOCKET, long, u_long *);
+int __stdcall getsockname(SOCKET, SOCKADDR *, int *);
+INT __stdcall getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
+void __stdcall freeaddrinfo(PADDRINFOA);
+char *__stdcall inet_ntoa(IN_ADDR);
 
 
 #ifdef __cplusplus

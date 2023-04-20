@@ -36,9 +36,9 @@ extern "C"
 {
 #endif
 
-DWORD WINAPI GetFileType(HANDLE);
-BOOL WINAPI SetFilePointerEx(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, DWORD);
-BOOL WINAPI GetFileSizeEx(HANDLE, PLARGE_INTEGER);
+DWORD __stdcall GetFileType(HANDLE);
+BOOL __stdcall SetFilePointerEx(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, DWORD);
+BOOL __stdcall GetFileSizeEx(HANDLE, PLARGE_INTEGER);
 
 #ifdef __cplusplus
 }
