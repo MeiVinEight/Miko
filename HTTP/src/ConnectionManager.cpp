@@ -8,18 +8,13 @@ void HTTP::ConnectionManager::transmit(const HTTP::Message &msg) const
 	{
 		case HTTP::HTTP_CLIENT:
 		{
-			String::string rm = HTTP::method(msg.method);
-			conn.write(rm.address.address, rm.length());
-			buf[0] = ' ';
-			conn.write(buf, 1);
-			conn.write(msg.URL.address.address, msg.URL.length());
-			Memory::copy(buf, " HTTP/", 6);
-			buf[6] = (char)('0' + ((msg.version >> 8) & 0xFF));
-			buf[7] = '.';
-			buf[8] = (char)('0' + ((msg.version >> 0) & 0xFF));
-			buf[9] = '\r';
-			buf[10] = '\n';
-			conn.write(buf, 11);
+			Streaming::format format(&conn);
+			format << HTTP::method(msg.method) << ' ' << msg.URL << ' ';
+			format << "HTTP/";
+			format << (char)('0' + ((msg.version >> 8) & 0xFF));
+			format << '.';
+			format << (char)('0' + ((msg.version >> 0) & 0xFF));
+			format << Streaming::CRLF;
 			break;
 		}
 		case HTTP::HTTP_SERVER:
