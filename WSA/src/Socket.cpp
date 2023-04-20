@@ -149,6 +149,68 @@ QWORD WSA::Socket::available()
 	}
 	throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 }
+bool WSA::Socket::select(int what, long s, long us) const
+{
+	TIMEVAL val = {};
+	val.tv_sec = s;
+	val.tv_usec = us;
+	fd_set rd = {};
+	fd_set wt = {};
+	int expect;
+	switch (what)
+	{
+		case WSA::SOCK_RD:
+		{
+			expect = 1;
+			rd.fd_count = 1;
+			rd.fd_array[0] = this->connection;
+			break;
+		}
+		case WSA::SOCK_WT:
+		{
+			expect = 1;
+			wt.fd_count = 1;
+			wt.fd_array[0] = this->connection;
+			break;
+		}
+		case WSA::SOCK_RW:
+		{
+			expect = 2;
+			wt.fd_count = rd.fd_count = 1;
+			wt.fd_array[0] = rd.fd_array[0] = this->connection;
+			break;
+		}
+		default:
+		{
+			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		}
+	}
+	timeval *wait = nullptr;
+	if (s != -1)
+		wait = &val;
+
+	int result = ::select(0, &rd, &wt, nullptr, wait);
+	if (result == SOCKET_ERROR)
+	{
+		throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
+	}
+	return result == expect;
+}
+bool WSA::Socket::select(int what) const
+{
+	return this->select(what, -1, 0);
+}
+void WSA::Socket::shutdown(int how) const
+{
+	if (this->connection == WSA::INVALID_SOCKET)
+	{
+		throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+	}
+	if (::shutdown(this->connection, how) == SOCKET_ERROR)
+	{
+		throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
+	}
+}
 BOOL WSA::Socket::opening() const
 {
 	return !!(~this->connection);

@@ -14,6 +14,11 @@ typedef unsigned __int64 SOCKET;
 namespace WSA
 {
 	static const SOCKET INVALID_SOCKET = ~((SOCKET) 0);
+
+	static const int SOCK_RD = 0;
+	static const int SOCK_WT = 1;
+	static const int SOCK_RW = 2;
+
 	WSA_API extern const DWORD ERRNO_UNKNOWN_HOST;
 	WSA_API extern const DWORD ERRNO_SOCKET_ALREADY_OCCUPIED;
 
@@ -64,6 +69,9 @@ namespace WSA
 		WSA_API DWORD write(const void *, DWORD) override;
 		WSA_API void flush() override;
 		WSA_API QWORD available() override;
+		WSA_API bool select(int, long, long) const;
+		WSA_API bool select(int) const;
+		WSA_API void shutdown(int) const;
 		WSA_API BOOL opening() const;
 		WSA_API void close();
 	};

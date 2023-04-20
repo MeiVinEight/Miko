@@ -3,13 +3,13 @@
 #include <crypto.h>
 #include <filesystem.h>
 #include <wsa.h>
-#include <cws.h>
-#include <hhttp.h>
 
 void func()
 {
-	Cryptography::SecurityRandom random;
-	Streaming::cout << random.random() << Streaming::LF;
+	WSA::Socket socket;
+	socket.connect({127, 0, 0, 1, 12138});
+	Streaming::cout << socket.select(WSA::SOCK_RD) << Streaming::LF;
+	socket.close();
 }
 
 int main()

@@ -22,15 +22,17 @@ extern "C"
 #define FIONREAD            (0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
 #define DLL_PROCESS_DETACH  0
 #define DLL_PROCESS_ATTACH  1
+#define FD_SETSIZE          64
 
 typedef void             *HANDLE, *HINSTANCE, *LPVOID;
-typedef unsigned long    u_long;
-typedef BYTE             UCHAR;
-typedef unsigned short   USHORT, u_short;
-typedef DWORD            ULONG;
-typedef unsigned __int64 size_t;
 typedef int              INT;
 typedef const char       *PCSTR;
+typedef unsigned short   USHORT, u_short;
+typedef unsigned int     u_int;
+typedef unsigned long    u_long;
+typedef unsigned __int64 size_t;
+typedef BYTE             UCHAR;
+typedef DWORD            ULONG;
 typedef struct
 {
 	WORD					wVersion;
@@ -81,6 +83,16 @@ typedef struct addrinfo
 	SOCKADDR 	*ai_addr;
 	addrinfo	*ai_next;
 } ADDRINFOA, *PADDRINFOA;
+typedef struct fd_set
+{
+	u_int fd_count;               /* how many are SET? */
+	SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
+} fd_set;
+typedef struct timeval
+{
+	long tv_sec;         /* seconds */
+	long tv_usec;        /* and microseconds */
+} TIMEVAL;
 
 int __stdcall WSAStartup(WORD, LPWSADATA);
 int __stdcall WSACleanup(void);
@@ -101,6 +113,8 @@ int __stdcall getsockname(SOCKET, SOCKADDR *, int *);
 INT __stdcall getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
 void __stdcall freeaddrinfo(PADDRINFOA);
 char *__stdcall inet_ntoa(IN_ADDR);
+int __stdcall shutdown(SOCKET, int);
+int __stdcall select(int, fd_set *, fd_set *, fd_set *, const TIMEVAL *);
 
 #ifdef __cplusplus
 }
