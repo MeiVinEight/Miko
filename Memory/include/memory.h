@@ -73,7 +73,22 @@ namespace Memory
 		MEMORYAPI exception(const Memory::exception &) noexcept;
 		MEMORYAPI ~exception();
 	};
-	// TODO Memory order
+	namespace BE
+	{
+		MEMORYAPI QWORD get(const void *, BYTE);
+		MEMORYAPI WORD get(WORD);
+		MEMORYAPI DWORD get(DWORD);
+		MEMORYAPI QWORD get(QWORD);
+		MEMORYAPI void set(QWORD, void *, BYTE);
+	}
+	namespace LE
+	{
+		MEMORYAPI QWORD get(const void *, BYTE);
+		MEMORYAPI QWORD get(WORD);
+		MEMORYAPI QWORD get(DWORD);
+		MEMORYAPI QWORD get(QWORD);
+		MEMORYAPI void set(QWORD, void *, BYTE);
+	}
 
 	MEMORYAPI extern const BYTE BENDIAN;
 	MEMORYAPI extern const BYTE LENDIAN;

@@ -116,6 +116,10 @@ BOOL __stdcall FreeLibrary(HMODULE);
 void *__cdecl operator new(size_t, void *) noexcept;
 void backtrace(Memory::exception &);
 QWORD StringLength(const void *);
+QWORD GetAsLEndian(const void *, BYTE);
+QWORD GetAsBEndian(const void *, BYTE);
+void SaveAsLEndian(QWORD x, void *p, BYTE n);
+void SaveAsBEndian(QWORD x, void *p, BYTE n);
 
 #ifdef __cplusplus
 }
