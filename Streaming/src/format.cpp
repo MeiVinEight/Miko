@@ -127,6 +127,18 @@ Streaming::format &Streaming::format::operator>>(String::string &str)
 	str = String::string(buf, len);
 	return *this;
 }
+Streaming::format &Streaming::format::operator<<(bool b)
+{
+	if (b)
+	{
+		(*this) << "true";
+	}
+	else
+	{
+		(*this) << "false";
+	}
+	return *this;
+}
 Streaming::format &Streaming::format::operator<<(char x)
 {
 	this->write(&x, 1);

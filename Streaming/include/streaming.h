@@ -57,6 +57,7 @@ namespace Streaming
 		STREAMINGAPI Streaming::format &operator>>(DWORD &);
 		STREAMINGAPI Streaming::format &operator>>(QWORD &);
 		STREAMINGAPI Streaming::format &operator>>(String::string &);
+		STREAMINGAPI Streaming::format &operator<<(bool);
 		STREAMINGAPI Streaming::format &operator<<(char);
 		STREAMINGAPI Streaming::format &operator<<(int);
 		STREAMINGAPI Streaming::format &operator<<(DWORD);
