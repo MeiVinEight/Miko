@@ -132,23 +132,19 @@ HTTP::Message HTTP::ConnectionManager::receive() const
 			str[type][idx++] = ch;
 		}
 	}
+
 	if (message.contain("Content-Length"))
 	{
-		QWORD contentLength = 0;
-		String::string &cl = message["Content-Length"];
-		for (QWORD i = 0; i < cl.length(); i++)
-		{
-			contentLength *= 10;
-			contentLength += cl[i] - '0';
-		}
+		QWORD contentLength = String::integer(message["Content-Length"]);
 		message.content.resize(contentLength);
 		conn.read(message.content.address, contentLength);
 	}
 	QWORD ava = conn.available();
 	if (ava && message["Connection"] == "close")
 	{
-		message.content.resize(ava);
-		conn.read(message.content.address, ava);
+		QWORD offset = message.content.length;
+		message.content.resize(offset + ava);
+		conn.read(message.content.address + offset, ava);
 	}
 	return message;
 }
