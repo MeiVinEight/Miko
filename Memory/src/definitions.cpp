@@ -3,6 +3,8 @@
 
 Memory::string *ErrorMessage = nullptr;
 DWORD ErrorCode = 0;
+HMODULE NTDLL = nullptr;
+ULONG (*RtlNtStatusToDosError)(NTSTATUS) = nullptr;
 
 void *__cdecl operator new(size_t size, void *where) noexcept
 {

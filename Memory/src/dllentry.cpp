@@ -20,6 +20,14 @@ int __stdcall DllMain(HINSTANCE *, unsigned int reason, void *)
 			// symbol system
 			SymSetOptions(SYMOPT_LOAD_LINES);
 			result &= !!SymInitialize(GetCurrentProcess(), nullptr, 1);
+
+			NTDLL = LoadLibraryA("ntdll.dll");
+			result &= NTDLL != nullptr;
+			if (NTDLL)
+			{
+				RtlNtStatusToDosError = (ULONG (*)(NTSTATUS)) GetProcAddress(NTDLL, "RtlNtStatusToDosError");
+				result &= RtlNtStatusToDosError != nullptr;
+			}
 			break;
 		}
 		case DLL_PROCESS_DETACH:
@@ -27,6 +35,7 @@ int __stdcall DllMain(HINSTANCE *, unsigned int reason, void *)
 			delete[] ErrorMessage;
 			result &= !!SymCleanup(GetCurrentProcess());
 			result &= !!HeapDestroy(heap);
+			result &= !!FreeLibrary(NTDLL);
 			break;
 		}
 	}

@@ -24,7 +24,7 @@ WSA::Address WSA::IP(LPCSTR host)
 		throw Memory::exception(WSA::ERRNO_UNKNOWN_HOST);
 	}
 	freeaddrinfo(info);
-	throw Memory::exception(err, Memory::INTERNAL);
+	throw Memory::exception(err, Memory::DOSERROR);
 }
 SOCKET WSA::socket()
 {
@@ -33,5 +33,5 @@ SOCKET WSA::socket()
 	{
 		return sock;
 	}
-	throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
+	throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 }

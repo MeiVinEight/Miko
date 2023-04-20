@@ -27,5 +27,5 @@ Memory::string WSA::Address::string() const
 		Memory::copy(ret.address, s, ret.length);
 		return ret;
 	}
-	throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
+	throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 }

@@ -16,8 +16,9 @@ typedef unsigned long long	QWORD;
 
 namespace Memory
 {
-	MEMORYAPI extern const BYTE INTERNAL;
-	MEMORYAPI extern const BYTE EXTERNAL;
+	static const BYTE NTSTATUS = 0;
+	static const BYTE DOSERROR = 1;
+	static const BYTE EXTERNAL = 2;
 
 	MEMORYAPI void *allocate(QWORD);
 	MEMORYAPI void *reallocate(void *, QWORD);
@@ -63,7 +64,7 @@ namespace Memory
 		};
 
 		DWORD code = 0;
-		BYTE type = Memory::INTERNAL;
+		BYTE type = Memory::DOSERROR;
 		Memory::string message;
 		Memory::exception::frame *stack = nullptr;
 		DWORD count = 0;

@@ -38,7 +38,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		{
 			int err = WSAGetLastError();
 			this->close();
-			throw Memory::exception(err, Memory::INTERNAL);
+			throw Memory::exception(err, Memory::DOSERROR);
 		}
 		this->IP = addr.IP;
 		this->RP = addr.ID;
@@ -62,7 +62,7 @@ DWORD WSA::Socket::read(void *b, DWORD len)
 			{
 				DWORD err = WSAGetLastError();
 				this->close();
-				throw Memory::exception(err, Memory::INTERNAL);
+				throw Memory::exception(err, Memory::DOSERROR);
 			}
 			return readed;
 		}
@@ -79,7 +79,7 @@ DWORD WSA::Socket::write(const void *b, DWORD len)
 		{
 			DWORD err = WSAGetLastError();
 			this->close();
-			throw Memory::exception(err, Memory::INTERNAL);
+			throw Memory::exception(err, Memory::DOSERROR);
 		}
 		return sended;
 	}
@@ -95,7 +95,7 @@ QWORD WSA::Socket::available()
 	{
 		return ava;
 	}
-	throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
+	throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 }
 BOOL WSA::Socket::opening() const
 {
@@ -111,7 +111,7 @@ void WSA::Socket::close()
 		this->RP = this->LP = 0;
 		if (wrong)
 		{
-			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
+			throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 		}
 	}
 }

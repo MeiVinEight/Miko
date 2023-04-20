@@ -43,7 +43,7 @@ void WSA::ServerSocket::bind(const WSA::SocketAddress &endpoint)
 		{
 			err = WSAGetLastError();
 			this->close();
-			throw Memory::exception(err, Memory::INTERNAL);
+			throw Memory::exception(err, Memory::DOSERROR);
 		}
 		return;
 	}
@@ -87,7 +87,7 @@ void WSA::ServerSocket::close()
 		this->address = {{0, 0, 0, 0}, 0};
 		if (wrong)
 		{
-			throw Memory::exception(WSAGetLastError(), Memory::INTERNAL);
+			throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 		}
 	}
 }

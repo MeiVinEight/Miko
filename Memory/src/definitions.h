@@ -26,14 +26,16 @@ extern "C"
 
 
 typedef void *HANDLE, *HINSTANCE, *LPVOID, *PVOID, *HMODULE;
-typedef unsigned __int64 ULONG_PTR, SIZE_T, ULONGLONG;
+typedef __int64 INT_PTR;
+typedef unsigned __int64 ULONG_PTR, SIZE_T, ULONGLONG, DWORD64, *PDWORD64, ULONG64;
 typedef char CHAR, *va_list;
 typedef CHAR *LPSTR;
-typedef const char *PCSTR;
-typedef unsigned __int64 DWORD64, *PDWORD64, ULONG64;
+typedef const CHAR *PCSTR, *LPCSTR;
+typedef long LONG, NTSTATUS;
 typedef unsigned long ULONG;
 typedef DWORD *PDWORD;
 typedef const void *LPCVOID;
+typedef INT_PTR (__stdcall *FARPROC)();
 typedef struct
 {
 	ULONG       SizeOfStruct;
@@ -83,6 +85,8 @@ typedef MEMORY_BASIC_INFORMATION32 MEMORY_BASIC_INFORMATION, *PMEMORY_BASIC_INFO
 
 extern Memory::string *ErrorMessage;
 extern DWORD ErrorCode;
+extern HMODULE NTDLL;
+extern ULONG (*RtlNtStatusToDosError)(NTSTATUS);
 
 HANDLE __stdcall GetProcessHeap(void);
 LPVOID __stdcall HeapAlloc(HANDLE, DWORD, SIZE_T);
@@ -105,7 +109,10 @@ BOOL __declspec(dllimport) __stdcall SymFromAddr(HANDLE, DWORD64, PDWORD64, PSYM
 DWORD __stdcall K32GetModuleBaseNameA(HANDLE, HMODULE, LPSTR, DWORD);
 DWORD __stdcall GetModuleFileNameA(HMODULE, LPSTR, DWORD);
 __declspec(dllimport) WORD __stdcall RtlCaptureStackBackTrace(DWORD, DWORD, PVOID *, PDWORD);
-SIZE_T VirtualQuery(LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
+SIZE_T __stdcall VirtualQuery(LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
+HMODULE __stdcall LoadLibraryA(LPCSTR);
+FARPROC __stdcall GetProcAddress(HMODULE, LPCSTR);
+BOOL __stdcall FreeLibrary(HMODULE);
 void *__cdecl operator new(size_t, void *) noexcept;
 void backtrace(Memory::exception &);
 QWORD StringLength(const void *);

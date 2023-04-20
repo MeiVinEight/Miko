@@ -1,8 +1,5 @@
 #include "definitions.h"
 
-const BYTE Memory::INTERNAL = 0;
-const BYTE Memory::EXTERNAL = 1;
-
 DWORD order_value = 1;
 char *order_point = (char *) &order_value;
 const BYTE Memory::BENDIAN = order_point[0] == 0;
@@ -78,11 +75,17 @@ Memory::string Memory::message(DWORD errcode, BYTE type)
 	Memory::string msg;
 	switch (type)
 	{
-		case Memory::INTERNAL:
+		case Memory::NTSTATUS:
+		case Memory::DOSERROR:
 		{
+			if (type == Memory::NTSTATUS)
+				errcode = RtlNtStatusToDosError((LONG) errcode);
 			char buf[256]{0};
 			DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-			DWORD len = FormatMessageA(flags, nullptr, errcode, 0, buf, sizeof(buf), nullptr);
+			// EN US = 0x0409
+			DWORD len = FormatMessageA(flags, nullptr, errcode, 0x0409, buf, sizeof(buf), nullptr);
+			if (len == 0)
+				throw Memory::exception(GetLastError(), Memory::DOSERROR);
 			// trialing blanks
 			while (len && (buf[--len] <= 0x20));
 			len++;

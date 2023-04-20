@@ -21,7 +21,7 @@ bool Filesystem::create(const String::string &path)
 				DWORD err = GetLastError();
 				if (err != ERROR_FILE_EXISTS)
 				{
-					throw Memory::exception(err, Memory::INTERNAL);
+					throw Memory::exception(err, Memory::DOSERROR);
 				}
 				return false;
 			}
@@ -45,7 +45,7 @@ bool Filesystem::make(const String::string &path)
 			{
 				return true;
 			}
-			throw Memory::exception(GetLastError(), Memory::INTERNAL);
+			throw Memory::exception(GetLastError(), Memory::DOSERROR);
 		}
 		return false;
 	}
@@ -77,7 +77,7 @@ bool Filesystem::exist(const String::string &path)
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
-			throw Memory::exception(err, Memory::INTERNAL);
+			throw Memory::exception(err, Memory::DOSERROR);
 		}
 		return false;
 	}
@@ -95,7 +95,7 @@ bool Filesystem::directory(const String::string &path)
 		DWORD err = GetLastError();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
-			throw Memory::exception(err, Memory::INTERNAL);
+			throw Memory::exception(err, Memory::DOSERROR);
 		}
 		return false;
 	}
@@ -123,7 +123,7 @@ Memory::string Filesystem::canonicalize(const String::string &path)
 		Memory::copy(canon.address, buf, len);
 		return canon;
 	}
-	throw Memory::exception(GetLastError(), Memory::INTERNAL);
+	throw Memory::exception(GetLastError(), Memory::DOSERROR);
 }
 QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
@@ -132,7 +132,7 @@ QWORD Filesystem::open(const String::string &path, DWORD mode)
 	HFILE hfVal = OpenFile((char *) cstring(path).address, &data, mode);
 	if (hfVal == Filesystem::FILE_ERROR)
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 	return hfVal;
 }
@@ -140,7 +140,7 @@ void Filesystem::close(QWORD fdVal)
 {
 	if (!CloseHandle((HANDLE)fdVal))
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 }
 DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
@@ -148,7 +148,7 @@ DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
 	DWORD readed;
 	if (!ReadFile((HANDLE)fdVal, b, len, &readed, nullptr))
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 	return readed;
 }
@@ -157,7 +157,7 @@ DWORD Filesystem::write(QWORD fdVal, const void *b, DWORD len)
 	DWORD written;
 	if (!WriteFile((HANDLE)fdVal, b, len, &written, nullptr))
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 	return written;
 }
@@ -167,13 +167,13 @@ void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 	distance.QuadPart = (long long) offset;
 	if (!SetFilePointerEx((HANDLE)fdVal, distance, nullptr, mode))
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 }
 void Filesystem::flush(QWORD fdVal)
 {
 	if (!FlushFileBuffers((HANDLE) fdVal))
 	{
-		throw Memory::exception(GetLastError(), Memory::INTERNAL);
+		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
 }
