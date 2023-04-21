@@ -1,22 +1,22 @@
 #include "definitions.h"
 
-QWORD Memory::BE::get(const void *p, BYTE n)
+QWORD Memory::LE::get(const void *p, BYTE n)
 {
 	return GetAsLEndian(p, n);
 }
-WORD Memory::BE::get(WORD x)
+WORD Memory::LE::get(WORD x)
 {
-	return Memory::BE::get(&x, 2);
+	return Memory::LE::get(&x, 2);
 }
-DWORD Memory::BE::get(DWORD x)
+DWORD Memory::LE::get(DWORD x)
 {
-	return Memory::BE::get(&x, 4);
+	return Memory::LE::get(&x, 4);
 }
-QWORD Memory::BE::get(QWORD x)
+QWORD Memory::LE::get(QWORD x)
 {
-	return Memory::BE::get(&x, 8);
+	return Memory::LE::get(&x, 8);
 }
-void Memory::BE::set(QWORD x, void *p, BYTE n)
+void Memory::LE::set(QWORD x, void *p, BYTE n)
 {
 	return SaveAsLEndian(x, p, n);
 }

@@ -84,8 +84,8 @@ namespace Memory
 	namespace LE
 	{
 		MEMORYAPI QWORD get(const void *, BYTE);
-		MEMORYAPI QWORD get(WORD);
-		MEMORYAPI QWORD get(DWORD);
+		MEMORYAPI WORD get(WORD);
+		MEMORYAPI DWORD get(DWORD);
 		MEMORYAPI QWORD get(QWORD);
 		MEMORYAPI void set(QWORD, void *, BYTE);
 	}
