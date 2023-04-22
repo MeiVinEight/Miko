@@ -1,15 +1,20 @@
 #include <sstring.h>
 #include <streaming.h>
-#include <crypto.h>
 #include <filesystem.h>
 #include <wsa.h>
 
 void func()
 {
-	WSA::Socket socket;
-	socket.connect({127, 0, 0, 1, 12138});
-	Streaming::cout << socket.select(WSA::SOCK_RD) << Streaming::LF;
+	Streaming::cout << WSA::IP("github.com").string(true) << Streaming::LF;
+	WSA::Socket server;
+	server.bind(WSA::SocketAddress(12138));
+	server.listen();
+	WSA::Socket socket = server.accept();
+	char buf[12] = {};
+	socket.read(buf, 11);
 	socket.close();
+	server.close();
+	Streaming::cout << buf;
 }
 
 int main()
@@ -20,7 +25,7 @@ int main()
 	}
 	catch (Memory::exception &exec)
 	{
-		Streaming::cout << exec.message << Streaming::LF;
+		Streaming::cout << exec.code << ": " << exec.message << Streaming::LF;
 		for (DWORD i = 0; i < exec.count; i++)
 		{
 			/*

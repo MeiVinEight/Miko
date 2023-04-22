@@ -1,6 +1,7 @@
 #include "definitions.h"
+#pragma comment(lib, "ws2_32.lib") // import ws2_32.lib
 
-QWORD strlen(const void *str)
+QWORD StringLength(const void *str)
 {
 	const char *s = (const char *) str;
 	while (*s++);

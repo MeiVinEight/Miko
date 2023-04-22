@@ -22,86 +22,151 @@ WSA::Socket &WSA::Socket::operator=(WSA::Socket &&move) noexcept
 	}
 	return *this;
 }
-void WSA::Socket::bind(const WSA::SocketAddress &endpoint)
+void WSA::Socket::socket()
 {
-	if (this->connection == WSA::INVALID_SOCKET)
+	if(~this->connection)
+		throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
+
+	this->connection = WSA::socket(this->family, this->type, this->protocol);
+	if (this->family == WSA::AF_INET6)
 	{
-		this->IP = endpoint.IP;
-		this->LP = endpoint.ID;
-
-		// Create an unbound socket
-		this->connection = WSA::socket();
-
-		// bind this socket to address
-		SOCKADDR_IN addr;
-		addr.sin_family = AF_INET;
-		addr.sin_addr.S_un.S_addr = htonl(endpoint.IP.make());
-		addr.sin_port = htons(endpoint.ID);
-		int err = ::bind(this->connection, (SOCKADDR *) &addr, sizeof(SOCKADDR_IN));
-		err = err ? err : listen(this->connection, this->suspend);
-		if (err)
+		// Set IPV6_V6ONLY to false, enable dual-stack socket
+		DWORD onlyV6 = 0;
+		int size = sizeof(onlyV6);
+		this->option(WSA::OPTLVL_IPPROTO_IPV6, WSA::OPT_IPV6_V6ONLY, &onlyV6, &size, WSA::OPT_SET);
+	}
+}
+void WSA::Socket::option(int lvl, int opt, void *val, int *len, BYTE req) const
+{
+	if (~this->connection)
+	{
+		switch (req)
 		{
-			err = WSAGetLastError();
-			this->close();
-			throw Memory::exception(err, Memory::DOSERROR);
+			case WSA::OPT_GET:
+			{
+				if (getsockopt(this->connection, lvl, opt, val, len) == SOCKET_ERROR)
+				{
+					throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
+				}
+				break;
+			}
+			case WSA::OPT_SET:
+			{
+				if (setsockopt(this->connection, lvl, opt, val, *len) == SOCKET_ERROR)
+				{
+					throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
+				}
+				break;
+			}
 		}
 		return;
 	}
-	throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+}
+void WSA::Socket::bind(const WSA::SocketAddress &endpoint)
+{
+	if (this->connection == WSA::INVALID_SOCKET)
+		this->socket();
+
+	this->IP = endpoint.IP;
+	this->LP = endpoint.ID;
+
+	// bind this socket to address
+	if (this->family == WSA::AF_INET6)
+	{
+		SOCKADDR_IN6 addr = {};
+		addr.sin6_family = this->family;
+		Memory::copy(&addr.sin6_addr, this->IP.address, 16);
+		addr.sin6_port = htons(this->LP);
+		WSA::bind(this->connection, &addr, sizeof(SOCKADDR_IN6));
+	}
+	else
+	{
+		SOCKADDR_IN addr = {};
+		addr.sin_family = (short) this->family;
+		addr.sin_addr.S_un.S_addr = htonl(this->IP.make());
+		addr.sin_port = htons(this->LP);
+		WSA::bind(this->connection, &addr, sizeof(SOCKADDR_IN));
+	}
+}
+void WSA::Socket::listen() const
+{
+	if (this->connection == WSA::INVALID_SOCKET)
+		throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
+	WSA::listen(this->connection, this->suspend);
+}
+void WSA::Socket::connect(WSA::SocketAddress addr)
+{
+	if (this->connection == WSA::INVALID_SOCKET)
+		this->socket();
+
+	this->IP = addr.IP;
+	this->RP = addr.ID;
+
+	if (this->family == WSA::AF_INET6)
+	{
+		SOCKADDR_IN6 addr_in = {};
+		addr_in.sin6_family = WSA::AF_INET6;
+		addr_in.sin6_port = htons(this->RP);
+		Memory::copy(addr_in.sin6_addr.u.Byte, this->IP.address, 16);
+		WSA::connect(this->connection, &addr_in, sizeof(SOCKADDR_IN6));
+
+		int len = sizeof(SOCKADDR_IN6);
+		getsockname(this->connection, (SOCKADDR *) &addr_in, &len);
+		this->LP = htons(addr_in.sin6_port);
+	}
+	else
+	{
+		// connect to server
+		SOCKADDR_IN addr_in = {};
+		addr_in.sin_family = WSA::AF_INET6;
+		addr_in.sin_addr.S_un.S_addr = htonl(this->IP.make());
+		addr_in.sin_port = htons(this->RP);
+		WSA::connect(this->connection, &addr_in, sizeof(SOCKADDR_IN));
+
+		int len = sizeof(SOCKADDR_IN);
+		getsockname(this->connection, (SOCKADDR *) &addr_in, &len);
+		this->LP = htons(addr_in.sin_port);
+	}
 }
 WSA::Socket WSA::Socket::accept() const
 {
 	if (~this->connection)
 	{
-		SOCKADDR_IN addr;
-		int len = sizeof(SOCKADDR_IN);
-
-		SOCKET conn = ::accept(this->connection, (SOCKADDR *) &addr, &len);
-		if (conn == WSA::INVALID_SOCKET)
-		{
-			throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
-		}
 		WSA::Socket sock;
-		sock.connection = conn;
-		sock.IP.take(htonl(addr.sin_addr.S_un.S_addr));
-		sock.RP = htons(addr.sin_port);
+		sock.family = this->family;
+		sock.type = this->type;
+		sock.protocol = this->protocol;
+		if (this->family == WSA::AF_INET6)
+		{
+			SOCKADDR_IN6 addr = {};
+			int len = sizeof(SOCKADDR_IN6);
 
-		len = sizeof(SOCKADDR_IN);
-		getsockname(conn, (SOCKADDR *) &addr, &len);
-		sock.LP = htons(addr.sin_port);
+			SOCKET conn = WSA::accept(this->connection, &addr, &len);
+			sock.connection = conn;
+			Memory::copy(sock.IP.address, addr.sin6_addr.u.Byte, 16);
+			sock.RP = htons(addr.sin6_port);
 
+			getsockname(conn, (SOCKADDR *) &addr, &len);
+			sock.LP = htons(addr.sin6_port);
+		}
+		else
+		{
+			SOCKADDR_IN addr;
+			int len = sizeof(SOCKADDR_IN);
+
+			SOCKET conn = WSA::accept(this->connection, &addr, &len);
+			sock.connection = conn;
+			sock.IP.take(htonl(addr.sin_addr.S_un.S_addr));
+			sock.RP = htons(addr.sin_port);
+
+			getsockname(conn, (SOCKADDR *) &addr, &len);
+			sock.LP = htons(addr.sin_port);
+		}
+		sock.suspend = 0;
 		return sock;
 	}
 	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
-}
-void WSA::Socket::connect(WSA::SocketAddress addr)
-{
-	if (this->connection == WSA::INVALID_SOCKET)
-	{
-		// Create an unbound socket
-		this->connection = WSA::socket();
-
-		// connect to server
-		SOCKADDR_IN addr_in;
-		addr_in.sin_family = AF_INET;
-		addr_in.sin_addr.S_un.S_addr = htonl(addr.IP.make());
-		addr_in.sin_port = htons(addr.ID);
-		if (::connect(this->connection, (SOCKADDR *)&addr_in, sizeof(SOCKADDR_IN)))
-		{
-			int err = WSAGetLastError();
-			this->close();
-			throw Memory::exception(err, Memory::DOSERROR);
-		}
-		this->IP = addr.IP;
-		this->RP = addr.ID;
-
-		int len = sizeof(SOCKADDR_IN);
-		getsockname(this->connection, (SOCKADDR *)&addr_in, &len);
-		this->LP = htons(addr_in.sin_port);
-
-		return;
-	}
-	throw Memory::exception(WSA::ERRNO_SOCKET_ALREADY_OCCUPIED);
 }
 DWORD WSA::Socket::read(void *b, DWORD len)
 {

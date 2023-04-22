@@ -1,8 +1,6 @@
 #ifndef WSADEF_H
 #define WSADEF_H
 
-#pragma comment(lib, "ws2_32.lib") // import ws2_32.lib
-
 #define WSA_SHARED
 
 #include <wsa.h>
@@ -16,18 +14,16 @@ extern "C"
 #define WSADESCRIPTION_LEN  256
 #define WSASYS_STATUS_LEN   128
 #define SOCKET_ERROR        (-1)
-#define AF_INET             2               /* internetwork: UDP, TCP, etc. */
-#define SOCK_STREAM         1               /* stream socket */
-#define IPPROTO_TCP	        6               /* tcp */
 #define FIONREAD            (0x40000000 | (((long) sizeof(u_long) & 0x7f) << 16) | (('f') << 8) | (127))
 #define DLL_PROCESS_DETACH  0
 #define DLL_PROCESS_ATTACH  1
 #define FD_SETSIZE          64
 
 typedef void             *HANDLE, *HINSTANCE, *LPVOID;
+typedef char             CHAR, *PSTR;
 typedef int              INT;
 typedef const char       *PCSTR;
-typedef unsigned short   USHORT, u_short;
+typedef unsigned short   USHORT, u_short, ADDRESS_FAMILY;
 typedef unsigned int     u_int;
 typedef unsigned long    u_long;
 typedef unsigned __int64 size_t;
@@ -93,33 +89,67 @@ typedef struct timeval
 	long tv_sec;         /* seconds */
 	long tv_usec;        /* and microseconds */
 } TIMEVAL;
+typedef struct in6_addr
+{
+	union
+	{
+		UCHAR       Byte[16];
+		USHORT      Word[8];
+	} u;
+} IN6_ADDR, *PIN6_ADDR, *LPIN6_ADDR;
+typedef struct
+{
+	union
+	{
+		struct
+		{
+			ULONG Zone : 28;
+			ULONG Level : 4;
+		};
+		ULONG Value;
+	};
+} SCOPE_ID, *PSCOPE_ID;
+typedef struct sockaddr_in6
+{
+	ADDRESS_FAMILY sin6_family; // AF_INET6.
+	USHORT sin6_port;           // Transport level port number.
+	ULONG  sin6_flowinfo;       // IPv6 flow information.
+	IN6_ADDR sin6_addr;         // IPv6 address.
+	union
+	{
+		ULONG sin6_scope_id;     // Set of interfaces for a scope.
+		SCOPE_ID sin6_scope_struct;
+	};
+} SOCKADDR_IN6_LH, *PSOCKADDR_IN6_LH, *LPSOCKADDR_IN6_LH;
+typedef SOCKADDR_IN6_LH SOCKADDR_IN6;
 
 int __stdcall WSAStartup(WORD, LPWSADATA);
 int __stdcall WSACleanup(void);
 int __stdcall WSAGetLastError(void);
-HOSTENT *__stdcall gethostbyname(const char *);
 SOCKET __stdcall socket(int, int, int);
 u_long __stdcall htonl(u_long);
 u_short __stdcall htons(u_short);
 int __stdcall bind(SOCKET, const SOCKADDR*, int);
 int __stdcall listen(SOCKET, int);
-SOCKET __stdcall accept(SOCKET, SOCKADDR*, int *);
+SOCKET __stdcall accept(SOCKET, const void *, int *);
 int __stdcall closesocket(SOCKET);
-int __stdcall connect(SOCKET, const SOCKADDR *, int);
+int __stdcall connect(SOCKET, const void *, int);
 int __stdcall recv(SOCKET, char *, int, int);
 int __stdcall send(SOCKET, const char *, int, int);
 int __stdcall ioctlsocket(SOCKET, long, u_long *);
 int __stdcall getsockname(SOCKET, SOCKADDR *, int *);
 INT __stdcall getaddrinfo(PCSTR, PCSTR, const ADDRINFOA *, PADDRINFOA *);
 void __stdcall freeaddrinfo(PADDRINFOA);
-char *__stdcall inet_ntoa(IN_ADDR);
+PCSTR __stdcall inet_ntop(INT, const void *, PSTR, size_t);
 int __stdcall shutdown(SOCKET, int);
 int __stdcall select(int, fd_set *, fd_set *, fd_set *, const TIMEVAL *);
+int __stdcall setsockopt(SOCKET, int, int, const void *, int);
+int __stdcall getsockopt(SOCKET, int, int, void *, int *);
 
 #ifdef __cplusplus
 }
 #endif
 
-QWORD strlen(const void *);
+QWORD StringLength(const void *);
 
 #endif //WSADEF_H
