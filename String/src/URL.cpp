@@ -3,6 +3,7 @@
 String::URL::~URL() noexcept = default;
 void String::URL::resolve(const String::string &url)
 {
+	this->location = url;
 	DWORD idx = url.search(':');
 	if (idx >= url.length())
 		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
