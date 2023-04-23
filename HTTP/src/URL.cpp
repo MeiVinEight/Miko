@@ -18,6 +18,8 @@ void HTTP::URL::resolve(const String::string &url)
 	idx = (idx > http.length()) ? http.length() : idx;
 	String::string hostport(http.address, idx);
 	this->path = String::string(http.address, http.length() - idx);
+	if (!this->path.length())
+		this->path = "/";
 
 	idx = hostport.search(':');
 	idx = (idx > hostport.length()) ? hostport.length() : idx;

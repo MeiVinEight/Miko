@@ -77,7 +77,7 @@ String::string String::string::operator+(const String::string &str) const
 }
 String::string::operator bool() const
 {
-	return this->length();
+	return (bool) this->length();
 }
 QWORD String::string::length() const
 {
