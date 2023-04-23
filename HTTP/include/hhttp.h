@@ -37,7 +37,7 @@ namespace HTTP
 	{
 		public:
 		String::string host;
-		WORD port = 80;
+		WORD port = 443;
 		bool special = false;
 		String::string path;
 

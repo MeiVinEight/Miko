@@ -112,5 +112,5 @@ QWORD String::string::search(char c) const
 	for (QWORD i = 0; i < this->length(); i++)
 		if ((*this)[i] == c)
 			return i;
-	return -1LL;
+	return ~((QWORD) 0);
 }

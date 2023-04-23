@@ -7,18 +7,18 @@ void HTTP::URL::resolve(const String::string &url)
 	if (protocol != "http" && protocol != "https")
 		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
 
-	if (this->specific[0] != '/' || this->specific[1] != '.')
+	if (this->specific[0] != '/' || this->specific[1] != '/')
 		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
 
-	if (protocol == "https")
-		this->port = 443;
+	if (protocol == "http")
+		this->port = 80;
 
 	String::string http(this->specific.address.address + 2, this->specific.length() - 2);
 	DWORD idx = http.search('/');
 	idx = (idx > http.length()) ? http.length() : idx;
 	String::string hostport(http.address, idx);
-	this->path = String::string(http.address, http.length() - idx);
-	if (!this->path.length())
+	this->path = String::string(http.address.address + idx, http.length() - idx);
+	if (!this->path)
 		this->path = "/";
 
 	idx = hostport.search(':');
@@ -30,7 +30,10 @@ void HTTP::URL::resolve(const String::string &url)
 		String::string ports(hostport.address.address + idx, hostport.length() - idx);
 		if (!ports)
 			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
-		this->port = String::integer(ports) & 0xFFFF;
+		QWORD id = String::integer(ports);
+		if (id > 0xFFFF || id == 0)
+			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		this->port = id;
 		this->special = true;
 	}
 }

@@ -2,19 +2,23 @@
 #include <streaming.h>
 #include <filesystem.h>
 #include <wsa.h>
+#include <hhttp.h>
+#include <cws.h>
 
 void func()
 {
-	Streaming::cout << WSA::IP("github.com").string(true) << Streaming::LF;
-	WSA::Socket server;
-	server.bind(WSA::SocketAddress(12138));
-	server.listen();
-	WSA::Socket socket = server.accept();
-	char buf[12] = {};
-	socket.read(buf, 11);
-	socket.close();
-	server.close();
-	Streaming::cout << buf;
+	String::URL u1;
+	HTTP::URL u2;
+	CWS::URL u3;
+	u1.resolve("http://www.baidu.com");
+
+	u2.resolve("http://127.0.0.1");
+	u2.resolve("http://127.0.0.1/");
+	u2.resolve("http://127.0.0.1:12138");
+
+	u3.resolve("ws://127.0.0.1");
+	u3.resolve("ws://127.0.0.1:12138/chat");
+
 }
 
 int main()

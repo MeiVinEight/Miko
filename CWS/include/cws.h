@@ -56,6 +56,16 @@ namespace CWS
 	CWSAPI Memory::string security(const Memory::string &);
 	CWSAPI bool verify(const Memory::string &, const Memory::string &);
 
+	class URL: public String::URL
+	{
+		public:
+		String::string address;
+		WORD ID = 443;
+		bool special = false;
+		String::string path;
+
+		CWSAPI void resolve(const String::string &) override;
+	};
 	class Message
 	{
 		public:
