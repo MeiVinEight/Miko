@@ -1,6 +1,70 @@
-#include "Keccak.h"
+#include "SHA3.h"
 
 const QWORD SHA3FUNCTIONS[4] = {224, 256, 384, 512};
+
+void KeccakP(BYTE l, BYTE nr, BYTE *S, BYTE *T)
+{
+	SPONGE sponge;
+	sponge.L = l;
+	BYTE w = 1 << l;
+	NibbleReader nibble;
+
+	// STEP1: Convert S into state array, A, as descrined in FIPS 202 Sec. 3.1.2.
+	nibble.stream = S;
+	nibble.position = 0;
+	for (QWORD y = 0; y < 5; y++)
+	{
+		for (QWORD x = 0; x < 5; x++)
+		{
+			sponge.A[x][y] = nibble.read(w);
+		}
+	}
+
+	// STEP2: For ir from 12 + 2l - nr to 12 + 2l - 1, let A = Rnd(A, ir).
+	QWORD t = 12 + 2*l;
+	QWORD s = t - nr;
+	for (QWORD ir = s; ir < t; ir++)
+	{
+		// Rnd(A, ir) = ι(χ(π(ρ(θ(A)))), ir).
+		sponge.theta();
+		sponge.rho();
+		sponge.pi();
+		sponge.chi();
+		sponge.iota(ir);
+	}
+
+	// STEP3: Convert A into a string S′ of length b, as described in FIPS 202 Sec. 3.1.3.
+	nibble.stream = T;
+	nibble.position = 0;
+	for (QWORD y = 0; y < 5; y++)
+	{
+		for (QWORD x = 0; x < 5; x++)
+		{
+			nibble.write(sponge.A[x][y], w);
+		}
+	}
+
+	// STEP4: Return S′.
+}
+void KeccakF(BYTE l, BYTE *S, BYTE *T)
+{
+	KeccakP(l, 12 + 2*l, S, T);
+	// return KeccakP1(S);
+}
+void Sponge(BYTE *S, const BYTE *P)
+{
+	QWORD b = 1600;
+	for (QWORD i = 0; i < b >> 3; i++)
+	{
+		S[i] ^= P[i];
+	}
+	KeccakF(6, S, S);
+}
+void PAD101(BYTE *S, QWORD x, QWORD &position)
+{
+	Memory::fill(S + position, 0, x - position);
+	S[x - 1] |= 0x80;
+}
 
 Cryptography::SHA3::SHA3(BYTE type): Cryptography::MessageDigest::MessageDigest(200, 200, nullptr), function(type)
 {
@@ -32,7 +96,7 @@ void Cryptography::SHA3::update(const void *data, QWORD len)
 		if (this->position >= size)
 		{
 			this->position = 0;
-			SPONGE(this->digest.address, this->block.address);
+			Sponge(this->digest.address, this->block.address);
 		}
 	}
 }
@@ -46,7 +110,7 @@ Memory::string Cryptography::SHA3::finally()
 	QWORD pos = this->position;
 	blk[pos++] = 6;
 	PAD101(blk.address, size, pos);
-	SPONGE(out.address, blk.address);
+	Sponge(out.address, blk.address);
 	out.resize(SHA3FUNCTIONS[this->function] >> 3);
 	return out;
 }

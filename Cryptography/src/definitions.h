@@ -20,6 +20,7 @@ typedef DWORD ULONG;
 typedef void *BCRYPT_ALG_HANDLE, *HINSTANCE;
 
 extern BCRYPT_ALG_HANDLE RNG_HANDLE;
+extern BYTE KECCAKRC[255];
 
 NTSTATUS __stdcall BCryptOpenAlgorithmProvider(BCRYPT_ALG_HANDLE, LPCWSTR, LPCWSTR, ULONG);
 NTSTATUS __stdcall BCryptCloseAlgorithmProvider(BCRYPT_ALG_HANDLE, ULONG);
@@ -32,6 +33,8 @@ bool Appendix32(QWORD, Memory::string &, QWORD &, void (*)(QWORD, BYTE, void *))
 bool Appendix64(QWORD, Memory::string &, QWORD &, void (*)(QWORD, BYTE, void *));
 void Transform32(Memory::string &, void (*)(QWORD, BYTE, void *));
 void Transform64(Memory::string &, void (*)(QWORD, BYTE, void *));
+QWORD ROTL(QWORD, BYTE, BYTE);
+QWORD ROTR(QWORD, BYTE, BYTE);
 QWORD ROTL32(QWORD, BYTE);
 QWORD ROTR32(QWORD, BYTE);
 QWORD ROTL64(QWORD, BYTE);

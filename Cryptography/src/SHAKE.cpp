@@ -1,4 +1,4 @@
-#include "Keccak.h"
+#include "SHA3.h"
 
 const QWORD SHAKEFUNCTIONS[2] = {128, 256};
 
@@ -32,7 +32,7 @@ void Cryptography::SHAKE::update(const void *data, QWORD len)
 		if (this->position >= blkSize)
 		{
 			this->position = 0;
-			SPONGE(this->digest.address, this->block.address);
+			Sponge(this->digest.address, this->block.address);
 		}
 	}
 }
@@ -49,7 +49,7 @@ Memory::string Cryptography::SHAKE::finally()
 		QWORD pos = this->position;
 		blk[pos++] = 0x1F;
 		PAD101(blk.address, blkSize, pos);
-		SPONGE(dig.address, blk.address);
+		Sponge(dig.address, blk.address);
 		QWORD offset = 0;
 		while (offset < out.length)
 		{
@@ -57,7 +57,7 @@ Memory::string Cryptography::SHAKE::finally()
 			copy = copy < blkSize ? copy : blkSize;
 			Memory::copy(out.address + offset, dig.address, copy);
 			offset += copy;
-			KeccakF(dig.address);
+			KeccakF(6, dig.address, dig.address);
 		}
 		BYTE msk = 0xFF;
 		BYTE bit = (8 - (size % 8)) % 8;

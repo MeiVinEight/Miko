@@ -7,18 +7,10 @@
 
 void func()
 {
-	String::URL u1;
-	HTTP::URL u2;
-	CWS::URL u3;
-	u1.resolve("http://www.baidu.com");
-
-	u2.resolve("http://127.0.0.1");
-	u2.resolve("http://127.0.0.1/");
-	u2.resolve("http://127.0.0.1:12138");
-
-	u3.resolve("ws://127.0.0.1");
-	u3.resolve("ws://127.0.0.1:12138/chat");
-
+	String::string text = "sample text";
+	Cryptography::SHA3 sha3(Cryptography::SHA3::SHA256);
+	sha3.update(text.address.address, text.length());
+	Streaming::cout << Hexadecimal::format(sha3.finally());
 }
 
 int main()
