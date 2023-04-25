@@ -1,16 +1,27 @@
 #include <sstring.h>
 #include <streaming.h>
 #include <filesystem.h>
-#include <wsa.h>
-#include <hhttp.h>
-#include <cws.h>
+#include <WTM.h>
+
+DWORD ThreadProc(void *param)
+{
+	bool *flag = (bool *) param;
+	while (*flag)
+	{
+		WTM::thread::sleep(1);
+	}
+	WTM::thread curr = WTM::thread::current();
+	Streaming::cout << curr.name() << Streaming::LF;
+	return 12138;
+}
 
 void func()
 {
-	String::string text = "sample text";
-	Cryptography::SHA3 sha3(Cryptography::SHA3::SHA256);
-	sha3.update(text.address.address, text.length());
-	Streaming::cout << Hexadecimal::format(sha3.finally());
+	bool flag = true;
+	WTM::thread thread = WTM::thread::create(ThreadProc, &flag);
+	thread.name((String::string("Sample text")).address);
+	flag = false;
+	thread.wait();
 }
 
 int main()
