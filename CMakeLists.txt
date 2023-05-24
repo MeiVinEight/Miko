@@ -3,6 +3,8 @@ project(Miko)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_subdirectory(Memory)
 add_subdirectory(Timestamp)
 add_subdirectory(Compression)
