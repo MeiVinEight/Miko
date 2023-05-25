@@ -54,15 +54,17 @@ char &String::string::operator[](QWORD idx) const
 }
 String::string &String::string::operator+=(const char *str) &
 {
-	QWORD len = String::length(str);
-	this->address.resize(this->length() + len);
-	Memory::copy(this->address.address + this->length(), str, len);
+	QWORD suf = String::length(str);
+	QWORD pre = this->length();
+	this->address.resize(this->length() + suf);
+	Memory::copy(this->address.address + pre, str, suf);
 	return *this;
 }
 String::string &String::string::operator+=(const String::string &str) &
 {
+	QWORD old = this->length();
 	this->address.resize(this->length() + str.length());
-	Memory::copy(this->address.address + this->length(), str.address.address, str.length());
+	Memory::copy(this->address.address + old, str.address.address, str.length());
 	return *this;
 }
 String::string String::string::operator+(const char *str) const
