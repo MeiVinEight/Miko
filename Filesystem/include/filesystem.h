@@ -45,6 +45,7 @@ namespace Filesystem
 	FSAPI bool directory(const String::string &);
 	FSAPI Memory::string parent(const String::string &);
 	FSAPI Memory::string canonicalize(const String::string &);
+	FSAPI bool absolute(const String::string &);
 	FSAPI QWORD open(const String::string &, DWORD);
 	FSAPI void close(QWORD);
 	FSAPI DWORD read(QWORD, void *, DWORD);

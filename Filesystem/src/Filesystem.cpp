@@ -125,6 +125,10 @@ Memory::string Filesystem::canonicalize(const String::string &path)
 	}
 	throw Memory::exception(GetLastError(), Memory::DOSERROR);
 }
+bool Filesystem::absolute(const String::string &path)
+{
+	return path.length() >= 2 && path[1] == ':';
+}
 QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
 	Filesystem::create(path);
