@@ -45,19 +45,16 @@ JSON::object::object(const JSON::object &copy): content(new JSON::object::KV[cop
 		}
 	}
 }
-
 JSON::object::object(JSON::object &&move) noexcept: content(move.content), size(move.size), type(move.type)
 {
 	move.content = nullptr;
 	move.size = 0;
 	move.type = JSON::type::UNKNOWN;
 }
-
 JSON::object::~object()
 {
 	this->cleanup();
 }
-
 JSON::object &JSON::object::operator=(const JSON::object &copy)
 {
 	if (&copy != this)
@@ -66,7 +63,6 @@ JSON::object &JSON::object::operator=(const JSON::object &copy)
 	}
 	return *this;
 }
-
 JSON::object &JSON::object::operator=(JSON::object &&move) noexcept
 {
 	if (&move != this)
@@ -81,12 +77,10 @@ JSON::object &JSON::object::operator=(JSON::object &&move) noexcept
 	}
 	return *this;
 }
-
 JSON::object &JSON::object::operator=(const char *str)
 {
 	return (*this) = String::string(str);
 }
-
 JSON::object &JSON::object::operator=(const String::string &str)
 {
 	this->cleanup();
@@ -97,7 +91,6 @@ JSON::object &JSON::object::operator=(const String::string &str)
 	this->type = JSON::type::STRING;
 	return *this;
 }
-
 JSON::object &JSON::object::operator=(QWORD value)
 {
 	this->cleanup();
@@ -108,13 +101,11 @@ JSON::object &JSON::object::operator=(QWORD value)
 	this->type = JSON::type::INTEGER;
 	return *this;
 }
-
 JSON::object &JSON::object::operator=(int value)
 {
 	(void) value;
 	return (*this) = (QWORD) value;
 }
-
 JSON::object &JSON::object::operator=(double value)
 {
 	this->cleanup();
@@ -125,7 +116,6 @@ JSON::object &JSON::object::operator=(double value)
 	this->type = JSON::type::FLOAT;
 	return *this;
 }
-
 JSON::object &JSON::object::operator=(bool val)
 {
 	this->cleanup();
@@ -136,7 +126,6 @@ JSON::object &JSON::object::operator=(bool val)
 	this->type = JSON::type::BOOLEAN;
 	return *this;
 }
-
 JSON::object &JSON::object::operator[](const String::string &key)
 {
 	if (this->type == JSON::type::COMPONENT || this->type == JSON::type::UNKNOWN)
@@ -172,12 +161,10 @@ JSON::object &JSON::object::operator[](const String::string &key)
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 JSON::object &JSON::object::operator[](const char *key)
 {
 	return (*this)[String::string(key)];
 }
-
 JSON::object &JSON::object::operator[](QWORD idx)
 {
 	if (this->type == JSON::type::ARRAY || this->type == JSON::type::UNKNOWN)
@@ -206,7 +193,6 @@ JSON::object &JSON::object::operator[](QWORD idx)
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 JSON::object::operator String::string &() const
 {
 	if (this->type == JSON::type::STRING)
@@ -215,7 +201,6 @@ JSON::object::operator String::string &() const
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 JSON::object::operator QWORD() const
 {
 	if (this->type == JSON::type::INTEGER)
@@ -224,12 +209,10 @@ JSON::object::operator QWORD() const
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 JSON::object::operator int() const
 {
 	return (int)(QWORD)(*this);
 }
-
 JSON::object::operator double() const
 {
 	if (this->type == JSON::type::FLOAT)
@@ -238,7 +221,6 @@ JSON::object::operator double() const
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 JSON::object::operator bool() const
 {
 	if (this->type == JSON::type::BOOLEAN)
@@ -247,12 +229,10 @@ JSON::object::operator bool() const
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
-
 QWORD JSON::object::length() const
 {
 	return this->size;
 }
-
 void JSON::object::cleanup()
 {
 	switch (this->type)
@@ -297,7 +277,25 @@ void JSON::object::cleanup()
 	this->size = 0;
 	this->type = JSON::type::UNKNOWN;
 }
-
+bool JSON::object::contain(const String::string &key) const
+{
+	if (this->type != JSON::type::COMPONENT)
+	{
+		throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
+	}
+	for (QWORD i = 0; i < this->size; i++)
+	{
+		if (*((String::string *) this->content[i][0]) == key)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+bool JSON::object::contain(const char *key) const
+{
+	return this->contain(String::string(key));
+}
 String::string JSON::object::stringify() const
 {
 	switch (this->type)

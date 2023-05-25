@@ -55,6 +55,8 @@ namespace JSON
 		JSONAPI operator bool() const;
 		JSONAPI QWORD length() const;
 		JSONAPI void cleanup();
+		JSONAPI bool contain(const String::string &) const;
+		JSONAPI bool contain(const char *) const;
 		JSONAPI String::string stringify() const;
 	};
 
