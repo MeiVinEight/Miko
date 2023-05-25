@@ -17,11 +17,11 @@ DWORD Streaming::fully::read(void *b, DWORD length)
 }
 DWORD Streaming::fully::read(const Memory::string &buf)
 {
-	return this->Streaming::stream::read(buf);
+	return this->read(buf.address,buf.length);
 }
 DWORD Streaming::fully::read(const Memory::string &buf, DWORD len)
 {
-	return this->Streaming::stream::read(buf, len);
+	return this->read(buf.address, len);
 }
 DWORD Streaming::fully::write(const void *b, DWORD length)
 {
@@ -37,11 +37,11 @@ DWORD Streaming::fully::write(const void *b, DWORD length)
 }
 DWORD Streaming::fully::write(const Memory::string &buf)
 {
-	return this->Streaming::stream::write(buf);
+	return this->write(buf.address, buf.length);
 }
 DWORD Streaming::fully::write(const Memory::string &buf, DWORD len)
 {
-	return this->Streaming::stream::write(buf, len);
+	return this->write(buf.address, len);
 }
 void Streaming::fully::flush()
 {
