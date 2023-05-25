@@ -40,6 +40,7 @@ namespace String
 		STRINGAPI String::string lower() const;
 		STRINGAPI String::string upper() const;
 		STRINGAPI QWORD search(char) const;
+		STRINGAPI Memory::string native() const;
 	};
 	class URL
 	{

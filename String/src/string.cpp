@@ -116,3 +116,10 @@ QWORD String::string::search(char c) const
 			return i;
 	return ~((QWORD) 0);
 }
+Memory::string String::string::native() const
+{
+	Memory::string buf(this->length() + 1);
+	Memory::copy(buf.address, this->address.address, this->length());
+	buf[this->length()] = 0;
+	return buf;
+}
