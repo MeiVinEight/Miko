@@ -66,7 +66,6 @@ DWORD __stdcall GetLastError(void);
 DWORD __stdcall WaitForSingleObject(void *, DWORD);
 BOOL __stdcall CloseHandle(void *);
 BOOL __stdcall GetExitCodeProcess(void *, DWORD *);
-BOOL __stdcall SetConsoleTextAttribute(void *, DWORD);
 
 }
 #pragma endregion NTDECL
@@ -225,7 +224,8 @@ project::project(String::string path): path((String::string &&) path), config(JS
 		Streaming::cout << "config file must be component" << Streaming::LF;
 		throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 	}
-	Streaming::cout << "Loading project: " << ((String::string) this->config["name"]) << " [" << this->path << "]\n";
+	Streaming::cout << "\x1B[104m LOADING \x1B[0m ";
+	Streaming::cout << ((String::string) this->config["name"]) << " [" << this->path << "]\n";
 	// Link this project into project list
 	// use header link
 	ProjectNode *node = (ProjectNode *) Memory::allocate(sizeof(ProjectNode));
@@ -423,8 +423,8 @@ bool project::compile()
 		}
 
 
-		this->prefix();
-		Streaming::cout << "Compile project" << Streaming::LF;
+		Streaming::cout << "\x1B[46m COMPILING \x1B[0m ";
+		Streaming::cout << ((String::string) this->config["name"]) << " [" << this->path << "]\n";
 		success &= ExecuteCommand(clr + sourceFiles + clropt, this->path);
 		Streaming::cout << Streaming::LF;
 		if (!success)
@@ -473,15 +473,11 @@ int main()
 
 	if (success)
 	{
-		SetConsoleTextAttribute((void *) Filesystem::STDOUT, 0x2F);
-		Streaming::cout << " SUCCESSFUL ";
-		SetConsoleTextAttribute((void *) Filesystem::STDOUT, 0x07);
+		Streaming::cout << "\x1B[42m SUCCESSFUL \x1B[0m";
 	}
 	else
 	{
-		SetConsoleTextAttribute((void *) Filesystem::STDOUT, 0x4F);
-		Streaming::cout << " FAILED ";
-		SetConsoleTextAttribute((void *) Filesystem::STDOUT, 0x07);
+		Streaming::cout << "\x1B[41m FAILED \x1B[0m";
 	}
 	return 0;
 }
