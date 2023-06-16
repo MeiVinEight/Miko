@@ -18,17 +18,10 @@ JSON::object::object(const JSON::object &copy): content(new JSON::object::KV[cop
 				break;
 			}
 			case JSON::type::INTEGER:
-			{
-				this->content[i][1] = new QWORD(*((QWORD *) copy.content[i][1]));
-			}
 			case JSON::type::FLOAT:
-			{
-				this->content[i][1] = new double(*((double *) copy.content[i][1]));
-				break;
-			}
 			case JSON::type::BOOLEAN:
 			{
-				this->content[i][1] = new bool(*((bool *) copy.content[i][1]));
+				this->content[i][1] = copy.content[i][1];
 				break;
 			}
 			case JSON::type::COMPONENT:
@@ -83,23 +76,31 @@ JSON::object &JSON::object::operator=(const char *str)
 }
 JSON::object &JSON::object::operator=(const String::string &str)
 {
-	this->cleanup();
-	this->content = new JSON::object::KV[1];
-	this->content[0][0] = nullptr;
-	this->content[0][1] = new String::string(str);
-	this->size = 1;
-	this->type = JSON::type::STRING;
-	return *this;
+	if (!this->readonly)
+	{
+		this->cleanup();
+		this->content = new JSON::object::KV[1];
+		this->content[0][0] = nullptr;
+		this->content[0][1] = new String::string(str);
+		this->size = 1;
+		this->type = JSON::type::STRING;
+		return *this;
+	}
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
 JSON::object &JSON::object::operator=(QWORD value)
 {
-	this->cleanup();
-	this->content = new JSON::object::KV[1];
-	this->content[0][0] = nullptr;
-	this->content[0][1] = new QWORD(value);
-	this->size = 1;
-	this->type = JSON::type::INTEGER;
-	return *this;
+	if (!this->readonly)
+	{
+		this->cleanup();
+		this->content = new JSON::object::KV[1];
+		this->content[0][0] = nullptr;
+		this->content[0][1] = (void *) value;
+		this->size = 1;
+		this->type = JSON::type::INTEGER;
+		return *this;
+	}
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
 JSON::object &JSON::object::operator=(int value)
 {
@@ -108,28 +109,41 @@ JSON::object &JSON::object::operator=(int value)
 }
 JSON::object &JSON::object::operator=(double value)
 {
-	this->cleanup();
-	this->content = new JSON::object::KV[1];
-	this->content[0][0] = nullptr;
-	this->content[0][1] = new double(value);
-	this->size = 1;
-	this->type = JSON::type::FLOAT;
-	return *this;
+	if (!this->readonly)
+	{
+		QWORD qword = *((QWORD *) &value);
+		this->cleanup();
+		this->content = new JSON::object::KV[1];
+		this->content[0][0] = nullptr;
+		this->content[0][1] = (void *) qword;
+		this->size = 1;
+		this->type = JSON::type::FLOAT;
+		return *this;
+	}
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
 JSON::object &JSON::object::operator=(bool val)
 {
-	this->cleanup();
-	this->content = new JSON::object::KV[1];
-	this->content[0][0] = nullptr;
-	this->content[0][1] = new bool(val);
-	this->size = 1;
-	this->type = JSON::type::BOOLEAN;
-	return *this;
+	if (!this->readonly)
+	{
+		QWORD qv = val;
+		this->cleanup();
+		this->content = new JSON::object::KV[1];
+		this->content[0][0] = nullptr;
+		this->content[0][1] = (void *) qv;
+		this->size = 1;
+		this->type = JSON::type::BOOLEAN;
+		return *this;
+	}
+	throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
 }
 JSON::object &JSON::object::operator[](const String::string &key)
 {
 	if (this->type == JSON::type::COMPONENT || this->type == JSON::type::UNKNOWN)
 	{
+		if (this->readonly && this->type == JSON::UNKNOWN)
+			throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
+
 		this->type = JSON::type::COMPONENT;
 		QWORD idx = -1;
 
@@ -138,11 +152,14 @@ JSON::object &JSON::object::operator[](const String::string &key)
 			if (*((String::string *) this->content[i][0]) == key)
 			{
 				idx = i;
+				break;
 			}
 		}
 
 		if (idx == -1)
 		{
+			if (this->readonly)
+				throw Memory::exception(JSON::ERRNO_OBJECT_NOT_FOUND);
 			idx = size;
 			JSON::object::KV *nkv = new JSON::object::KV[this->size + 1];
 			for (int i = 0; i < this->size; i++)
@@ -157,7 +174,9 @@ JSON::object &JSON::object::operator[](const String::string &key)
 			this->size++;
 		}
 
-		return *((JSON::object *) this->content[idx][1]);
+		JSON::object *obj = (JSON::object *) this->content[idx][1];
+		obj->readonly = this->readonly;
+		return *obj;
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
@@ -169,9 +188,15 @@ JSON::object &JSON::object::operator[](QWORD idx)
 {
 	if (this->type == JSON::type::ARRAY || this->type == JSON::type::UNKNOWN)
 	{
+		if (this->readonly && this->type == JSON::type::UNKNOWN)
+			throw Memory::exception(Memory::ERRNO_ACCESS_VIOLATION);
+
 		this->type = JSON::type::ARRAY;
 		if (idx >= this->size)
 		{
+			if (this->readonly)
+				throw Memory::exception(JSON::ERRNO_OBJECT_NOT_FOUND);
+
 			JSON::object::KV *nkv = new JSON::object::KV[idx + 1];
 			for (QWORD i = 0; i < idx + 1; i++)
 			{
@@ -189,9 +214,16 @@ JSON::object &JSON::object::operator[](QWORD idx)
 			this->content = nkv;
 			this->size = idx + 1;
 		}
-		return *((JSON::object *) this->content[idx][1]);
+
+		JSON::object *obj = (JSON::object *) this->content[idx][1];
+		obj->readonly = this->readonly;
+		return *obj;
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
+}
+JSON::object &JSON::object::operator[](int idx)
+{
+	return this->operator[]((QWORD) idx);
 }
 JSON::object::operator String::string &() const
 {
@@ -205,7 +237,7 @@ JSON::object::operator QWORD() const
 {
 	if (this->type == JSON::type::INTEGER)
 	{
-		return *((QWORD *) this->content[0][1]);
+		return (QWORD) this->content[0][1];
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
@@ -217,7 +249,7 @@ JSON::object::operator double() const
 {
 	if (this->type == JSON::type::FLOAT)
 	{
-		return *((double *) this->content[0][1]);
+		return *((double *) &this->content[0][1]);
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
@@ -225,7 +257,7 @@ JSON::object::operator bool() const
 {
 	if (this->type == JSON::type::BOOLEAN)
 	{
-		return *((bool *) this->content[0][1]);
+		return (bool) (*((QWORD *) &this->content[0][1]));
 	}
 	throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
 }
@@ -240,21 +272,6 @@ void JSON::object::cleanup()
 		case JSON::type::STRING:
 		{
 			delete ((String::string *) this->content[0][1]);
-			break;
-		}
-		case JSON::type::INTEGER:
-		{
-			delete ((QWORD *) this->content[0][1]);
-			break;
-		}
-		case JSON::type::FLOAT:
-		{
-			delete ((double *) this->content[0][1]);
-			break;
-		}
-		case JSON::type::BOOLEAN:
-		{
-			delete ((bool *) this->content[0][1]);
 			break;
 		}
 		case JSON::type::COMPONENT:
@@ -280,9 +297,8 @@ void JSON::object::cleanup()
 bool JSON::object::contain(const String::string &key) const
 {
 	if (this->type != JSON::type::COMPONENT)
-	{
 		throw Memory::exception(JSON::ERRNO_WRONG_OBJECT_TYPE);
-	}
+
 	for (QWORD i = 0; i < this->size; i++)
 	{
 		if (*((String::string *) this->content[i][0]) == key)

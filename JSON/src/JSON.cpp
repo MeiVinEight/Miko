@@ -15,8 +15,9 @@ BYTE ESCAPE[256] = {
 	0x00, 0x00, 0x00, 0x00, '\\', 0x00, 0x00, 0x00,
 };
 
-extern const DWORD JSON::ERRNO_WRONG_OBJECT_TYPE = Memory::registry("Wrong object type");
-extern const DWORD JSON::ERRNO_WRONG_FORMAT = Memory::registry("Wrong json format");
+const DWORD JSON::ERRNO_WRONG_OBJECT_TYPE = Memory::registry("Wrong object type");
+const DWORD JSON::ERRNO_WRONG_FORMAT = Memory::registry("Wrong json format");
+const DWORD JSON::ERRNO_OBJECT_NOT_FOUND = Memory::registry("Cannot find the json object");
 
 BYTE UTF8W(QWORD x)
 {

@@ -13,6 +13,7 @@ namespace JSON
 {
 	JSONAPI extern const DWORD ERRNO_WRONG_OBJECT_TYPE;
 	JSONAPI extern const DWORD ERRNO_WRONG_FORMAT;
+	JSONAPI extern const DWORD ERRNO_OBJECT_NOT_FOUND;
 
 	enum type
 	{
@@ -32,6 +33,7 @@ namespace JSON
 		JSON::object::KV *content = nullptr;
 		QWORD size = 0;
 		BYTE type = JSON::type::UNKNOWN;
+		bool readonly = false;
 
 		object() = default;
 		JSONAPI object(const JSON::object &);
@@ -48,6 +50,7 @@ namespace JSON
 		JSONAPI JSON::object &operator[](const String::string &);
 		JSONAPI JSON::object &operator[](const char *);
 		JSONAPI JSON::object &operator[](QWORD);
+		JSONAPI JSON::object &operator[](int);
 		JSONAPI operator String::string &() const;
 		JSONAPI operator QWORD() const;
 		JSONAPI operator int() const;
