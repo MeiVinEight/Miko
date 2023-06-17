@@ -1,0 +1,31 @@
+{
+	"name": "Filesystem",
+	"source": "src",
+	"depends":
+	[
+		"Memory",
+		"Streaming",
+		"String"
+	],
+	"definitions":
+	[
+		"FS_SHARED"
+	],
+	"include": "include",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Filesystem",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"kernel32.lib",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib",
+		"..\\.release\\Streaming.lib"
+	]
+}

@@ -5,6 +5,7 @@
 	[
 		"Memory",
 		"String",
-		"Streaming"
+		"Streaming",
+		"Filesystem"
 	]
 }
