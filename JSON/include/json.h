@@ -1,13 +1,13 @@
 #ifndef JSON_H
 #define JSON_H
 
-#ifdef JSON_SHARED
-	#define JSONAPI __declspec(dllexport)
-#else
-	#define JSONAPI __declspec(dllimport)
-#endif
-
 #include <sstring.h>
+
+#ifdef JSON_SHARED
+#define JSONAPI __declspec(dllexport)
+#else
+#define JSONAPI __declspec(dllimport)
+#endif
 
 namespace JSON
 {

@@ -1,4 +1,6 @@
-#include "definitions.h"
+#include <exception.h>
+#include <json.h>
+
 BYTE HEX[17] = {"0123456789abcdef"};
 BYTE ESCAPE[256] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -19,6 +21,17 @@ const DWORD JSON::ERRNO_WRONG_OBJECT_TYPE = Memory::registry("Wrong object type"
 const DWORD JSON::ERRNO_WRONG_FORMAT = Memory::registry("Wrong json format");
 const DWORD JSON::ERRNO_OBJECT_NOT_FOUND = Memory::registry("Cannot find the json object");
 
+void Capacity(BYTE *(&buffer), QWORD &size, QWORD expect)
+{
+	if (expect > size)
+	{
+		BYTE *nbuf = new BYTE[2 * size];
+		Memory::copy(nbuf, buffer, size);
+		delete[] buffer;
+		buffer = nbuf;
+		size *= 2;
+	}
+}
 BYTE UTF8W(QWORD x)
 {
 	BYTE ret = 0;

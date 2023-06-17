@@ -1,4 +1,5 @@
-#include "definitions.h"
+#include <exception.h>
+#include <json.h>
 
 JSON::object::object(const JSON::object &copy): content(new JSON::object::KV[copy.size]), size(copy.size), type(copy.type)
 {
