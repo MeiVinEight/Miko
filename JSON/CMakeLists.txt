@@ -7,6 +7,10 @@ include_directories(
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Miko)
+add_definitions(
+	-DCMAKE_BUILD
+	-DJSON_SHARED
+)
 aux_source_directory(src SRC)
 
 add_library(JSON SHARED ${SRC})
