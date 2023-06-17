@@ -1,12 +1,8 @@
 #ifndef MIKO_SSTRING_H
 #define MIKO_SSTRING_H
 
-#ifdef STRING_SHARED
-	#define STRINGAPI __declspec(dllexport)
-#else
-	#define STRINGAPI __declspec(dllimport)
-#endif
-
+#include <stringspec.h>
+#include <WinType.h>
 #include <memory.h>
 
 namespace String
@@ -42,16 +38,6 @@ namespace String
 		STRINGAPI QWORD search(char) const;
 		STRINGAPI Memory::string native() const;
 	};
-	class URL
-	{
-		public:
-		String::string location;
-		String::string scheme;
-		String::string specific;
-
-		STRINGAPI virtual ~URL() noexcept;
-		STRINGAPI virtual void resolve(const String::string &);
-	};
 
 	STRINGAPI QWORD length(const void *);
 	STRINGAPI String::string stringify(double);
@@ -61,11 +47,6 @@ namespace String
 	STRINGAPI String::string stringify(void *);
 	STRINGAPI double floating(const String::string &);
 	STRINGAPI QWORD integer(const String::string &);
-}
-namespace Hexadecimal
-{
-	STRINGAPI String::string format(const Memory::string &);
-	STRINGAPI String::string stringify(QWORD);
 }
 
 #endif //MIKO_SSTRING_H

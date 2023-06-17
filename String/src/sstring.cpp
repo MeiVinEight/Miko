@@ -1,5 +1,5 @@
-#include "definitions.h"
 #include "MWORD.h"
+#include "BinaryStorage.h"
 
 const int EXP_BIAS = (1 << 10) - 1;
 const DWORD EXP_SHIFT = 52;
@@ -13,20 +13,6 @@ QWORD DoubleToLong(double x)
 double LongToDouble(QWORD x)
 {
 	return *((double *) &x);
-}
-int NumberSize(QWORD x)
-{
-	int v = 0;
-	while (x)
-	{
-		v++;
-		x >>= 1;
-	}
-	return v;
-}
-int LeadingZeros(QWORD x)
-{
-	return 64 - NumberSize(x);
 }
 int TrailingZeros(QWORD x)
 {

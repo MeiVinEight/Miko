@@ -1,4 +1,5 @@
 #include "MWORD.h"
+#include "BinaryStorage.h"
 
 constexpr inline QWORD max(QWORD a, QWORD b)
 {

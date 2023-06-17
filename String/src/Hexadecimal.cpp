@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <hexadecimal.h>
 
 String::string Hexadecimal::format(const Memory::string &data)
 {

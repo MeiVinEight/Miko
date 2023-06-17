@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <sstring.h>
 
 String::string::string() = default;
 String::string::string(const char *str): string(str, String::length(str))

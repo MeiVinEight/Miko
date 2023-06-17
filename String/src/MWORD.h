@@ -1,6 +1,9 @@
 #ifndef MWORD_H
 #define MWORD_H
-#include "definitions.h"
+
+#include <WinType.h>
+#include <memory.h>
+#include <sstring.h>
 
 class MWORD
 {
