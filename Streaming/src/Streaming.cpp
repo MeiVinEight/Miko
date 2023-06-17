@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <streaming.h>
 
 void Streaming::CR(Streaming::stream *stream)
 {

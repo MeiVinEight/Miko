@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <stream.h>
 
 DWORD Streaming::stream::read(const Memory::string &buf)
 {

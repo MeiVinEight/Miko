@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <fully.h>
 
 Streaming::fully::fully(Streaming::stream *delegating): stream(delegating)
 {
