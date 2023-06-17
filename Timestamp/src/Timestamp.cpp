@@ -1,4 +1,17 @@
+#include <timestamp.h>
+
 #include "definitions.h"
+
+extern "C"
+{
+void GetSystemTimeAsFileTime(void *);
+}
+
+typedef struct
+{
+	DWORD dwLowDateTime;
+	DWORD dwHighDateTime;
+} FILETIME, *PFILETIME, *LPFILETIME;
 
 QWORD Timestamp::current()
 {
