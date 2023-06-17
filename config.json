@@ -8,6 +8,7 @@
 		"Streaming",
 		"Filesystem",
 		"JSON",
-		"compile"
+		"compile",
+		"Timestamp"
 	]
 }

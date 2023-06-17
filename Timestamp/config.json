@@ -1,0 +1,26 @@
+{
+	"name": "Timestamp",
+	"source": "src",
+	"include": "include",
+	"depends":
+	[
+		"Memory"
+	],
+	"definitions":
+	[
+		"TIMESTAMP_SHARED"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Timestamp",
+	"options":
+	[
+		"/LD",
+		"/O1",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/NOENTRY",
+		"/INCREMENTAL:NO",
+		"kernel32.lib"
+	]
+}
