@@ -4,6 +4,7 @@
 	"subproject":
 	[
 		"Memory",
-		"String"
+		"String",
+		"Streaming"
 	]
 }

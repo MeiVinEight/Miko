@@ -1,0 +1,28 @@
+{
+	"name": "Streaming",
+	"source": "src",
+	"depends":
+	[
+		"Memory",
+		"String"
+	],
+	"definitions":
+	[
+		"STREAMING_SHARED"
+	],
+	"include": "include",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Streaming",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"/NOENTRY",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib"
+	]
+}
