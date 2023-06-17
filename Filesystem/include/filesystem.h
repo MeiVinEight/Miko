@@ -9,7 +9,6 @@
 
 #include <memory.h>
 #include <sstring.h>
-#include <streaming.h>
 
 /*
  * TODO UNC ?
@@ -33,6 +32,9 @@ namespace Filesystem
 	const static DWORD OF_PROMPT           = 0x00002000;
 	const static DWORD OF_EXIST            = 0x00004000;
 	const static DWORD OF_REOPEN           = 0x00008000;
+	const static DWORD SEEK_BEGIN          = 0;
+	const static DWORD SEEK_CURRENT        = 1;
+	const static DWORD SEEk_END            = 2;
 	FSAPI extern const DWORD ERRNO_WRONG_FILE_TYPE;
 	FSAPI extern const QWORD STDIN;
 	FSAPI extern const QWORD STDOUT;
@@ -52,33 +54,8 @@ namespace Filesystem
 	FSAPI DWORD write(QWORD, const void *, DWORD);
 	FSAPI void seek(QWORD, QWORD, DWORD);
 	FSAPI void flush(QWORD);
+	FSAPI QWORD available(QWORD);
 }
 
-namespace Streaming
-{
-	class file: public Streaming::stream
-	{
-		public:
-		QWORD object = Filesystem::FILE_ERROR;
-
-		FSAPI file(QWORD);
-		FSAPI file(const String::string &);
-		FSAPI file(Streaming::file &&) noexcept;
-		FSAPI virtual ~file();
-		FSAPI DWORD read(void *, DWORD) override;
-		FSAPI DWORD write(const void *, DWORD) override;
-		FSAPI void flush() override;
-		FSAPI QWORD available() override;
-		FSAPI Streaming::file &operator=(Streaming::file &&) noexcept;
-		FSAPI virtual Streaming::file &operator>>(const Memory::string &);
-		FSAPI virtual Streaming::file &operator<<(const Memory::string &);
-		FSAPI virtual void seek(QWORD) const;
-		FSAPI virtual void close();
-	};
-	FSAPI extern Streaming::file input;
-	FSAPI extern Streaming::file output;
-	FSAPI extern Streaming::format cin;
-	FSAPI extern Streaming::format cout;
-}
 
 #endif //FILESYSTEM_H

@@ -1,8 +1,6 @@
 #ifndef FSDEF_H
 #define FSDEF_H
 
-#define FS_SHARED
-
 #include <filesystem.h>
 
 
@@ -11,8 +9,6 @@ extern "C"
 {
 #endif
 
-#define WINAPI						__stdcall
-#define NULL						0
 #define INVALID_HANDLE_VALUE		((HANDLE)(LONG_PTR)-1)
 #define INVALID_FILE_ATTRIBUTES		(-1)
 #define MAX_PATH					260
@@ -28,9 +24,6 @@ extern "C"
 #define FILE_ATTRIBUTE_NORMAL		0x00000080
 
 #define OFS_MAXPATHNAME				128
-
-#define FILE_BEGIN					0
-#define FILE_CURRENT				1
 
 #define FILE_TYPE_DISK				0x0001
 

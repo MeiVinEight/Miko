@@ -1,3 +1,5 @@
+#include <exception.h>
+
 #include "definitions.h"
 
 const DWORD Filesystem::ERRNO_WRONG_FILE_TYPE = Memory::registry("Wrong file type");
@@ -168,7 +170,7 @@ void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 {
 	LARGE_INTEGER distance;
 	distance.QuadPart = (long long) offset;
-	if (!SetFilePointerEx((HANDLE)fdVal, distance, nullptr, mode))
+	if (!SetFilePointerEx((HANDLE) fdVal, distance, nullptr, mode))
 	{
 		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
@@ -179,4 +181,28 @@ void Filesystem::flush(QWORD fdVal)
 	{
 		throw Memory::exception(GetLastError(), Memory::DOSERROR);
 	}
+}
+QWORD Filesystem::available(QWORD fdVal)
+{
+	void * handle = (void *) fdVal;
+	DWORD type = GetFileType(handle);
+	switch (type)
+	{
+		case FILE_TYPE_DISK:
+		{
+			LARGE_INTEGER distance, pos;
+			distance.QuadPart = 0;
+			if (SetFilePointerEx(handle, distance, &pos, Filesystem::SEEK_CURRENT))
+			{
+				QWORD current = pos.QuadPart;
+				LARGE_INTEGER filesize;
+				if (GetFileSizeEx(handle, &filesize))
+				{
+					return filesize.QuadPart - current;
+				}
+			}
+			break;
+		}
+	}
+	return -1;
 }

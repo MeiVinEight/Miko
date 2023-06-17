@@ -1,4 +1,6 @@
-#include "definitions.h"
+#include <filestream.h>
+#include <exception.h>
+
 
 Streaming::file::file(QWORD fdVal): object(fdVal)
 {
@@ -61,32 +63,17 @@ QWORD Streaming::file::available()
 {
 	if (~this->object)
 	{
-		HANDLE handle = (HANDLE) this->object;
-		DWORD type = GetFileType(handle);
-		switch (type)
-		{
-			case FILE_TYPE_DISK:
-			{
-				LARGE_INTEGER distance, pos;
-				distance.QuadPart = 0;
-				if (SetFilePointerEx(handle, distance, &pos, FILE_CURRENT))
-				{
-					QWORD current = pos.QuadPart;
-					LARGE_INTEGER filesize;
-					if (GetFileSizeEx(handle, &filesize))
-					{
-						return filesize.QuadPart - current;
-					}
-				}
-				break;
-			}
-		}
+		return Filesystem::available(this->object);
 	}
 	return -1;
 }
 void Streaming::file::seek(QWORD offset) const
 {
-	Filesystem::seek(this->object, offset, FILE_BEGIN);
+	if (~this->object)
+	{
+		Filesystem::seek(this->object, offset, Filesystem::SEEK_BEGIN);
+	}
+	throw Memory::exception(Memory::ERRNO_OBJECT_CLOSED);
 }
 void Streaming::file::close()
 {
