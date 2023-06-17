@@ -1,5 +1,8 @@
 #ifndef STATICDICTIONARY_H
 #define STATICDICTIONARY_H
+
+
+#ifdef __cplusplus
 #include <memory.h>
 #include "dictionary.h"
 
@@ -26,5 +29,19 @@ namespace StaticDictionary
 	extern DWORD ferment(Memory::string &, QWORD);
 	void dictionary(Memory::string &, QWORD &, QWORD, QWORD, QWORD);
 }
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
+void DllMainStaticDictionary();
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //STATICDICTIONARY_H

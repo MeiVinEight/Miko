@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <NibbleReader.h>
 
 Compression::NibbleReader::NibbleReader(Memory::string stream): stream((Memory::string &&) stream)
 {

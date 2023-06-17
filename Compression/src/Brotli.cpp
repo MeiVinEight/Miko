@@ -1,5 +1,14 @@
-#include "definitions.h"
+#include <brotli.h>
+#include <NibbleReader.h>
+
 #include "StaticDictionary.h"
+
+#ifndef CMAKE_BUILD
+
+const unsigned long _tls_index = 0;
+int _Init_thread_epoch = (int) 0x80000000;
+
+#endif
 
 /* References: RFC7932 - Section 4.  Encoding of Distances */
 BYTE DISTANCE_INDEX[] = { 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1};
@@ -125,6 +134,7 @@ class Huffman
 	{
 		delete this->children[0];
 		delete this->children[1];
+		this->children[0] = this->children[1] = nullptr;
 	}
 	Huffman *&operator[](WORD i)
 	{
@@ -158,7 +168,6 @@ void IMTF(Memory::string &data)
 		}
 	}
 }
-
 BYTE ReadWBITS(Compression::NibbleReader &br)
 {
 	BYTE WBITS = br.read(1);
@@ -175,7 +184,6 @@ BYTE ReadWBITS(Compression::NibbleReader &br)
 
 	return 17;
 }
-
 WORD ReadVarByte(Compression::NibbleReader &br)
 {
 	WORD bits = br.read(1);
@@ -185,7 +193,6 @@ WORD ReadVarByte(Compression::NibbleReader &br)
 	bits = br.read(3);
 	return br.read(bits) + (1 << bits) + 1;
 }
-
 Huffman *CreateHuffman(const BYTE *clens, QWORD alphabetSize)
 {
 	QWORD count[16]{0};
@@ -234,7 +241,6 @@ Huffman *CreateHuffman(const BYTE *clens, QWORD alphabetSize)
 		return huffman;
 	}
 }
-
 /* References: RFC7932 - Section 3. Compressed Representation of Prefix Codes
  *
  * +--------------------------------------------------------+
@@ -478,7 +484,6 @@ Huffman *DecodeHuffman(Compression::NibbleReader &br, QWORD alphabetSize)
 		return CreateHuffman((BYTE *) codeLength.address, codeLength.length);
 	}
 }
-
 Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapSize, WORD trees)
 {
 	Memory::string context(contextMapSize);
@@ -518,7 +523,6 @@ Memory::string DecodeContextMap(Compression::NibbleReader &br, QWORD contextMapS
 	}
 	return context;
 }
-
 void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &output, QWORD &length)
 {
 	WORD NBLTYPESL = ReadVarByte(br);
@@ -735,7 +739,6 @@ void DecodeCompressedMetaBlock(State &s, Compression::NibbleReader &br, Memory::
 
 	Memory::free(contextMode);
 }
-
 bool DecodeMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &output, QWORD &length)
 {
 	BYTE islast = br.read(1);
@@ -782,7 +785,6 @@ bool DecodeMetaBlock(State &s, Compression::NibbleReader &br, Memory::string &ou
 
 	return !islast;
 }
-
 Memory::string uncompress(const Memory::string &data)
 {
 	Memory::string output(0);

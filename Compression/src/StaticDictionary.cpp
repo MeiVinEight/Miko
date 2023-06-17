@@ -1,4 +1,3 @@
-#include "definitions.h"
 #include "StaticDictionary.h"
 
 DWORD StaticDictionary::NWORDS[25];
@@ -130,35 +129,49 @@ DWORD StaticDictionary::transformation[121][3] = {
 	{0x0001,  2, 0x7E02}, // 119
 	{0x0001,  1, 0x7E02}, // 120
 };
-void (*(StaticDictionary::transforms[5]))(Memory::string &, WORD) = {
-	[](Memory::string &word, WORD idx) -> void
-	{
-	},
-	[](Memory::string &word, WORD idx) -> void
+
+void Identity(Memory::string &, WORD)
+{
+}
+void FermentFirst(Memory::string &word, WORD)
+{
+	if (word.length)
 	{
 		StaticDictionary::ferment(word, 0);
-	},
-	[](Memory::string &word, WORD idx) -> void
-	{
-		for (WORD i = 0; i < word.length;)
-			i += StaticDictionary::ferment(word, i);
-	},
-	[](Memory::string &word, WORD idx) -> void
-	{
-		idx -= 2;
-		QWORD len = (word.length < idx) ? 0 : (word.length - idx);
-		Memory::string fword(len);
-		Memory::copy(fword.address, word.address + idx, len);
-		word = (Memory::string &&)fword;
-	},
-	[](Memory::string &word, WORD idx) -> void
-	{
-		idx -= 11;
-		QWORD len = (word.length < idx) ? 0 : (word.length - idx);
-		Memory::string fword(len);
-		Memory::copy(fword.address, word.address, len);
-		word = (Memory::string &&)fword;
 	}
+}
+void FermentAll(Memory::string &word, WORD)
+{
+	for (DWORD i = 0; i < word.length;)
+	{
+		i += StaticDictionary::ferment(word, i);
+	}
+}
+void OmitFirst(Memory::string &word, WORD k)
+{
+	k -= 2;
+	QWORD len = (word.length < k ? 0 : (word.length - k));
+	Memory::string fword(len);
+	if (len)
+	{
+		Memory::copy(fword.address, word.address + k, len);
+	}
+	word = (Memory::string &&) fword;
+}
+void OmitLast(Memory::string &word, WORD k)
+{
+	k -= 11;
+	QWORD len = (word.length < k) ? 0 : word.length;
+	Memory::string fword(len);
+	if (len)
+	{
+		Memory::copy(fword.address, word.address, len);
+	}
+	word = (Memory::string &&) fword;
+}
+
+void (*(StaticDictionary::transforms[5]))(Memory::string &, WORD) = {
+	Identity, FermentFirst, FermentAll, OmitFirst, OmitLast
 };
 
 DWORD StaticDictionary::ferment(Memory::string &word, QWORD pos)
@@ -218,22 +231,15 @@ void StaticDictionary::dictionary(Memory::string &output, QWORD &length, QWORD a
 	length += tword.length;
 }
 
-void DllMainStaticDictionary(unsigned int reason)
+void DllMainStaticDictionary()
 {
-	switch (reason)
+	StaticDictionary::DOFFSET[0] = 0;
+	StaticDictionary::NWORDS[0] = 0;
+	for (WORD i = 0; i++ < 24;)
 	{
-		case DLL_PROCESS_ATTACH:
-		{
-			StaticDictionary::DOFFSET[0] = 0;
-			StaticDictionary::NWORDS[0] = 0;
-			for (WORD i = 0; i++ < 24;)
-			{
-				StaticDictionary::NWORDS[i] = (i < 4) ? 0 : (1 << StaticDictionary::NDBITS[i]);
-				StaticDictionary::DOFFSET[i] = StaticDictionary::DOFFSET[i - 1] + (i - 1) * StaticDictionary::NWORDS[i - 1];
-			}
-			QWORD DICTSIZE = StaticDictionary::DOFFSET[24] + 24 * StaticDictionary::NWORDS[24];
-			(void) DICTSIZE;
-			break;
-		}
+		StaticDictionary::NWORDS[i] = (i < 4) ? 0 : (1 << StaticDictionary::NDBITS[i]);
+		StaticDictionary::DOFFSET[i] = StaticDictionary::DOFFSET[i - 1] + (i - 1) * StaticDictionary::NWORDS[i - 1];
 	}
+	QWORD DICTSIZE = StaticDictionary::DOFFSET[24] + 24 * StaticDictionary::NWORDS[24];
+	(void) DICTSIZE;
 }
