@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <exception.h>
 
 Memory::string::string(): string(0)
 {

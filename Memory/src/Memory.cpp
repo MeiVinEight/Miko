@@ -1,12 +1,36 @@
 #include "definitions.h"
+#include "crt.h"
+#include "ErrorMessage.h"
 
+#include <error.h>
+#include <exception.h>
+
+#define FORMAT_MESSAGE_IGNORE_INSERTS  0x00000200
+#define FORMAT_MESSAGE_FROM_STRING     0x00000400
+#define FORMAT_MESSAGE_FROM_HMODULE    0x00000800
+#define FORMAT_MESSAGE_FROM_SYSTEM     0x00001000
+#define FORMAT_MESSAGE_ARGUMENT_ARRAY  0x00002000
+#define FORMAT_MESSAGE_MAX_WIDTH_MASK  0x000000FF
+
+extern "C"
+{
+
+DWORD FormatMessageA(DWORD, const void *, DWORD, DWORD, LPSTR, DWORD, char *);
+DWORD GetLastError(void);
+
+}
+
+ULONG (*RtlNtStatusToDosError)(NTSTATUS) = nullptr;
+Memory::string *ErrorMessage = nullptr;
+
+DWORD ErrorCode = 0;
 DWORD order_value = 1;
 char *order_point = (char *) &order_value;
+
 const BYTE Memory::BENDIAN = order_point[0] == 0;
 const BYTE Memory::LENDIAN = order_point[0] == 1;
 const DWORD Memory::ERRNO_SUCCESS = Memory::registry("The operation completed successfully");
 const DWORD Memory::ERRNO_ACCESS_VIOLATION = Memory::registry("Memory access violation");
-const DWORD Memory::ERRNO_INVALID_PARAMETER = Memory::registry("The parameter is incorrect");
 const DWORD Memory::ERRNO_OBJECT_CLOSED = Memory::registry("Kernel object has been closed");
 
 void *Memory::allocate(QWORD size)
@@ -103,7 +127,7 @@ Memory::string Memory::message(DWORD errcode, BYTE type)
 		}
 		default:
 		{
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		}
 	}
 	return msg;

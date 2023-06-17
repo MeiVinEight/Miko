@@ -1,4 +1,6 @@
-#include "definitions.h"
+#include <endian.h>
+
+#include "CommonEndian.h"
 
 QWORD Memory::BE::get(const void *p, BYTE n)
 {
