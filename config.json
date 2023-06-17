@@ -6,6 +6,7 @@
 		"Memory",
 		"String",
 		"Streaming",
-		"Filesystem"
+		"Filesystem",
+		"JSON"
 	]
 }

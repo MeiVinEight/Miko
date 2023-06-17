@@ -1,0 +1,26 @@
+{
+	"name": "JSON",
+	"source": "src",
+	"depends":
+	[
+		"String"
+	],
+	"definitions":
+	[
+		"JSON_SHARED"
+	],
+	"include": "include",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\JSON",
+	"options":
+	[
+		"/EHsc",
+		"/LD",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib"
+	]
+}
