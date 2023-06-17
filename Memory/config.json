@@ -1,0 +1,23 @@
+{
+	"name": "Memory",
+	"source": "src",
+	"include":"include",
+	"definitions":
+	[
+		"COMPILE",
+		"MEMORY_SHARED"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Memory",
+	"options":
+	[
+		"/LD",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"/ALIGN:16",
+		"kernel32.lib",
+		"Dbghelp.lib"
+	]
+}
