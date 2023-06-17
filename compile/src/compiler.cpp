@@ -1,8 +1,14 @@
 #include <memory.h>
+#include <optnew.h>
+#include <exception.h>
 #include <sstring.h>
 #include <json.h>
-#include <streaming.h>
+#include <fully.h>
 #include <filesystem.h>
+#include <filestream.h>
+#include <standardstream.h>
+#include <streaming.h>
+#include <hexadecimal.h>
 
 /*-------------------------------- NT declarations --------------------------------*/
 #pragma region NTDECL
