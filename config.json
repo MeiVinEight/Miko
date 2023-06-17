@@ -9,6 +9,7 @@
 		"Filesystem",
 		"JSON",
 		"compile",
-		"Timestamp"
+		"Timestamp",
+		"Compression"
 	]
 }

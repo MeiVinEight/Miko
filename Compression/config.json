@@ -1,0 +1,24 @@
+{
+	"name": "Compression",
+	"source": "src",
+	"include": "include",
+	"depends":
+	[
+		"Memory"
+	],
+	"definitions":
+	[
+		"COMPRESSION_SHARED"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Compression",
+	"options":
+	[
+		"/LD",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\.release\\Memory.lib"
+	]
+}
