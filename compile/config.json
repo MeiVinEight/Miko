@@ -1,0 +1,31 @@
+{
+	"name": "Compiler",
+	"source": "src",
+	"depends":
+	[
+		"Memory",
+		"String",
+		"JSON",
+		"Streaming",
+		"Filesystem"
+	],
+	"resource": "res",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\compiler",
+	"options":
+	[
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/INCREMENTAL:NO",
+		"/NOD",
+		"/ENTRY:main",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"kernel32.lib",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib",
+		"..\\.release\\JSON.lib",
+		"..\\.release\\Filesystem.lib",
+		"..\\.release\\Streaming.lib"
+	]
+}
