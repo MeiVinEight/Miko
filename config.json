@@ -8,6 +8,6 @@
 		"Streaming",
 		"Filesystem",
 		"JSON",
-		"Compiler"
+		"compile"
 	]
 }
