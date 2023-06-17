@@ -11,6 +11,8 @@ __declspec(allocate(".CRT$XCZ")) void (__cdecl *XCZ)(void) = 0;
 
 #pragma comment(linker, "/MERGE:.CRT=.rdata")
 
+int _fltused = 1;
+
 void CRTINIT()
 {
 	void (__cdecl **xca)(void) = &XCA;
