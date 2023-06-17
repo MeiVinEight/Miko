@@ -5,7 +5,8 @@
 	"definitions":
 	[
 		"COMPILE",
-		"MEMORY_SHARED"
+		"MEMORY_SHARED",
+		"TYPEINFO_SHARED"
 	],
 	"obj": ".compile\\",
 	"exe": "..\\.release\\Memory",
