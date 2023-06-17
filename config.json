@@ -3,6 +3,7 @@
 	"source": null,
 	"subproject":
 	[
-		"Memory"
+		"Memory",
+		"String"
 	]
 }

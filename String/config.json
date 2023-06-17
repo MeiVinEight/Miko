@@ -1,0 +1,27 @@
+{
+	"name": "String",
+	"source": "src",
+	"depends":
+	[
+		"Memory"
+	],
+	"definitions":
+	[
+		"STRING_SHARED"
+	],
+	"include": "include",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\String",
+	"options":
+	[
+		"/EHsc",
+		"/GS-",
+		"/LD",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"/NOENTRY",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"..\\.release\\Memory.lib"
+	]
+}
