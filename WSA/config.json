@@ -1,0 +1,28 @@
+{
+	"name": "WSA",
+	"source": "src",
+	"definitions":
+	[
+		"WSA_SHARED"
+	],
+	"depends":
+	[
+		"Memory",
+		"Streaming"
+	],
+	"include": "include",
+	"obj": ".compile\\",
+	"exe": "..\\.release\\WSA",
+	"options":
+	[
+		"/LD",
+		"/GS-",
+		"/EHsc",
+		"/link",
+		"/NOD",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"ws2_32.lib",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\Streaming.lib"
+	]
+}

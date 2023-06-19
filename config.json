@@ -10,6 +10,7 @@
 		"JSON",
 		"compile",
 		"Timestamp",
-		"Compression"
+		"Compression",
+		"WSA"
 	]
 }
