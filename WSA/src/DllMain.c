@@ -32,8 +32,8 @@ void CRTINIT()
 #pragma section(".CRT$XCA", long, read) // First C++ Initializer
 #pragma section(".CRT$XCZ", long, read) // Last C++ Initializer
 
-__declspec(allocate(".CRT$XCA")) void (__cdecl *XCA)(void) = nullptr;
-__declspec(allocate(".CRT$XCZ")) void (__cdecl *XCZ)(void) = nullptr;
+__declspec(allocate(".CRT$XCA")) void (__cdecl *XCA)(void) = 0;
+__declspec(allocate(".CRT$XCZ")) void (__cdecl *XCZ)(void) = 0;
 
 #pragma comment(linker, "/MERGE:.CRT=.rdata")
 
