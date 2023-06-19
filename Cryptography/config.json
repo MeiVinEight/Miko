@@ -1,0 +1,27 @@
+{
+	"name": "Cryptography",
+	"source": "src",
+	"include": "include",
+	"definitions":
+	[
+		"CRYPTO_SHARED"
+	],
+	"depends":
+	[
+		"Memory"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Cryptography",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"bcrypt.lib",
+		"..\\.release\\Memory.lib"
+	]
+}
