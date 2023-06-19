@@ -1,4 +1,21 @@
-#include "definitions.h"
+#include <endian.h>
+#include <exception.h>
+#include <Address.h>
+#include <wsa.h>
+
+#include "ws2_32.h"
+#include "sockaddr.h"
+
+extern "C"
+{
+
+int __stdcall getaddrinfo(const char *, const char *, const void *, void *);
+void __stdcall freeaddrinfo(void *);
+const char *__stdcall inet_ntop(int, const void *, char *, QWORD);
+QWORD strlen(const char *);
+#pragma intrinsic(strlen)
+
+}
 
 WSA::Address::Address() = default;
 WSA::Address::Address(BYTE s0, BYTE s1, BYTE s2, BYTE s3)
@@ -40,7 +57,7 @@ Memory::string WSA::Address::string(bool onlyV6) const
 {
 	char buf[64] = {};
 	Memory::string ret;
-	INT family;
+	int family;
 	union
 	{
 		IN_ADDR V4 = {};
@@ -63,7 +80,7 @@ Memory::string WSA::Address::string(bool onlyV6) const
 		throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 	}
 
-	ret.resize(StringLength(buf));
+	ret.resize(strlen(buf));
 	Memory::copy(ret.address, buf, ret.length);
 	return ret;
 }
@@ -75,4 +92,38 @@ bool WSA::Address::IPV4() const
 {
 	WORD *addr = (WORD *) this->address;
 	return addr[0] == addr[1] == addr[2] == addr[3] == addr[4] == 0 && addr[5] == 0xFFFF;
+}
+WSA::Address WSA::IP(const char *host)
+{
+	ADDRINFOA *info = nullptr;
+	int err = getaddrinfo(host, nullptr, nullptr, &info);
+	if (!err)
+	{
+		if (info)
+		{
+			WSA::Address address;
+			switch (info->ai_family)
+			{
+				case WSA::AF_INET:
+				{
+					SOCKADDR_IN *addr = (SOCKADDR_IN *) info->ai_addr;
+					IN_ADDR *ia = &addr->sin_addr;
+					address.take(htonl(ia->S_un.S_addr));
+					break;
+				}
+				case WSA::AF_INET6:
+				{
+					SOCKADDR_IN6 *addr = (SOCKADDR_IN6 *) info->ai_addr;
+					IN6_ADDR *ia = &addr->sin6_addr;
+					Memory::copy(address.address, ia, 16);
+					break;
+				}
+			}
+			freeaddrinfo(info);
+			return address;
+		}
+		throw Memory::exception(WSA::ERRNO_UNKNOWN_HOST);
+	}
+	freeaddrinfo(info);
+	throw Memory::exception(err, Memory::DOSERROR);
 }

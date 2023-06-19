@@ -1,4 +1,35 @@
-#include "definitions.h"
+#include <error.h>
+#include <exception.h>
+#include <Socket.h>
+
+#include "ws2_32.h"
+#include "sockaddr.h"
+
+#define SOCKET_ERROR        (-1)
+#define FIONREAD            (0x40000000 | (((long) sizeof(unsigned long) & 0x7f) << 16) | (('f') << 8) | (127))
+
+typedef struct FDSET
+{
+	unsigned int fd_count;       /* how many are SET? */
+	SOCKET       fd_array[64];   /* an array of SOCKETs */
+} FDSET;
+typedef struct timeval
+{
+	long tv_sec;         /* seconds */
+	long tv_usec;        /* and microseconds */
+} TIMEVAL;
+
+extern "C"
+{
+
+unsigned short __stdcall htons(unsigned short);
+int __stdcall ioctlsocket(SOCKET, long, unsigned long *);
+int __stdcall getsockname(SOCKET, void *, int *);
+int __stdcall shutdown(SOCKET, int);
+int __stdcall setsockopt(SOCKET, int, int, const void *, int);
+int __stdcall getsockopt(SOCKET, int, int, void *, int *);
+
+}
 
 WSA::Socket::Socket() = default;
 WSA::Socket::Socket(WSA::Socket &&move) noexcept: connection(move.connection), IP(move.IP), RP(move.RP), LP(move.LP)
@@ -112,7 +143,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		WSA::connect(this->connection, &addr_in, sizeof(SOCKADDR_IN6));
 
 		int len = sizeof(SOCKADDR_IN6);
-		getsockname(this->connection, (SOCKADDR *) &addr_in, &len);
+		getsockname(this->connection, &addr_in, &len);
 		this->LP = htons(addr_in.sin6_port);
 	}
 	else
@@ -125,7 +156,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 		WSA::connect(this->connection, &addr_in, sizeof(SOCKADDR_IN));
 
 		int len = sizeof(SOCKADDR_IN);
-		getsockname(this->connection, (SOCKADDR *) &addr_in, &len);
+		getsockname(this->connection, &addr_in, &len);
 		this->LP = htons(addr_in.sin_port);
 	}
 }
@@ -147,7 +178,7 @@ WSA::Socket WSA::Socket::accept() const
 			Memory::copy(sock.IP.address, addr.sin6_addr.u.Byte, 16);
 			sock.RP = htons(addr.sin6_port);
 
-			getsockname(conn, (SOCKADDR *) &addr, &len);
+			getsockname(conn, &addr, &len);
 			sock.LP = htons(addr.sin6_port);
 		}
 		else
@@ -160,7 +191,7 @@ WSA::Socket WSA::Socket::accept() const
 			sock.IP.take(htonl(addr.sin_addr.S_un.S_addr));
 			sock.RP = htons(addr.sin_port);
 
-			getsockname(conn, (SOCKADDR *) &addr, &len);
+			getsockname(conn, &addr, &len);
 			sock.LP = htons(addr.sin_port);
 		}
 		sock.suspend = 0;
@@ -172,7 +203,7 @@ DWORD WSA::Socket::read(void *b, DWORD len)
 {
 	if (~this->connection)
 	{
-		DWORD readed = recv(this->connection, (char *) b, (int) len, 0);
+		DWORD readed = WSA::receive(this->connection, b, (int) len, 0);
 		if (readed)
 		{
 			if (readed == SOCKET_ERROR)
@@ -191,7 +222,7 @@ DWORD WSA::Socket::write(const void *b, DWORD len)
 {
 	if (~this->connection)
 	{
-		DWORD sended = send(this->connection, (const char *) b, (int) len, 0);
+		DWORD sended = WSA::send(this->connection, b, (int) len, 0);
 		if (sended == SOCKET_ERROR)
 		{
 			DWORD err = WSAGetLastError();
@@ -207,7 +238,7 @@ void WSA::Socket::flush()
 }
 QWORD WSA::Socket::available()
 {
-	u_long ava = 0;
+	unsigned long ava = 0;
 	if (~ioctlsocket(this->connection, FIONREAD, &ava))
 	{
 		return ava;
@@ -219,8 +250,8 @@ bool WSA::Socket::select(int what, long s, long us) const
 	TIMEVAL val = {};
 	val.tv_sec = s;
 	val.tv_usec = us;
-	fd_set rd = {};
-	fd_set wt = {};
+	FDSET rd = {};
+	FDSET wt = {};
 	int expect;
 	switch (what)
 	{
@@ -247,14 +278,14 @@ bool WSA::Socket::select(int what, long s, long us) const
 		}
 		default:
 		{
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		}
 	}
 	timeval *wait = nullptr;
 	if (s != -1)
 		wait = &val;
 
-	int result = ::select(0, &rd, &wt, nullptr, wait);
+	int result = WSA::select(0, &rd, &wt, nullptr, wait);
 	if (result == SOCKET_ERROR)
 	{
 		throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
@@ -284,7 +315,7 @@ void WSA::Socket::close()
 {
 	if (~this->connection)
 	{
-		int wrong = closesocket(this->connection);
+		int wrong = WSA::close(this->connection);
 		this->connection = WSA::INVALID_SOCKET;
 		this->IP = {0, 0, 0, 0};
 		this->RP = this->LP = 0;

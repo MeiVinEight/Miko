@@ -1,42 +1,29 @@
-#include "definitions.h"
+#include <exception.h>
+#include <wsa.h>
+
+#include "ws2_32.h"
+#include "sockaddr.h"
+
+#define SOCKET_ERROR        (-1)
+
+extern "C"
+{
+
+SOCKET __stdcall socket(int, int, int);
+int __stdcall bind(SOCKET, const void*, int);
+int __stdcall listen(SOCKET, int);
+SOCKET __stdcall accept(SOCKET, const void *, int *);
+int __stdcall closesocket(SOCKET);
+int __stdcall connect(SOCKET, const void *, int);
+int __stdcall recv(SOCKET, char *, int, int);
+int __stdcall send(SOCKET, const char *, int, int);
+int __stdcall select(int, void *, void *, void *, const void *);
+
+}
 
 const DWORD WSA::ERRNO_UNKNOWN_HOST = Memory::registry("Cannot find target host");
 const DWORD WSA::ERRNO_SOCKET_ALREADY_OCCUPIED = Memory::registry("Socket already occupied");
 
-WSA::Address WSA::IP(const char *host)
-{
-	ADDRINFOA *info = nullptr;
-	INT err = getaddrinfo(host, nullptr, nullptr, &info);
-	if (!err)
-	{
-		if (info)
-		{
-			WSA::Address address;
-			switch (info->ai_family)
-			{
-				case WSA::AF_INET:
-				{
-					SOCKADDR_IN *addr = (SOCKADDR_IN *) info->ai_addr;
-					IN_ADDR *ia = &addr->sin_addr;
-					address.take(htonl(ia->S_un.S_addr));
-					break;
-				}
-				case WSA::AF_INET6:
-				{
-					SOCKADDR_IN6 *addr = (SOCKADDR_IN6 *) info->ai_addr;
-					IN6_ADDR *ia = &addr->sin6_addr;
-					Memory::copy(address.address, ia, 16);
-					break;
-				}
-			}
-			freeaddrinfo(info);
-			return address;
-		}
-		throw Memory::exception(WSA::ERRNO_UNKNOWN_HOST);
-	}
-	freeaddrinfo(info);
-	throw Memory::exception(err, Memory::DOSERROR);
-}
 SOCKET WSA::socket(int af, int type, int proto)
 {
 	SOCKET sock = ::socket(af, type, proto);
@@ -75,4 +62,20 @@ SOCKET WSA::accept(SOCKET sock, const void *addr, int *size)
 		throw Memory::exception(WSAGetLastError(), Memory::DOSERROR);
 	}
 	return ret;
+}
+int WSA::close(SOCKET sock)
+{
+	return closesocket(sock);
+}
+int WSA::receive(SOCKET sock, void *buf, int len, int flag)
+{
+	return ::recv(sock, (char *) buf, len, flag);
+}
+int WSA::send(SOCKET sock, const void *buf, int len, int flag)
+{
+	return ::send(sock, (const char *) buf, len, flag);
+}
+int WSA::select(int nfds, void *rd, void *wt, void *rw, const void *timeout)
+{
+	return ::select(nfds, rd, wt, rw, timeout);
 }
