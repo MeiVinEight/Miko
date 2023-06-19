@@ -13,4 +13,4 @@ add_definitions(
 aux_source_directory(src SOURCE)
 
 add_library(Cryptography SHARED ${SOURCE})
-target_link_libraries(Cryptography PUBLIC Memory)
+target_link_libraries(Cryptography PUBLIC Memory bcrypt)
