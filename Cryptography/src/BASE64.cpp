@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <base64.h>
 
 /*
  * References: RFC2045 - Section 6.8. Base64 Content-Transfer-Encoding

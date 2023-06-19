@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <MersenneTwister.h>
 
 void Cryptography::MersenneTwister::seed(QWORD seed)
 {

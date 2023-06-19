@@ -1,4 +1,8 @@
-#include "SHA256.h"
+#include <endian.h>
+#include <SHA224.h>
+
+#include "SHA256C.h"
+#include "definitions.h"
 
 Cryptography::SHA224::SHA224(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_32, 32, &CalculateSHA256)
 {
@@ -7,10 +11,10 @@ Cryptography::SHA224::SHA224(): MessageDigest(Cryptography::MessageDigest::BLOCK
 }
 bool Cryptography::SHA224::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix32(this->length, block, position, &SaveAsBEndian);
+	return Appendix32(this->length, block, position, &Memory::BE::set);
 }
 void Cryptography::SHA224::transform(Memory::string &digest)
 {
-	Transform32(digest, &SaveAsBEndian);
+	Transform32(digest, &Memory::BE::set);
 	digest.resize(28);
 }

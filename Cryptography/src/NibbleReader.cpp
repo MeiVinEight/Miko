@@ -23,7 +23,9 @@ void NibbleReader::write(QWORD x, BYTE bits)
 	{
 		QWORD idx = this->position >> 3;
 		QWORD btx = this->position & 0x7;
-		this->stream[idx] &= ROTL(0xFE, btx, 8);
+		BYTE msk = 0xFF;
+		msk ^= 1 << btx;
+		this->stream[idx] &= msk;
 		this->stream[idx] |= ((x & 1) << btx);
 		x >>= 1;
 		this->position++;

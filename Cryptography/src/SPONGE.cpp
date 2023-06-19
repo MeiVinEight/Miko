@@ -1,4 +1,5 @@
 #include "Keccak.h"
+#include "definitions.h"
 
 void SPONGE::theta()
 {

@@ -1,3 +1,6 @@
+#include <endian.h>
+#include <MD4.h>
+
 #include "definitions.h"
 
 /*
@@ -48,7 +51,7 @@ void CalculateMD4(BYTE *X, BYTE *dig)
 		{
 			DWORD idx = (4 - (j % 4)) % 4;
 			ABCD[(idx + 0) % 4] += func[i](ABCD[(idx + 1) % 4], ABCD[(idx + 2) % 4], ABCD[(idx + 3) % 4]);
-			ABCD[(idx + 0) % 4] += GetAsLEndian(4, X + (MD4K[i][j] << 2));
+			ABCD[(idx + 0) % 4] += Memory::LE::get(X + (MD4K[i][j] << 2), 4);
 			ABCD[(idx + 0) % 4] += MD4CONSTANT[i];
 			ABCD[(idx + 0) % 4] = ROTL32(ABCD[(idx + 0) % 4], MD4S[i][j & 0x3]);
 		}
@@ -66,9 +69,9 @@ Cryptography::MD4::MD4(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_
 }
 bool Cryptography::MD4::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix32(this->length, block, position, &SaveAsLEndian);
+	return Appendix32(this->length, block, position, &Memory::LE::set);
 }
 void Cryptography::MD4::transform(Memory::string &digest)
 {
-	Transform32(digest, &SaveAsLEndian);
+	Transform32(digest, &Memory::LE::set);
 }

@@ -1,3 +1,6 @@
+#include <endian.h>
+#include <MD5.h>
+
 #include "definitions.h"
 
 /*
@@ -92,9 +95,9 @@ Cryptography::MD5::MD5(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_
 }
 bool Cryptography::MD5::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix32(this->length, block, position, &SaveAsLEndian);
+	return Appendix32(this->length, block, position, &Memory::LE::set);
 }
 void Cryptography::MD5::transform(Memory::string &digest)
 {
-	Transform32(digest, &SaveAsLEndian);
+	Transform32(digest, &Memory::LE::set);
 }

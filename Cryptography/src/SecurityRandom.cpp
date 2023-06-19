@@ -1,3 +1,6 @@
+#include <exception.h>
+#include <SecurityRandom.h>
+
 #include "definitions.h"
 
 void Cryptography::SecurityRandom::seed(QWORD)
@@ -6,7 +9,7 @@ void Cryptography::SecurityRandom::seed(QWORD)
 QWORD Cryptography::SecurityRandom::random()
 {
 	const QWORD length = sizeof(QWORD);
-	UCHAR buf[length] = {};
+	BYTE buf[8] = {};
 	NTSTATUS status = BCryptGenRandom(RNG_HANDLE, buf, length, 0);
 	if (status)
 		throw Memory::exception(status, Memory::NTSTATUS);

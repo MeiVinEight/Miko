@@ -1,7 +1,8 @@
 #ifndef KECCAK_H
 #define KECCAK_H
 
-#include "definitions.h" // IWYU pragma: export
+#include <WinType.h>
+// #include "definitions.h" // IWYU pragma: export
 
 class NibbleReader
 {

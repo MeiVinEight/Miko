@@ -1,4 +1,7 @@
-#include "SHA512.h"
+#include <endian.h>
+#include <SHA512.h>
+
+#include "SHA512C.h"
 
 extern const QWORD SHA512K[80] = {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
@@ -79,9 +82,9 @@ Cryptography::SHA512::SHA512(): MessageDigest(Cryptography::MessageDigest::BLOCK
 }
 bool Cryptography::SHA512::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix64(this->length, block, position, &SaveAsBEndian);
+	return Appendix64(this->length, block, position, &Memory::BE::set);
 }
 void Cryptography::SHA512::transform(Memory::string &digest)
 {
-	Transform64(digest, &SaveAsBEndian);
+	Transform64(digest, &Memory::BE::set);
 }

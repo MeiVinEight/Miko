@@ -1,4 +1,6 @@
-#include "SHA3.h"
+#include <SHAKE.h>
+
+#include "SHA3C.h"
 
 const QWORD SHAKEFUNCTIONS[2] = {128, 256};
 

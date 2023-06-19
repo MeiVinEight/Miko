@@ -1,3 +1,6 @@
+#include <endian.h>
+#include <SHA1.h>
+
 #include "definitions.h"
 
 /*
@@ -58,9 +61,9 @@ Cryptography::SHA1::SHA1(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZ
 }
 bool Cryptography::SHA1::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix32(this->length, block, position, &SaveAsBEndian);
+	return Appendix32(this->length, block, position, &Memory::BE::set);
 }
 void Cryptography::SHA1::transform(Memory::string &digest)
 {
-	Transform32(digest, &SaveAsBEndian);
+	Transform32(digest, &Memory::BE::set);
 }

@@ -1,4 +1,7 @@
-#include "SHA3.h"
+#include <SHA3.h>
+
+#include "SHA3C.h"
+#include "Keccak.h"
 
 const QWORD SHA3FUNCTIONS[4] = {224, 256, 384, 512};
 

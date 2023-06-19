@@ -1,4 +1,7 @@
-#include "SHA512.h"
+#include <endian.h>
+#include <SHA384.h>
+
+#include "SHA512C.h"
 
 Cryptography::SHA384::SHA384(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
 {
@@ -16,10 +19,10 @@ Cryptography::SHA384::SHA384(): MessageDigest(Cryptography::MessageDigest::BLOCK
 }
 bool Cryptography::SHA384::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix64(this->length, block, position, &SaveAsBEndian);
+	return Appendix64(this->length, block, position, &Memory::BE::set);
 }
 void Cryptography::SHA384::transform(Memory::string &digest)
 {
-	Transform64(digest, &SaveAsBEndian);
+	Transform64(digest, &Memory::BE::set);
 	digest.resize(48);
 }

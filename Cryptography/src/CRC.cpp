@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <crc.h>
 
 const BYTE INIT = 0;
 const BYTE REFI = 1;

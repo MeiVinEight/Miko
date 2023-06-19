@@ -1,8 +1,8 @@
 #ifndef DEINITIONS_H
 #define DEINITIONS_H
 
-#define CRYPTO_SHARED
-#include <crypto.h>
+#include <WinType.h>
+#include <memory.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -22,17 +22,17 @@ typedef void *BCRYPT_ALG_HANDLE, *HINSTANCE;
 extern BCRYPT_ALG_HANDLE RNG_HANDLE;
 extern BYTE KECCAKRC[255];
 
-NTSTATUS __stdcall BCryptOpenAlgorithmProvider(BCRYPT_ALG_HANDLE, LPCWSTR, LPCWSTR, ULONG);
-NTSTATUS __stdcall BCryptCloseAlgorithmProvider(BCRYPT_ALG_HANDLE, ULONG);
-NTSTATUS __stdcall BCryptGenRandom(BCRYPT_ALG_HANDLE, PUCHAR, ULONG, ULONG);
+NTSTATUS __stdcall BCryptOpenAlgorithmProvider(BCRYPT_ALG_HANDLE, LPCWSTR, LPCWSTR, DWORD);
+NTSTATUS __stdcall BCryptCloseAlgorithmProvider(BCRYPT_ALG_HANDLE, DWORD);
+NTSTATUS __stdcall BCryptGenRandom(BCRYPT_ALG_HANDLE, PUCHAR, DWORD, DWORD);
 QWORD GetAsLEndian(BYTE, const void *);
 QWORD GetAsBEndian(BYTE, const void *);
 void SaveAsLEndian(QWORD, BYTE, void *);
 void SaveAsBEndian(QWORD, BYTE, void *);
-bool Appendix32(QWORD, Memory::string &, QWORD &, void (*)(QWORD, BYTE, void *));
-bool Appendix64(QWORD, Memory::string &, QWORD &, void (*)(QWORD, BYTE, void *));
-void Transform32(Memory::string &, void (*)(QWORD, BYTE, void *));
-void Transform64(Memory::string &, void (*)(QWORD, BYTE, void *));
+bool Appendix32(QWORD, Memory::string &, QWORD &, void (*)(QWORD, void *, BYTE));
+bool Appendix64(QWORD, Memory::string &, QWORD &, void (*)(QWORD, void *, BYTE));
+void Transform32(Memory::string &, void (*)(QWORD, void *, BYTE));
+void Transform64(Memory::string &, void (*)(QWORD, void *, BYTE));
 QWORD ROTL(QWORD, BYTE, BYTE);
 QWORD ROTR(QWORD, BYTE, BYTE);
 QWORD ROTL32(QWORD, BYTE);

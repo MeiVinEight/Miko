@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include <MessageDigest.h>
 
 Cryptography::MessageDigest::MessageDigest(QWORD block, QWORD digest, void (*computation)(BYTE *, BYTE *)):
 block(block), digest(digest), computation(computation)

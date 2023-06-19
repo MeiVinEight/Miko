@@ -1,7 +1,7 @@
 #ifndef CRYPTO_SHA256_H
 #define CRYPTO_SHA256_H
 
-#include "definitions.h"
+#include <WinType.h>
 
 #ifdef __cplusplus
 extern "C"

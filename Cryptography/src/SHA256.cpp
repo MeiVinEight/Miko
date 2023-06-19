@@ -1,4 +1,8 @@
-#include "SHA256.h"
+#include <endian.h>
+#include <SHA256.h>
+
+#include "SHA256C.h"
+#include "definitions.h"
 
 const DWORD SHA256K[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -25,7 +29,7 @@ void CalculateSHA256(BYTE *block, BYTE *digest)
 	DWORD W[64];
 	for (DWORD t = 0; t < 64; t++)
 	{
-		W[t] = GetAsBEndian(4, block + 4 * (t & 0xF));
+		W[t] = Memory::BE::get(block + 4 * (t & 0xF), 4);
 		if (t > 15)
 		{
 			W[t] = Sigma1256(W[t - 2]) + W[t - 7] + Sigma0256(W[t - 15]) + W[t - 16];
@@ -58,9 +62,9 @@ Cryptography::SHA256::SHA256(): MessageDigest(Cryptography::MessageDigest::BLOCK
 }
 bool Cryptography::SHA256::appendix(Memory::string &block, QWORD &position)
 {
-	return Appendix32(this->length, block, position, &SaveAsBEndian);
+	return Appendix32(this->length, block, position, &Memory::BE::set);
 }
 void Cryptography::SHA256::transform(Memory::string &digest)
 {
-	Transform32(digest, &SaveAsBEndian);
+	Transform32(digest, &Memory::BE::set);
 }
