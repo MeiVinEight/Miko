@@ -3,7 +3,7 @@
 
 #include <memory.h>
 
-extern ULONG (*RtlNtStatusToDosError)(NTSTATUS);
+extern DWORD (*RtlNtStatusToDosError)(NTSTATUS);
 extern Memory::string *ErrorMessage;
 
 #endif //ERRORMESSAGE_H

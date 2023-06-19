@@ -13,21 +13,21 @@ extern "C"
 
 typedef struct
 {
-	ULONG       SizeOfStruct;
-	ULONG       TypeIndex;        // Type Index of symbol
+	DWORD SizeOfStruct;
+	DWORD TypeIndex;        // Type Index of symbol
 	ULONG64     Reserved[2];
-	ULONG       Index;
-	ULONG       Size;
+	DWORD Index;
+	DWORD Size;
 	ULONG64     ModBase;          // Base Address of module comtaining this symbol
-	ULONG       Flags;
+	DWORD Flags;
 	ULONG64     Value;            // Value of symbol, ValuePresent should be 1
 	ULONG64     Address;          // Address of symbol including base address of module
-	ULONG       Register;         // register holding value or pointer to value
-	ULONG       Scope;            // scope of the symbol
-	ULONG       Tag;              // pdb classification
-	ULONG       NameLen;          // Actual length of name
-	ULONG       MaxNameLen;
-	CHAR        Name[1];          // Name of symbol
+	DWORD Register;         // register holding value or pointer to value
+	DWORD Scope;            // scope of the symbol
+	DWORD Tag;              // pdb classification
+	DWORD NameLen;          // Actual length of name
+	DWORD MaxNameLen;
+	char Name[1];          // Name of symbol
 } SYMBOL_INFO, *PSYMBOL_INFO;
 
 BOOL __declspec(dllimport) __stdcall SymFromAddr(void *, QWORD, void *, void *);

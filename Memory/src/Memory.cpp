@@ -20,7 +20,7 @@ DWORD GetLastError(void);
 
 }
 
-ULONG (*RtlNtStatusToDosError)(NTSTATUS) = nullptr;
+DWORD (*RtlNtStatusToDosError)(NTSTATUS) = nullptr;
 Memory::string *ErrorMessage = nullptr;
 
 DWORD ErrorCode = 0;
