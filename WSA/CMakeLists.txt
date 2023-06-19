@@ -18,4 +18,5 @@ aux_source_directory(src WSA_SOURCE)
 add_library(WSA SHARED ${WSA_SOURCE})
 target_link_libraries(WSA PUBLIC
 	Streaming
+	ws2_32
 )
