@@ -61,7 +61,7 @@ typedef struct
 	WORD nErrCode;
 	WORD Reserved1;
 	WORD Reserved2;
-	CHAR szPathName[OFS_MAXPATHNAME];
+	char szPathName[128];
 } OFSTRUCT, *LPOFSTRUCT;
 typedef struct
 {
@@ -106,7 +106,7 @@ typedef struct
 	union
 	{
 		WCHAR UnicodeChar;
-		CHAR   AsciiChar;
+		char AsciiChar;
 	} uChar;
 	DWORD dwControlKeyState;
 } KEY_EVENT_RECORD;
