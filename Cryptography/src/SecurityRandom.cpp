@@ -1,7 +1,11 @@
 #include <exception.h>
 #include <SecurityRandom.h>
 
-#include "definitions.h"
+#include "CNGRNG.h"
+
+void *RNG_HANDLE = nullptr;
+
+extern "C" long __stdcall BCryptGenRandom(void *, BYTE *, DWORD, DWORD);
 
 void Cryptography::SecurityRandom::seed(QWORD)
 {
@@ -10,7 +14,7 @@ QWORD Cryptography::SecurityRandom::random()
 {
 	const QWORD length = sizeof(QWORD);
 	BYTE buf[8] = {};
-	NTSTATUS status = BCryptGenRandom(RNG_HANDLE, buf, length, 0);
+	long status = BCryptGenRandom(RNG_HANDLE, buf, length, 0);
 	if (status)
 		throw Memory::exception(status, Memory::NTSTATUS);
 	return *((QWORD *) buf);

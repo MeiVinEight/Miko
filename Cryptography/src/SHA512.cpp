@@ -2,6 +2,9 @@
 #include <SHA512.h>
 
 #include "SHA512C.h"
+#include "SHAC.h"
+#include "rotate.h"
+#include "CommonMessageDigest.h"
 
 extern const QWORD SHA512K[80] = {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
@@ -26,6 +29,10 @@ extern const QWORD SHA512K[80] = {
 	0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
+QWORD SIGMA0512(QWORD x) { return ROTR64(x, 28) ^ ROTR64(x, 34) ^ ROTR64(x, 39); }
+QWORD SIGMA1512(QWORD x) { return ROTR64(x, 14) ^ ROTR64(x, 18) ^ ROTR64(x, 41); }
+QWORD Sigma0512(QWORD x) { return ROTR64(x,  1) ^ ROTR64(x, 8) ^ (x >> 7); }
+QWORD Sigma1512(QWORD x) { return ROTR64(x, 19) ^ ROTR64(x, 61) ^ (x >> 6); }
 void CalculateSHA512(BYTE *block, BYTE *digest)
 {
 	QWORD *HH = (QWORD *) digest;
@@ -40,7 +47,7 @@ void CalculateSHA512(BYTE *block, BYTE *digest)
 	QWORD W[80];
 	for (DWORD t = 0; t < 80U; t++)
 	{
-		W[t] = GetAsBEndian(8, block + 8 * (t & 0xF));
+		W[t] = Memory::BE::get(block + 8 * (t & 0xF), 8);
 		if (t > 15)
 		{
 			W[t] = Sigma1512(W[t - 2]) + W[t - 7] + Sigma0512(W[t - 15]) + W[t - 16];

@@ -1,5 +1,7 @@
 #include "Keccak.h"
-#include "definitions.h"
+#include "rotate.h"
+
+BYTE KECCAKRC[255];
 
 void SPONGE::theta()
 {

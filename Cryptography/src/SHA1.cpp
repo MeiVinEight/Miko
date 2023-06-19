@@ -1,7 +1,8 @@
 #include <endian.h>
 #include <SHA1.h>
 
-#include "definitions.h"
+#include "rotate.h"
+#include "CommonMessageDigest.h"
 
 /*
  * References:
@@ -35,7 +36,7 @@ void CalculateSHA1(BYTE *block, BYTE *digest)
 	DWORD E = H[4];
 	for (DWORD t = 0; t < 80; t++)
 	{
-		W[t] = GetAsBEndian(4, block + 4 * (t & 0xF));
+		W[t] = Memory::BE::get(block + 4 * (t & 0xF), 4);
 		if (t > 15)
 		{
 			W[t] = ROTL32(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);

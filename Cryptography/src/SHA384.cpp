@@ -2,6 +2,7 @@
 #include <SHA384.h>
 
 #include "SHA512C.h"
+#include "CommonMessageDigest.h"
 
 Cryptography::SHA384::SHA384(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_64, 64, &CalculateSHA512)
 {

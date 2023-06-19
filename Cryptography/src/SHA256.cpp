@@ -2,7 +2,9 @@
 #include <SHA256.h>
 
 #include "SHA256C.h"
-#include "definitions.h"
+#include "SHAC.h"
+#include "rotate.h"
+#include "CommonMessageDigest.h"
 
 const DWORD SHA256K[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -15,6 +17,10 @@ const DWORD SHA256K[64] = {
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
+QWORD SIGMA0256(QWORD x) { return ROTR32(x, 2) ^ ROTR32(x, 13) ^ ROTR32(x, 22); }
+QWORD SIGMA1256(QWORD x) { return ROTR32(x, 6) ^ ROTR32(x, 11) ^ ROTR32(x, 25); }
+QWORD Sigma0256(QWORD x) { return ROTR32(x, 7) ^ ROTR32(x, 18) ^ (x >> 3); }
+QWORD Sigma1256(QWORD x) { return ROTR32(x, 17) ^ ROTR32(x, 19) ^ (x >> 10); }
 void CalculateSHA256(BYTE *block, BYTE *digest)
 {
 	DWORD *HH = (DWORD *) digest;

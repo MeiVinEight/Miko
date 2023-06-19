@@ -1,7 +1,8 @@
 #include <endian.h>
 #include <MD4.h>
 
-#include "definitions.h"
+#include "rotate.h"
+#include "CommonMessageDigest.h"
 
 /*
  * References: RFC1320 - The MD4 Message-Digest Algorithm

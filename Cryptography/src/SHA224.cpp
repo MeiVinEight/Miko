@@ -2,7 +2,7 @@
 #include <SHA224.h>
 
 #include "SHA256C.h"
-#include "definitions.h"
+#include "CommonMessageDigest.h"
 
 Cryptography::SHA224::SHA224(): MessageDigest(Cryptography::MessageDigest::BLOCK_SIZE_32, 32, &CalculateSHA256)
 {

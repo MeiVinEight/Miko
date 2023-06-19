@@ -11,6 +11,10 @@ extern "C"
 
 extern const DWORD SHA256K[64];
 
+QWORD SIGMA0256(QWORD);
+QWORD SIGMA1256(QWORD);
+QWORD Sigma0256(QWORD);
+QWORD Sigma1256(QWORD);
 void CalculateSHA256(BYTE *, BYTE *);
 
 

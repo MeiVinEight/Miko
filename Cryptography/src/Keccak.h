@@ -2,7 +2,8 @@
 #define KECCAK_H
 
 #include <WinType.h>
-// #include "definitions.h" // IWYU pragma: export
+
+#ifdef __cplusplus
 
 class NibbleReader
 {
@@ -25,5 +26,18 @@ class SPONGE
 	void chi();
 	void iota(QWORD);
 };
+
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+extern BYTE KECCAKRC[255];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //KECCAK_H
