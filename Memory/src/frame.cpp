@@ -34,16 +34,10 @@ BOOL __declspec(dllimport) __stdcall SymFromAddr(void *, QWORD, void *, void *);
 DWORD __stdcall GetModuleFileNameA(void *, void *, DWORD);
 void *__stdcall GetCurrentProcess(void);
 BOOL __stdcall GetModuleHandleExA(DWORD, const void *, void **);
+QWORD strlen(const char *);
+#pragma intrinsic(strlen)
 
 
-}
-
-QWORD StringLength(const void *str)
-{
-	const char *s = (const char *) str;
-	QWORD len = 0;
-	while (s[len++]);
-	return len - 1;
 }
 
 Memory::exception::frame::frame(void *returnAddress)
@@ -61,7 +55,7 @@ Memory::exception::frame::frame(void *returnAddress)
 	QWORD disp = 0;
 	SymFromAddr(GetCurrentProcess(), (QWORD) returnAddress, &disp, syminfo);
 
-	this->function.resize(StringLength(syminfo->Name));
+	this->function.resize(strlen(syminfo->Name));
 	Memory::copy(this->function.address, syminfo->Name, this->function.length);
 
 	this->address = (void *) syminfo->Address;
