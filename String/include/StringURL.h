@@ -2,6 +2,7 @@
 #define STRINGURL_H
 
 #include <stringspec.h>
+#include <WinType.h>
 #include <sstring.h>
 
 namespace String
