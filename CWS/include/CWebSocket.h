@@ -26,7 +26,7 @@ namespace CWS
 		CWSAPI CWS::Message frame() const;
 		CWSAPI void frame(const CWS::Message &) const;
 		CWSAPI CWS::Message receive();
-		CWSAPI void transmit(const CWS::Message &);
+		CWSAPI void send(const CWS::Message &);
 	};
 }
 

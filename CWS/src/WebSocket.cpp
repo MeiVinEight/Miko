@@ -168,7 +168,7 @@ CWS::Message CWS::WebSocket::receive()
 			{
 				CWS::Message pong = frame;
 				pong.OPC = CWS::OPC_PONG;
-				this->transmit(pong);
+				this->send(pong);
 			}
 			this->control = frame;
 		}
@@ -187,7 +187,7 @@ CWS::Message CWS::WebSocket::receive()
 	msg.OPC = OPC;
 	return msg;
 }
-void CWS::WebSocket::transmit(const CWS::Message &msg)
+void CWS::WebSocket::send(const CWS::Message &msg)
 {
 	this->frame(msg);
 	if (msg.OPC == CWS::OPC_CLOSE)
