@@ -11,7 +11,7 @@ __declspec(allocate(".CRT$XCZ")) void (*XCZ)() = 0;
 
 int __stdcall _DllMainCRTStartup(void *ists, int reason, void *resv)
 {
-	if (reason)
+	if (reason == 1)
 	{
 		void (**xca)() = &XCA;
 		while (xca < &XCZ)
