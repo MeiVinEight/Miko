@@ -19,5 +19,5 @@ aux_source_directory(src HTTP_SOURCE)
 add_library(HTTP SHARED ${HTTP_SOURCE})
 target_link_libraries(HTTP PUBLIC
 	String
-	WSA
+	Streaming
 )

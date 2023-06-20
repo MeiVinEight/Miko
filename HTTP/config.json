@@ -25,7 +25,6 @@
 		"/INCREMENTAL:NO",
 		"..\\.release\\Memory.lib",
 		"..\\.release\\String.lib",
-		"..\\.release\\WSA.lib",
 		"..\\.release\\Streaming.lib",
 		"..\\Memory\\.compile\\typeinfo.obj"
 	]
