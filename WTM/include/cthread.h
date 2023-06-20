@@ -1,13 +1,8 @@
-#ifndef WTM_H
-#define WTM_H
+#ifndef CTHREAD_H
+#define CTHREAD_H
 
-#ifdef WTM_SHARED
-	#define WTMAPI __declspec(dllexport)
-#else
-	#define WTMAPI __declspec(dllimport)
-#endif
-
-#include <memory.h>
+#include <WTMSpec.h>
+#include <WinType.h>
 
 namespace WTM
 {
@@ -19,7 +14,7 @@ namespace WTM
 		WTMAPI thread(void *);
 		WTMAPI thread(const WTM::thread &);
 		WTMAPI thread(WTM::thread &&) noexcept;
-		WTMAPI ~thread() noexcept;
+		WTMAPI virtual ~thread() noexcept;
 		WTMAPI WTM::thread &operator=(const WTM::thread &);
 		WTMAPI WTM::thread &operator=(WTM::thread &&) noexcept;
 		WTMAPI DWORD ID() const;
@@ -37,4 +32,4 @@ namespace WTM
 	};
 }
 
-#endif //WTM_H
+#endif //CTHREAD_H

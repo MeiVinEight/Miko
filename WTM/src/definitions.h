@@ -1,8 +1,7 @@
 #ifndef WTM_DEFINITIONS_H
 #define WTM_DEFINITIONS_H
 
-#define WTM_SHARED
-#include <WTM.h>
+#include <WinType.h>
 
 #define DUPLICATE_SAME_ACCESS       0x00000002
 
@@ -11,44 +10,44 @@
 #define WAIT_TIMEOUT   (0x00000102UL)
 #define WAIT_FAILED    (0xFFFFFFFFUL)
 
-typedef char              CHAR;
-typedef wchar_t           WCHAR;
-typedef unsigned int      UINT;
-typedef int               BOOL;
-typedef long              HRESULT;
-typedef unsigned __int64  SIZE_T;
-typedef void             *HANDLE;
-typedef CHAR             *LPSTR;
-typedef const CHAR       *LPCCH;
-typedef WCHAR            *PWSTR, *LPWSTR;
-typedef const WCHAR      *PCWSTR, *LPCWCH;
-typedef BOOL             *LPBOOL;
-typedef HANDLE           *LPHANDLE, HLOCAL;
-typedef DWORD (__stdcall *PTHREAD_START_ROUTINE)(void *);
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-DWORD __stdcall GetLastError(void);
-HANDLE __stdcall GetCurrentProcess(void);
-HANDLE __stdcall GetCurrentThread(void);
-BOOL __stdcall DuplicateHandle(HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD);
-BOOL __stdcall CloseHandle(HANDLE);
-DWORD __stdcall WaitForSingleObject(HANDLE, DWORD);
-DWORD __stdcall SuspendThread(HANDLE);
-DWORD __stdcall ResumeThread(HANDLE);
+
+extern void *NTDLL;
+extern long (__stdcall *ZwSuspendProcess)(void *);
+extern long (__stdcall *ZwResumeProcess)(void *);
+extern long (__stdcall *NtQueryInformationProcess)(void *, DWORD, void *, DWORD, DWORD *);
+
+void *__stdcall GetCurrentProcess(void);
+void *__stdcall GetCurrentThread(void);
+BOOL __stdcall DuplicateHandle(void *, void *, void *, void **, DWORD, BOOL, DWORD);
+BOOL __stdcall CloseHandle(void *);
+DWORD __stdcall WaitForSingleObject(void *, DWORD);
+DWORD __stdcall SuspendThread(void *);
+DWORD __stdcall ResumeThread(void *);
 void __stdcall Sleep(DWORD);
-HANDLE __stdcall CreateThread(void *, SIZE_T, PTHREAD_START_ROUTINE, void *, DWORD, void *);
-DWORD GetThreadId(HANDLE);
-BOOL __stdcall GetExitCodeThread(HANDLE, DWORD *);
-HRESULT __stdcall GetThreadDescription(HANDLE, PWSTR *);
-HRESULT __stdcall SetThreadDescription(HANDLE, PCWSTR);
-int __stdcall WideCharToMultiByte(UINT, DWORD, LPCWCH, int, LPSTR, int, LPCCH, LPBOOL);
-int __stdcall MultiByteToWideChar(UINT, DWORD, LPCCH, int, LPWSTR, int);
-HLOCAL __stdcall LocalFree(HLOCAL);
-QWORD StringLengthW(const void *);
+void * __stdcall CreateThread(void *, QWORD, DWORD (*)(void *), void *, DWORD, void *);
+DWORD GetThreadId(void *);
+BOOL __stdcall GetExitCodeThread(void *, DWORD *);
+long __stdcall GetThreadDescription(void *, wchar_t * *);
+long __stdcall SetThreadDescription(void *, wchar_t *);
+int __stdcall WideCharToMultiByte(unsigned int, DWORD, const wchar_t *, int, char *, int, const char *, BOOL *);
+int __stdcall MultiByteToWideChar(unsigned int, DWORD, const char *, int, wchar_t *, int);
+void *__stdcall LocalFree(void *);
+void *__stdcall LoadLibraryA(const char *);
+QWORD (__stdcall *__stdcall GetProcAddress(void *, const char *))();
+BOOL __stdcall FreeLibrary(void *);
+DWORD __stdcall GetProcessId(void *);
+void *__stdcall OpenProcess(DWORD, BOOL, DWORD);
+BOOL __stdcall OpenProcessToken(void *, DWORD, void *);
+BOOL __stdcall LookupPrivilegeValueA(const char *, const char *, void *);
+BOOL __stdcall AdjustTokenPrivileges(void *, BOOL, void *, DWORD, void *, DWORD *);
+DWORD __stdcall QueryFullProcessImageNameA(void *, DWORD, char *, DWORD *);
+BOOL TerminateProcess(void *, unsigned int);
+void *__stdcall CreateToolhelp32Snapshot(DWORD, DWORD);
 
 #ifdef __cplusplus
 }
