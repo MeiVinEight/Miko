@@ -3,7 +3,7 @@
 
 #include <memory.h>
 
-extern DWORD (*RtlNtStatusToDosError)(NTSTATUS);
+extern DWORD (*RtlNtStatusToDosError)(long);
 extern Memory::string *ErrorMessage;
 
 #endif //ERRORMESSAGE_H

@@ -107,7 +107,7 @@ DllMain
 #else
 _DllMainCRTStartup
 #endif
-(HINSTANCE, unsigned int reason, void *)
+(void *, unsigned int reason, void *)
 {
 	int result = true;
 	switch (reason)
@@ -125,7 +125,7 @@ _DllMainCRTStartup
 			result &= NTDLL != nullptr;
 			if (NTDLL)
 			{
-				RtlNtStatusToDosError = (ULONG (*)(NTSTATUS)) GetProcAddress(NTDLL, "RtlNtStatusToDosError");
+				RtlNtStatusToDosError = (ULONG (*)(long)) GetProcAddress(NTDLL, "RtlNtStatusToDosError");
 				result &= RtlNtStatusToDosError != nullptr;
 				NTDLL___C_specific_handler = (C_SPECIFIC_HANDLER) GetProcAddress(NTDLL, "__C_specific_handler");
 				result &= NTDLL___C_specific_handler != nullptr;

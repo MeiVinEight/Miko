@@ -35,6 +35,10 @@ namespace Memory
 		MEMORYAPI exception(const Memory::exception &) noexcept;
 		MEMORYAPI ~exception();
 	};
+	MEMORYAPI DWORD registry(const char *);
+	MEMORYAPI Memory::string message(DWORD, BYTE);
+	MEMORYAPI DWORD error();
+	MEMORYAPI void error(DWORD);
 }
 
 #endif //EXCEPTION_H

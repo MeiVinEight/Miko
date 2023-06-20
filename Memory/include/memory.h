@@ -42,8 +42,6 @@ namespace Memory
 	MEMORYAPI bool compare(const void *, const void *, QWORD);
 	MEMORYAPI void reverse(void *, QWORD);
 	MEMORYAPI void violation();
-	MEMORYAPI DWORD registry(const char *);
-	MEMORYAPI Memory::string message(DWORD, BYTE);
 }
 
 #endif //MEMORY_MEMORY_H

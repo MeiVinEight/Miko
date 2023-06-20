@@ -45,7 +45,7 @@ Memory::exception::frame::frame(void *returnAddress)
 	this->offset = returnAddress;
 
 
-	unsigned long long syminfoSize = sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(CHAR);
+	unsigned long long syminfoSize = sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(char);
 	// CHAR symbuf[syminfoSize]{0};
 
 	SYMBOL_INFO *syminfo = (SYMBOL_INFO *) Memory::allocate(syminfoSize);
