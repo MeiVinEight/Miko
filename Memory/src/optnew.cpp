@@ -13,6 +13,7 @@
 #pragma comment(linker, "/EXPORT:??3@YAXPEAX_K@Z")  // void __cdecl operator delete(void *, unsigned long long);
 #pragma comment(linker, "/EXPORT:??_V@YAXPEAX@Z")   // void __cdecl operator delete[](void *)
 #pragma comment(linker, "/EXPORT:??_V@YAXPEAX_K@Z") // void __cdecl operator delete[](void *, unsigned long long);
+#pragma comment(linker, "/EXPORT:??_L@YAXPEAX_K1P6AX0@Z2@Z=eh_vector_constructor_iterator")
 #pragma comment(linker, "/EXPORT:??_M@YAXPEAX_K1P6AX0@Z@Z=eh_vector_destructor_iterator")
 void *__cdecl operator new(unsigned long long size)
 {
@@ -38,9 +39,19 @@ void __cdecl operator delete[](void *block, unsigned long long) noexcept
 {
 	operator delete(block);
 }
-extern "C" void eh_vector_destructor_iterator(const unsigned char *ptr, QWORD size, QWORD count, void (__thiscall *destructor)(const void *))
+extern "C"
 {
-	for (ptr += (size * count); count--; destructor(ptr -= size));
+void eh_vector_constructor_iterator(BYTE *ptr, QWORD size, QWORD count, void (__thiscall *ctr)(void *), void (__thiscall *)(void *))
+{
+	for (; count--; ptr += size)
+	{
+		ctr(ptr);
+	}
+}
+void eh_vector_destructor_iterator(const BYTE *ptr, QWORD size, QWORD count, void (__thiscall *dtr)(const void *))
+{
+	for (ptr += (size * count); count--; dtr(ptr -= size));
+}
 }
 
 
