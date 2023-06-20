@@ -13,4 +13,4 @@ add_definitions(
 aux_source_directory(src SOURCE)
 
 add_library(WTM SHARED ${SOURCE})
-target_link_libraries(WTM Memory psapi)
+target_link_libraries(WTM Memory)
