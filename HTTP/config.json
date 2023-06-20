@@ -1,0 +1,32 @@
+{
+	"name": "HTTP",
+	"source": "src",
+	"include": "include",
+	"depends":
+	[
+		"Memory",
+		"String",
+		"WSA",
+		"Streaming"
+	],
+	"definitions":
+	[
+		"HTTP_SHARED"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\HTTP",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib",
+		"..\\.release\\WSA.lib",
+		"..\\.release\\Streaming.lib",
+		"..\\Memory\\.compile\\typeinfo.obj"
+	]
+}
