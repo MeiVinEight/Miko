@@ -1,4 +1,8 @@
-#include "definitions.h"
+#include <fully.h>
+#include <exception.h>
+#include <CWebSocket.h>
+#include <MersenneTwister.h>
+#include <timestamp.h>
 
 CWS::WebSocket::WebSocket(): random(new Cryptography::MersenneTwister)
 {

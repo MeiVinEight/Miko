@@ -1,14 +1,16 @@
-#include "definitions.h"
+#include <winerr.h>
+#include <exception.h>
+#include <WSURL.h>
 
 void CWS::URL::resolve(const String::string &url)
 {
 	this->String::URL::resolve(url);
 	String::string protocol = this->scheme.lower();
 	if (protocol != "ws" && protocol != "wss")
-		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 
 	if (this->specific[0] != '/' && this->specific[1] != '/')
-		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 
 	if (protocol == "ws")
 		this->ID = 80;
@@ -29,10 +31,10 @@ void CWS::URL::resolve(const String::string &url)
 		idx++;
 		String::string port(hostport.address.address + idx, hostport.length() - idx);
 		if (!port)
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		QWORD id = String::integer(port);
 		if (id > 0xFFFF || id == 0)
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		this->ID = id;
 		this->special = true;
 	}

@@ -1,15 +1,9 @@
 #ifndef CWS_H
 #define CWS_H
 
-#ifdef CWS_SHARED
-	#define CWSAPI __declspec(dllexport)
-#else
-	#define CWSAPI __declspec(dllimport)
-#endif
-
+#include <CWSSpec.h>
+#include <WinType.h>
 #include <memory.h>
-#include <wsa.h>
-#include <crypto.h>
 
 /*
 +---------------------------------------------------------------+
@@ -55,46 +49,6 @@ namespace CWS
 
 	CWSAPI Memory::string security(const Memory::string &);
 	CWSAPI bool verify(const Memory::string &, const Memory::string &);
-
-	class URL: public String::URL
-	{
-		public:
-		String::string address;
-		WORD ID = 443;
-		bool special = false;
-		String::string path;
-
-		CWSAPI void resolve(const String::string &) override;
-	};
-	class Message
-	{
-		public:
-		BYTE FIN = 1;
-		BYTE RSV = 0;
-		BYTE MSK = 1;
-		BYTE OPC = CWS::OPC_BINARY;
-		Memory::string context;
-	};
-	class WebSocket
-	{
-		public:
-		WSA::Socket *connection = nullptr;
-		Cryptography::RNG *random = nullptr;
-		bool opening = true;
-		CWS::Message control;
-
-		CWSAPI WebSocket();
-		CWSAPI WebSocket(const CWS::WebSocket &);
-		CWSAPI WebSocket(CWS::WebSocket &&) noexcept;
-		CWSAPI virtual ~WebSocket();
-		CWSAPI CWS::WebSocket &operator=(const CWS::WebSocket &);
-		CWSAPI CWS::WebSocket &operator=(CWS::WebSocket &&) noexcept;
-		CWSAPI bool alive() const;
-		CWSAPI CWS::Message frame() const;
-		CWSAPI void frame(const CWS::Message &) const;
-		CWSAPI CWS::Message receive();
-		CWSAPI void transmit(const CWS::Message &);
-	};
 }
 
 #endif //CWS_H
