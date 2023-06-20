@@ -1,0 +1,35 @@
+{
+	"name": "CWS",
+	"source": "src",
+	"include": "include",
+	"definitions":
+	[
+		"CWS_SHARED"
+	],
+	"depends":
+	[
+		"Timestamp",
+		"WSA",
+		"String",
+		"Memory",
+		"Cryptography"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\CWS",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"/NOENTRY",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\String.lib",
+		"..\\.release\\Cryptography.lib",
+		"..\\.release\\Streaming.lib",
+		"..\\.release\\Timestamp.lib",
+		"..\\Memory\\.compile\\typeinfo.obj"
+	]
+}
