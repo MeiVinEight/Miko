@@ -1,0 +1,28 @@
+{
+	"name": "WTM",
+	"source": "src",
+	"include": "include",
+	"depends":
+	[
+		"Memory"
+	],
+	"definitions":
+	[
+		"WTM_SHARED"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\WTM",
+	"options":
+	[
+		"/LD",
+		"/EHsc",
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"kernel32.lib",
+		"Advapi32.lib",
+		"..\\.release\\Memory.lib"
+	]
+}

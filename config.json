@@ -12,6 +12,7 @@
 		"Timestamp",
 		"Compression",
 		"WSA",
-		"Cryptography"
+		"Cryptography",
+		"WTM"
 	]
 }
