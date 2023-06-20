@@ -1,4 +1,5 @@
-#include "definitions.h"
+#include <exception.h>
+#include <HTTPMessage.h>
 
 HTTP::Message::Message() = default;
 HTTP::Message::Message(const HTTP::Message &copy):

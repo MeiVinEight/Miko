@@ -1,4 +1,5 @@
-#include "definitions.h"
+#include <exception.h>
+#include <hhttp.h>
 
 const QWORD RM_TYPE_COUNT = 9;
 

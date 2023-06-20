@@ -1,14 +1,16 @@
-#include "definitions.h"
+#include <winerr.h>
+#include <exception.h>
+#include <HTTPURL.h>
 
 void HTTP::URL::resolve(const String::string &url)
 {
 	this->String::URL::resolve(url);
 	String::string protocol = this->scheme.lower();
 	if (protocol != "http" && protocol != "https")
-		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 
 	if (this->specific[0] != '/' || this->specific[1] != '/')
-		throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+		throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 
 	if (protocol == "http")
 		this->port = 80;
@@ -29,10 +31,10 @@ void HTTP::URL::resolve(const String::string &url)
 		idx++;
 		String::string ports(hostport.address.address + idx, hostport.length() - idx);
 		if (!ports)
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		QWORD id = String::integer(ports);
 		if (id > 0xFFFF || id == 0)
-			throw Memory::exception(Memory::ERRNO_INVALID_PARAMETER);
+			throw Memory::exception(ERROR_INVALID_PARAMETER, Memory::DOSERROR);
 		this->port = id;
 		this->special = true;
 	}

@@ -1,4 +1,6 @@
-#include "definitions.h"
+#include <format.h>
+#include <fully.h>
+#include <ConnectionManager.h>
 
 void HTTP::ConnectionManager::transmit(const HTTP::Message &msg) const
 {
