@@ -55,7 +55,7 @@ class type_info
 	TYPEINFOAPI bool before(const type_info &other) const noexcept;
 	TYPEINFOAPI const char *name() const noexcept;
 	TYPEINFOAPI const char *raw_name() const noexcept;
-	TYPEINFOAPI virtual ~type_info() noexcept;
+	virtual ~type_info() noexcept;
 
 	private:
 	mutable std_type_info_data data;
