@@ -15,6 +15,7 @@
 		"Cryptography",
 		"WTM",
 		"HTTP",
-		"CWS"
+		"CWS",
+		"WST"
 	]
 }

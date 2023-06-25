@@ -1,0 +1,26 @@
+{
+	"name": "WST",
+	"source": "src",
+	"depends":
+	[
+		"Memory",
+		"Streaming",
+		"Filesystem",
+		"String"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\WST",
+	"options":
+	[
+		"/O1",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"/ENTRY:main",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\Streaming.lib",
+		"..\\.release\\String.lib",
+		"..\\.release\\Filesystem.lib",
+		"..\\Memory\\.compile\\typeinfo.obj"
+	]
+}
