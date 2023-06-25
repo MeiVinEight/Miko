@@ -69,7 +69,6 @@ void *__stdcall FindFirstFileA(const char *, LPWIN32_FIND_DATAA);
 bool __stdcall FindNextFileA(void *, LPWIN32_FIND_DATAA);
 bool __stdcall FindClose(void *);
 BOOL __stdcall CreateProcessA(const char *, void *, void *, void *, BOOL, DWORD, void *, void *, void *, void *);
-DWORD __stdcall GetLastError(void);
 DWORD __stdcall WaitForSingleObject(void *, DWORD);
 BOOL __stdcall CloseHandle(void *);
 BOOL __stdcall GetExitCodeProcess(void *, DWORD *);
@@ -208,7 +207,7 @@ bool ExecuteCommand(const String::string &cmd, const String::string &work)
 	PROCESS_INFORMATION procinfo = {};
 	if (!CreateProcessA(nullptr, cstrCMD.address, nullptr, nullptr, true, 0, nullptr, cstrWork.address, &startup, &procinfo))
 	{
-		Streaming::cout << Memory::message(GetLastError(), Memory::DOSERROR) << Streaming::LF;
+		Streaming::cout << Memory::message(Memory::error(), Memory::DOSERROR) << Streaming::LF;
 		return false;
 	}
 	WaitForSingleObject(procinfo.hProcess, 0xFFFFFFFFUL);
@@ -216,7 +215,7 @@ bool ExecuteCommand(const String::string &cmd, const String::string &work)
 	DWORD exit = 0;
 	if (!GetExitCodeProcess(procinfo.hProcess, &exit))
 	{
-		Streaming::cout << Memory::message(GetLastError(), Memory::DOSERROR) << Streaming::LF;
+		Streaming::cout << Memory::message(Memory::error(), Memory::DOSERROR) << Streaming::LF;
 		return false;
 	}
 	CloseHandle(procinfo.hProcess);
