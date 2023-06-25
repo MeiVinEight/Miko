@@ -588,7 +588,7 @@ void UnwindNestedFrames(EXCEPTION_CONTEXT *pEC, const EHRegistrationNode *pEstab
 	record.ExceptionInformation[2] = (QWORD) handler;
 	record.ExceptionInformation[3] = (QWORD) TargetUnwindState;
 	record.ExceptionInformation[4]=  (QWORD) pEC->pContext;
-	record.ExceptionInformation[5] = pCatch->continuationAddress[0] = pEC->pDC->ImageBase;
+	record.ExceptionInformation[5] = pCatch->continuationAddress[0] + pEC->pDC->ImageBase;
 	record.ExceptionInformation[6] = (QWORD) pEC->pExcept;
 	record.ExceptionInformation[8] = EH_MAGIC_NUMBER1;
 	record.ExceptionInformation[9] = pCatch->continuationAddress[1] + pEC->pDC->ImageBase;
