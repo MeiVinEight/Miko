@@ -2,6 +2,74 @@
 
 #include "definitions.h"
 
+#pragma region STRUCT
+typedef struct
+{
+	BYTE cBytes;
+	BYTE fFixedDisk;
+	WORD nErrCode;
+	WORD Reserved1;
+	WORD Reserved2;
+	char szPathName[128];
+} OFSTRUCT;
+typedef union
+{
+	struct
+	{
+		DWORD LowPart;
+		long HighPart;
+	};
+	struct
+	{
+		DWORD LowPart;
+		long HighPart;
+	} u;
+	long long QuadPart;
+} LARGE_INTEGER, *PLARGE_INTEGER;
+typedef struct
+{
+	DWORD dwLowDateTime;
+	DWORD dwHighDateTime;
+} FILETIME, *PFILETIME, *LPFILETIME;
+typedef struct
+{
+	DWORD dwFileAttributes;
+	FILETIME ftCreationTime;
+	FILETIME ftLastAccessTime;
+	FILETIME ftLastWriteTime;
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+} WIN32_FILE_ATTRIBUTE_DATA;
+typedef enum
+{
+	GetFileExInfoStandard,
+	GetFileExMaxInfoLevel
+} GET_FILEEX_INFO_LEVELS;
+#pragma endregion
+
+#pragma region KERNEL
+extern "C"
+{
+void *__stdcall CreateFileA(const char *, DWORD, DWORD, void *, DWORD, DWORD, void *);
+int __stdcall OpenFile(const char *, void *, unsigned int);
+BOOL __stdcall ReadFile(void *, void *, DWORD, DWORD *, void *);
+BOOL __stdcall WriteFile(void *, const void *, DWORD, DWORD *, void *);
+BOOL __stdcall SetFilePointerEx(void *, LARGE_INTEGER, PLARGE_INTEGER, DWORD);
+DWORD __stdcall GetFileType(void *);
+BOOL __stdcall SetFileAttributesA(const char *, DWORD);
+DWORD __stdcall GetFileAttributesA(const char *);
+BOOL __stdcall RemoveDirectoryA(const char *);
+BOOL __stdcall DeleteFileA(const char *);
+DWORD __stdcall GetFullPathNameA(const char *, DWORD, char *, char **);
+BOOL __stdcall GetFileAttributesExA(const char *, GET_FILEEX_INFO_LEVELS, void *);
+BOOL __stdcall CreateDirectoryA(const char *, void *);
+BOOL __stdcall FlushFileBuffers(void *);
+void *__stdcall GetStdHandle(DWORD);
+BOOL __stdcall GetFileSizeEx(void *, PLARGE_INTEGER);
+BOOL __stdcall CloseHandle(void *);
+}
+#pragma endregion
+
 const DWORD Filesystem::ERRNO_WRONG_FILE_TYPE = Memory::registry("Wrong file type");
 const QWORD Filesystem::STDIN = (QWORD) GetStdHandle(STD_INPUT_HANDLE);
 const QWORD Filesystem::STDOUT = (QWORD) GetStdHandle(STD_OUTPUT_HANDLE);
@@ -15,12 +83,10 @@ bool Filesystem::create(const String::string &path)
 		{
 			Filesystem::make(Filesystem::parent(path));
 			Memory::string cpath = cstring(path);
-			DWORD desiredAccess = GENERIC_ALL;
-			DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-			HANDLE h = CreateFileA((LPCSTR) cpath.address, desiredAccess, shareMode, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-			if (h == INVALID_HANDLE_VALUE)
+			void *h = CreateFileA((const char *) cpath.address, 0x10000000L, 7, nullptr, 1, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (h == (void *) ~((QWORD) 0))
 			{
-				DWORD err = GetLastError();
+				DWORD err = Memory::error();
 				if (err != ERROR_FILE_EXISTS)
 				{
 					throw Memory::exception(err, Memory::DOSERROR);
@@ -43,11 +109,11 @@ bool Filesystem::make(const String::string &path)
 		if (!Filesystem::exist(path))
 		{
 			Filesystem::make(Filesystem::parent(path));
-			if (CreateDirectoryA((LPCSTR) cstring(canon).address, nullptr))
+			if (CreateDirectoryA((const char *) cstring(canon).address, nullptr))
 			{
 				return true;
 			}
-			throw Memory::exception(GetLastError(), Memory::DOSERROR);
+			throw Memory::exception(Memory::error(), Memory::DOSERROR);
 		}
 		return false;
 	}
@@ -74,9 +140,9 @@ bool Filesystem::exist(const String::string &path)
 {
 	Memory::string cpath = cstring(path);
 	char *cstr = (char *) cpath.address;
-	if (GetFileAttributesA(cstr) == INVALID_FILE_ATTRIBUTES)
+	if (GetFileAttributesA(cstr) == -1)
 	{
-		DWORD err = GetLastError();
+		DWORD err = Memory::error();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
 			throw Memory::exception(err, Memory::DOSERROR);
@@ -94,7 +160,7 @@ bool Filesystem::directory(const String::string &path)
 	WIN32_FILE_ATTRIBUTE_DATA data{0};
 	if (!GetFileAttributesExA((char *) cstring(path).address, GetFileExInfoStandard, &data))
 	{
-		DWORD err = GetLastError();
+		DWORD err = Memory::error();
 		if (err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
 		{
 			throw Memory::exception(err, Memory::DOSERROR);
@@ -125,7 +191,7 @@ Memory::string Filesystem::canonicalize(const String::string &path)
 		Memory::copy(canon.address, buf, len);
 		return canon;
 	}
-	throw Memory::exception(GetLastError(), Memory::DOSERROR);
+	throw Memory::exception(Memory::error(), Memory::DOSERROR);
 }
 bool Filesystem::absolute(const String::string &path)
 {
@@ -134,35 +200,35 @@ bool Filesystem::absolute(const String::string &path)
 QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
 	OFSTRUCT data;
-	HFILE hfVal = OpenFile((char *) cstring(path).address, &data, mode);
+	int hfVal = OpenFile((char *) cstring(path).address, &data, mode);
 	if (hfVal == Filesystem::FILE_ERROR)
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 	return hfVal;
 }
 void Filesystem::close(QWORD fdVal)
 {
-	if (!CloseHandle((HANDLE)fdVal))
+	if (!CloseHandle((void *) fdVal))
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 }
 DWORD Filesystem::read(QWORD fdVal, void *b, DWORD len)
 {
 	DWORD readed;
-	if (!ReadFile((HANDLE)fdVal, b, len, &readed, nullptr))
+	if (!ReadFile((void *) fdVal, b, len, &readed, nullptr))
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 	return readed;
 }
 DWORD Filesystem::write(QWORD fdVal, const void *b, DWORD len)
 {
 	DWORD written;
-	if (!WriteFile((HANDLE)fdVal, b, len, &written, nullptr))
+	if (!WriteFile((void *) fdVal, b, len, &written, nullptr))
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 	return written;
 }
@@ -170,16 +236,16 @@ void Filesystem::seek(QWORD fdVal, QWORD offset, DWORD mode)
 {
 	LARGE_INTEGER distance;
 	distance.QuadPart = (long long) offset;
-	if (!SetFilePointerEx((HANDLE) fdVal, distance, nullptr, mode))
+	if (!SetFilePointerEx((void *) fdVal, distance, nullptr, mode))
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 }
 void Filesystem::flush(QWORD fdVal)
 {
-	if (!FlushFileBuffers((HANDLE) fdVal))
+	if (!FlushFileBuffers((void *) fdVal))
 	{
-		throw Memory::exception(GetLastError(), Memory::DOSERROR);
+		throw Memory::exception(Memory::error(), Memory::DOSERROR);
 	}
 }
 QWORD Filesystem::available(QWORD fdVal)
