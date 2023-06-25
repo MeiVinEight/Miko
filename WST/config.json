@@ -12,6 +12,7 @@
 	"exe": "..\\.release\\WST",
 	"options":
 	[
+		"/EHsc",
 		"/O1",
 		"/link",
 		"/NOD",
