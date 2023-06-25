@@ -1,8 +1,7 @@
-#include "definitions.h"
-#include "crt.h"
-
 #include <memory.h>
 #include <exception.h>
+
+#include "crt.h"
 
 
 #define MAX_SYM_NAME 2000
@@ -15,13 +14,13 @@ typedef struct
 {
 	DWORD SizeOfStruct;
 	DWORD TypeIndex;        // Type Index of symbol
-	ULONG64     Reserved[2];
+	QWORD     Reserved[2];
 	DWORD Index;
 	DWORD Size;
-	ULONG64     ModBase;          // Base Address of module comtaining this symbol
+	QWORD     ModBase;          // Base Address of module comtaining this symbol
 	DWORD Flags;
-	ULONG64     Value;            // Value of symbol, ValuePresent should be 1
-	ULONG64     Address;          // Address of symbol including base address of module
+	QWORD     Value;            // Value of symbol, ValuePresent should be 1
+	QWORD     Address;          // Address of symbol including base address of module
 	DWORD Register;         // register holding value or pointer to value
 	DWORD Scope;            // scope of the symbol
 	DWORD Tag;              // pdb classification
@@ -69,7 +68,7 @@ Memory::exception::frame::frame(void *returnAddress)
 	char *modname = (char *) Memory::allocate(MAX_SYM_NAME + 1)/*[MAX_SYM_NAME + 1]{0}*/;
 	memset(modname, 0, MAX_SYM_NAME + 1);
 	// K32GetModuleBaseNameA(GetCurrentProcess(), (HMODULE) this->module, modname, MAX_SYM_NAME);
-	DWORD len = GetModuleFileNameA((HMODULE) this->module, modname, MAX_SYM_NAME);
+	DWORD len = GetModuleFileNameA(this->module, modname, MAX_SYM_NAME);
 	DWORD idx = len;
 	while (idx && modname[--idx] != '\\');
 	idx++;

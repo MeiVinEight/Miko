@@ -1,8 +1,6 @@
-#include "definitions.h"
-#include "crt.h"
-#include "ErrorMessage.h"
-
 #include <exception.h>
+
+#include "crt.h"
 
 DWORD order_value = 1;
 char *order_point = (char *) &order_value;

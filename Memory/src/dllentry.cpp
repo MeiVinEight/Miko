@@ -1,4 +1,3 @@
-#include "definitions.h"
 #include "crt.h"
 #include "C_specific_handler.h"
 #include "ErrorMessage.h"
@@ -90,15 +89,15 @@ void onexit(void)
 
 #endif
 
-HANDLE __stdcall GetProcessHeap(void);
+void *__stdcall GetProcessHeap(void);
 DWORD __declspec(dllimport) __stdcall SymSetOptions(DWORD);
-BOOL __declspec(dllimport) __stdcall SymInitialize(HANDLE, PCSTR, BOOL);
-BOOL __declspec(dllimport) __stdcall SymCleanup(HANDLE);
-FARPROC __stdcall GetProcAddress(void *, const void *);
-HMODULE __stdcall GetModuleHandleA(const void *);
+BOOL __declspec(dllimport) __stdcall SymInitialize(void *, const char *, BOOL);
+BOOL __declspec(dllimport) __stdcall SymCleanup(void *);
+void *__stdcall GetProcAddress(void *, const void *);
+void *__stdcall GetModuleHandleA(const void *);
 void *__stdcall GetCurrentProcess(void);
 
-HMODULE NTDLL = nullptr;
+void *NTDLL = nullptr;
 
 
 int __stdcall
@@ -125,7 +124,7 @@ _DllMainCRTStartup
 			result &= NTDLL != nullptr;
 			if (NTDLL)
 			{
-				RtlNtStatusToDosError = (ULONG (*)(long)) GetProcAddress(NTDLL, "RtlNtStatusToDosError");
+				RtlNtStatusToDosError = (DWORD (*)(long)) GetProcAddress(NTDLL, "RtlNtStatusToDosError");
 				result &= RtlNtStatusToDosError != nullptr;
 				NTDLL___C_specific_handler = (C_SPECIFIC_HANDLER) GetProcAddress(NTDLL, "__C_specific_handler");
 				result &= NTDLL___C_specific_handler != nullptr;

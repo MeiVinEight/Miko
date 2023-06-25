@@ -1,7 +1,8 @@
 #ifndef CMAKE_BUILD
 
+#include "WinType.h"
+
 #include "ExceptionHandler.h"
-#include "definitions.h"
 #include "crt.h"
 
 extern "C"
@@ -60,7 +61,7 @@ extern "C"
 #pragma region TYPEDEF
 typedef void (__stdcall *PFNPREPARE_FOR_THROW)(void *);
 typedef unsigned long long EHRegistrationNode;
-typedef PVOID (*EXCEPTION_HANDLER)(void *, EHRegistrationNode, ULONG, QWORD);
+typedef void *(*EXCEPTION_HANDLER)(void *, EHRegistrationNode, DWORD, QWORD);
 #pragma endregion
 
 #pragma region STRUCTS
@@ -93,9 +94,9 @@ typedef struct _EXCEPTION_RECORD
 	DWORD ExceptionCode;
 	DWORD ExceptionFlags;
 	struct _EXCEPTION_RECORD *ExceptionRecord;
-	PVOID ExceptionAddress;
+	void *ExceptionAddress;
 	DWORD NumberParameters;
-	ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
+	QWORD ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
 } EXCEPTION_RECORD, *PEXCEPTION_RECORD;
 typedef struct EHExceptionRecord
 {
@@ -130,11 +131,11 @@ typedef struct _xDISPATCHER_CONTEXT
 	unsigned long long ControlPc;
 	unsigned long long ImageBase;
 	PRUNTIME_FUNCTION  FunctionEntry;
-	ULONG_PTR          EstablisherFrame;
+	QWORD              EstablisherFrame;
 	QWORD              TargetIp;
 	void              *ContextRecord;
-	PVOID              LanguageHandler;
-	PVOID              HandlerData;
+	void              *LanguageHandler;
+	void              *HandlerData;
 	void              *HistoryTable;
 	DWORD              ScopeIndex;
 } DispatcherContext;

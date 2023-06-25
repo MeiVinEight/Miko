@@ -104,7 +104,7 @@ Memory::string Memory::message(DWORD errcode, BYTE type)
 			// EN US = 0x0409
 			DWORD len = FormatMessageA(flags, nullptr, errcode, 0x0409, buf, sizeof(buf), nullptr);
 			if (len == 0)
-				throw Memory::exception(GetLastError(), Memory::DOSERROR);
+				throw Memory::exception(Memory::error(), Memory::DOSERROR);
 			// trialing blanks
 			while (len && (buf[--len] <= 0x20));
 			len++;
