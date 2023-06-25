@@ -6,7 +6,6 @@
 #define DLL_PROCESS_ATTACH  1
 #define SOCKET_ERROR        (-1)
 
-typedef void *HINSTANCE;
 typedef struct
 {
 	WORD					wVersion;
