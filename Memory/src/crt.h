@@ -1,15 +1,13 @@
 #ifndef CRT_H
 #define CRT_H
 
+#include <allocate.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-
-void *__cdecl malloc(unsigned long long);
-void *__cdecl realloc(void *, unsigned long long);
-void __cdecl free(void *);
 void *memcpy(void *, const void *, unsigned long long);
 void *memset(void *, int, unsigned long long);
 
