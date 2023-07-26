@@ -1,7 +1,7 @@
 {
 	"name": "Memory",
 	"source": "src",
-	"include":"include",
+	"include": "include",
 	"definitions":
 	[
 		"COMPILE",

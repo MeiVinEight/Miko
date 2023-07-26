@@ -1,5 +1,3 @@
-#include "crt.h"
-
 void *heap = 0;
 
 #ifndef CMAKE_BUILD
@@ -17,12 +15,19 @@ typedef struct ExitNode
 
 ExitNode *exittable = 0;
 
-void *__cdecl malloc(unsigned long long size)
+__declspec(dllexport) void *__cdecl malloc(unsigned long long size)
 {
 	size += !size;
 	return HeapAlloc(heap, 0, size);
 }
-void *__cdecl realloc(void *block, unsigned long long size)
+__declspec(dllexport) void __cdecl free(void *block)
+{
+	if (block)
+	{
+		HeapFree(heap, 0, block);
+	}
+}
+__declspec(dllexport) void *__cdecl realloc(void *block, unsigned long long size)
 {
 	if (!block)
 		return malloc(size);
@@ -33,12 +38,14 @@ void *__cdecl realloc(void *block, unsigned long long size)
 	}
 	return HeapReAlloc(heap, 0, block, size);
 }
-void __cdecl free(void *block)
+__declspec(dllexport) void *memset(void *addr, int c, unsigned long long size)
 {
-	if (block)
+	unsigned char *buf = (unsigned char *) addr;
+	for (unsigned long long i = 0; i < size; i++)
 	{
-		HeapFree(heap, 0, block);
+		buf[i] = c;
 	}
+	return addr;
 }
 __declspec(dllexport) int __cdecl _purecall()
 {
