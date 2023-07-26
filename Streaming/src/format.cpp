@@ -138,8 +138,8 @@ Streaming::format &Streaming::format::operator>>(String::string &str)
 	bool continu = true;
 	while (continu)
 	{
-		char c;
-		(*this) >> c;
+		BYTE c;
+		(*this) >> *((char *) &c);
 		whitespace &= c <= 0x20;
 		continu = whitespace || c > 0x20;
 		this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
