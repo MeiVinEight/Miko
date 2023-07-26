@@ -18,7 +18,6 @@
 #define STD_OUTPUT_HANDLE   ((DWORD)-11)
 #define STD_ERROR_HANDLE    ((DWORD)-12)
 
-QWORD strlen(const void *);
 Memory::string cstring(const String::string &);
 
 #endif //FSDEF_H
