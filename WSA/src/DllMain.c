@@ -64,7 +64,9 @@ _DllMainCRTStartup
 		case DLL_PROCESS_ATTACH:
 		{
 			WSADATA data;
-			int result = WSAStartup(0x0202, &data);
+			int result = 1;
+			DWORD error = WSAStartup(0x0202, &data);
+			result &= !error;
 			CRTINIT();
 			return result;
 		}
