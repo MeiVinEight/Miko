@@ -23,6 +23,20 @@ String::string &String::string::operator=(const char *str)
 }
 String::string &String::string::operator=(const String::string &) & = default;
 String::string &String::string::operator=(String::string &&move) & noexcept = default;
+bool String::string::operator<(const char *str) const
+{
+	Memory::string str1(this->length() + 1);
+	Memory::copy(str1.address, this->address.address, this->length());
+	str1[this->length()] = 0;
+	return String::compare((const char *) str1.address, str) < 0;
+}
+bool String::string::operator<(const String::string &str) const
+{
+	Memory::string str2(str.length() + 1);
+	Memory::copy(str2.address, str.address.address, str.length());
+	str2[str.length()] = 0;
+	return (*this) < (const char *) str2.address;
+}
 bool String::string::operator==(const char *str) const
 {
 	QWORD len = String::length(str);

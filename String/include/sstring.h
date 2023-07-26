@@ -23,6 +23,8 @@ namespace String
 		STRINGAPI String::string &operator=(const char *);
 		STRINGAPI String::string &operator=(const String::string &) &;
 		STRINGAPI String::string &operator=(String::string &&) & noexcept;
+		STRINGAPI bool operator<(const char *) const;
+		STRINGAPI bool operator<(const String::string &) const;
 		STRINGAPI bool operator==(const char *) const;
 		STRINGAPI bool operator==(const String::string &) const;
 		STRINGAPI bool operator!=(const String::string &) const;
@@ -40,6 +42,7 @@ namespace String
 	};
 
 	STRINGAPI QWORD length(const void *);
+	STRINGAPI int compare(const char *, const char *);
 	STRINGAPI String::string stringify(double);
 	STRINGAPI String::string stringify(QWORD, bool);
 	STRINGAPI String::string stringify(QWORD);

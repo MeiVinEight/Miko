@@ -6,6 +6,16 @@ const DWORD EXP_SHIFT = 52;
 const QWORD SIGNIF_BIT_MASK = (1ULL << EXP_SHIFT) - 1;
 const QWORD EXP_OFFSET = 1023;
 
+extern "C"
+{
+
+QWORD strlen(const char *);
+int strcmp(const char *a, const char *b);
+#pragma intrinsic(strlen)
+#pragma intrinsic(strcmp)
+
+}
+
 QWORD DoubleToLong(double x)
 {
 	return *((QWORD *) &x);
@@ -72,9 +82,11 @@ void roundup(int firstDigitIndex, int nDigits, Memory::string &digits, int &decE
 
 QWORD String::length(const void *str)
 {
-	const char *s = (const char *)str;
-	while (*s++);
-	return s - (const char *)str - 1;
+	return strlen((const char *) str);
+}
+int String::compare(const char *str1, const char *str2)
+{
+	return strcmp(str1, str2);
 }
 String::string String::stringify(double d)
 {
