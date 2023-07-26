@@ -18,13 +18,27 @@ DWORD Streaming::format::read(void *b, DWORD len)
 			readed++;
 			this->temporary = 0xFFFFFFFF;
 		}
-		readed += this->stream->read(buf, len);
+		while (len)
+		{
+			DWORD x = this->stream->read(buf, len);
+			len -= x;
+			readed += x;
+			buf += x;
+		}
 	}
 	return readed;
 }
 DWORD Streaming::format::write(const void *b, DWORD len)
 {
-	return this->stream->write(b, len);
+	QWORD length = len;
+	const BYTE *buf = (const BYTE *) b;
+	while (length)
+	{
+		DWORD written = this->stream->write(buf, length);
+		length -= written;
+		buf += written;
+	}
+	return len;
 }
 void Streaming::format::flush()
 {
@@ -36,12 +50,26 @@ QWORD Streaming::format::available()
 }
 Streaming::format &Streaming::format::operator>>(const Memory::string &data)
 {
-	this->stream->read(data.address, data.length);
+	QWORD length = data.length;
+	BYTE *buf = data.address;
+	while (length)
+	{
+		DWORD readed = this->stream->read(buf, length);
+		length -= readed;
+		buf += readed;
+	}
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(const Memory::string &data)
 {
-	this->stream->write(data.address, data.length);
+	QWORD length = data.length;
+	const BYTE *buf = data.address;
+	while (length)
+	{
+		DWORD written = this->stream->write(buf, length);
+		length -= written;
+		buf += written;
+	}
 	return *this;
 }
 Streaming::format &Streaming::format::operator>>(char &x)
