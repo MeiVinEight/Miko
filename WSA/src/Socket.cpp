@@ -110,6 +110,10 @@ void WSA::Socket::bind(const WSA::SocketAddress &endpoint)
 		Memory::copy(&addr.sin6_addr, this->IP.address, 16);
 		addr.sin6_port = htons(this->LP);
 		WSA::bind(this->connection, &addr, sizeof(SOCKADDR_IN6));
+
+		int len = sizeof(SOCKADDR_IN6);
+		int err = getsockname(this->connection, &addr, &len);
+		this->LP = htons(addr.sin6_port);
 	}
 	else
 	{
@@ -118,6 +122,11 @@ void WSA::Socket::bind(const WSA::SocketAddress &endpoint)
 		addr.sin_addr.S_un.S_addr = htonl(this->IP.make());
 		addr.sin_port = htons(this->LP);
 		WSA::bind(this->connection, &addr, sizeof(SOCKADDR_IN));
+
+		int len = sizeof(SOCKADDR_IN);
+		int err = getsockname(this->connection, &addr, &len);
+		this->LP = htons(addr.sin_port);
+		Memory::copy(this->IP.address + 12, &addr.sin_addr, 4);
 	}
 }
 void WSA::Socket::listen() const
