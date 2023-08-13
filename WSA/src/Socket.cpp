@@ -150,7 +150,7 @@ void WSA::Socket::connect(WSA::SocketAddress addr)
 	{
 		// connect to server
 		SOCKADDR_IN addr_in = {};
-		addr_in.sin_family = WSA::AF_INET6;
+		addr_in.sin_family = WSA::AF_INET;
 		addr_in.sin_addr.S_un.S_addr = htonl(this->IP.make());
 		addr_in.sin_port = htons(this->RP);
 		WSA::connect(this->connection, &addr_in, sizeof(SOCKADDR_IN));
