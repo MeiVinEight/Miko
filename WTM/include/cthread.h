@@ -3,6 +3,7 @@
 
 #include <WTMSpec.h>
 #include <WinType.h>
+#include <memory.h>
 
 namespace WTM
 {
