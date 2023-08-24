@@ -50,26 +50,12 @@ QWORD Streaming::format::available()
 }
 Streaming::format &Streaming::format::operator>>(const Memory::string &data)
 {
-	QWORD length = data.length;
-	BYTE *buf = data.address;
-	while (length)
-	{
-		DWORD readed = this->stream->read(buf, length);
-		length -= readed;
-		buf += readed;
-	}
+	this->read(data.address, data.length);
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(const Memory::string &data)
 {
-	QWORD length = data.length;
-	const BYTE *buf = data.address;
-	while (length)
-	{
-		DWORD written = this->stream->write(buf, length);
-		length -= written;
-		buf += written;
-	}
+	this->write(data.address, data.length);
 	return *this;
 }
 Streaming::format &Streaming::format::operator>>(char &x)
