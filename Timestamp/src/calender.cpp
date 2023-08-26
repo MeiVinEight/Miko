@@ -1,4 +1,5 @@
 #include <calender.h>
+#include <timestamp.h>
 
 #include "definitions.h"
 
@@ -23,7 +24,6 @@ extern "C"
 {
 BOOL FileTimeToSystemTime(const void *, void *);
 BOOL FileTimeToLocalFileTime(const void *, void *);
-void GetLocalTime(void *);
 }
 
 void SetCalenderZone(LPSYSTEMTIME systemTime, Timestamp::calender *pCal)
@@ -41,28 +41,19 @@ void SetCalenderZone(LPSYSTEMTIME systemTime, Timestamp::calender *pCal)
 
 void Timestamp::calender::convert()
 {
-	SYSTEMTIME st;
-	GetLocalTime(&st);
-	SetCalenderZone(&st, this);
+	this->convert(Timestamp::current());
 }
 void Timestamp::calender::convert(QWORD timestamp)
 {
 	timestamp += offset;
 	timestamp *= 10000;
-	FILETIME ft;
-	ft.dwLowDateTime = (timestamp >> 0x00) & 0xFFFFFFFF;
-	ft.dwHighDateTime = (timestamp >> 0x20) & 0xFFFFFFFF;
-	FILETIME lft;
+	FILETIME &ft = *((FILETIME *) &timestamp);
 	SYSTEMTIME st;
-	if (FileTimeToLocalFileTime(&ft, &lft))
+	if (FileTimeToSystemTime(&ft, &st))
 	{
-		if (FileTimeToSystemTime(&lft, &st))
-		{
-			SetCalenderZone(&st, this);
-		}
+		SetCalenderZone(&st, this);
 	}
-	// DWORD x = GetLastError();
-	// throw Exception::exception(Exception::message(x));
+	// throw Memory::exception(Memory::DOSERROR, Memory::error());
 }
 WORD &Timestamp::calender::operator[](WORD idx)
 {

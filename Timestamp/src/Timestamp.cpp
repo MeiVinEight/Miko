@@ -5,6 +5,7 @@
 extern "C"
 {
 void GetSystemTimeAsFileTime(void *);
+BOOL FileTimeToLocalFileTime(const void *, void *);
 }
 
 typedef struct
@@ -15,8 +16,13 @@ typedef struct
 
 QWORD Timestamp::current()
 {
-	FILETIME ft;
+	FILETIME ft, lft;
 	GetSystemTimeAsFileTime(&ft);
-	QWORD time = ((QWORD)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-	return (time / 10000) - offset;
+	if (FileTimeToLocalFileTime(&ft, &lft))
+	{
+		QWORD &time = *((QWORD *) &lft);
+		return (time /= 10000) -= offset;
+	}
+	// throw Memory::exception(Memory::DOSERROR, Memory::error());
+	return ~((QWORD) 0);
 }
