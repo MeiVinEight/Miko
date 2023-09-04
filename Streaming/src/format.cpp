@@ -79,6 +79,7 @@ Streaming::format &Streaming::format::operator>>(DWORD &x)
 }
 Streaming::format &Streaming::format::operator>>(QWORD &x)
 {
+	bool ava = true;
 	QWORD x1 = 0;
 	bool sign = true;
 	bool neg = false;
@@ -86,31 +87,34 @@ Streaming::format &Streaming::format::operator>>(QWORD &x)
 	bool valid = false;
 	char c;
 	bool continu = true;
-	while (continu)
+	while (ava && continu)
 	{
-		(*this) >> c;
-		whitespace |= (c < 0x21);
-		if (c == '+' || c == '-')
+		ava &= this->read(&c, 1) != 0;
+		if (ava)
 		{
-			continu = sign;
-			if (sign)
+			whitespace |= (c < 0x21);
+			if (c == '+' || c == '-')
 			{
-				sign = false;
-				neg = c == '-';
+				continu = sign;
+				if (sign)
+				{
+					sign = false;
+					neg = c == '-';
+				}
 			}
+			else if (c >= '0' && c <= '9')
+			{
+				valid = true;
+				int d = c - '0';
+				x1 *= 10;
+				x1 += d;
+			}
+			else
+			{
+				continu = !whitespace;
+			}
+			this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
 		}
-		else if (c >= '0' && c <= '9')
-		{
-			valid = true;
-			int d = c - '0';
-			x1 *= 10;
-			x1 += d;
-		}
-		else
-		{
-			continu = !whitespace;
-		}
-		this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
 	}
 	x1 = neg ? -x1 : x1;
 	valid ? (x = x1) : 0;
@@ -121,21 +125,25 @@ Streaming::format &Streaming::format::operator>>(String::string &str)
 	Memory::string buf(16);
 	QWORD len = 0;
 	bool whitespace = true;
+	bool ava = true;
 	bool continu = true;
-	while (continu)
+	while (ava && continu)
 	{
 		BYTE c;
-		(*this) >> *((char *) &c);
-		whitespace &= c <= 0x20;
-		continu = whitespace || c > 0x20;
-		this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
-		if (c > 0x20)
+		ava &= this->read(&c, 1) != 0;
+		if (ava)
 		{
-			if (len >= buf.length)
+			whitespace &= c <= 0x20;
+			continu = whitespace || c > 0x20;
+			this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
+			if (c > 0x20)
 			{
-				buf.resize(buf.length * 2);
+				if (len >= buf.length)
+				{
+					buf.resize(buf.length * 2);
+				}
+				buf[len++] = c;
 			}
-			buf[len++] = c;
 		}
 	}
 	str = String::string(buf, len);
