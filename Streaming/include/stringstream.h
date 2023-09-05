@@ -10,10 +10,10 @@ namespace Streaming
 		public:
 		Memory::string address;
 		QWORD position = 0;
-		DWORD read(void *, DWORD) override;
-		DWORD write(const void *, DWORD) override;
-		void flush() override;
-		QWORD available() override;
+		STREAMINGAPI DWORD read(void *, DWORD) override;
+		STREAMINGAPI DWORD write(const void *, DWORD) override;
+		STREAMINGAPI void flush() override;
+		STREAMINGAPI QWORD available() override;
 	};
 }
 
