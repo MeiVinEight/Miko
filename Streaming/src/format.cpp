@@ -18,9 +18,10 @@ DWORD Streaming::format::read(void *b, DWORD len)
 			readed++;
 			this->temporary = 0xFFFFFFFF;
 		}
-		while (len)
+		DWORD x = 0xFFFFFFFF;
+		while (len && x)
 		{
-			DWORD x = this->stream->read(buf, len);
+			x = this->stream->read(buf, len);
 			len -= x;
 			readed += x;
 			buf += x;
