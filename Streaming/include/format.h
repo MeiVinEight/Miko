@@ -6,6 +6,7 @@
 #include <stream.h>
 #include <memory.h>
 #include <sstring.h>
+#include <exception.h>
 
 namespace Streaming
 {
@@ -35,6 +36,7 @@ namespace Streaming
 		STREAMINGAPI Streaming::format &operator<<(void *);
 		STREAMINGAPI Streaming::format &operator<<(const char *);
 		STREAMINGAPI Streaming::format &operator<<(const String::string &);
+		STREAMINGAPI Streaming::format &operator<<(const Memory::exception &);
 		STREAMINGAPI Streaming::format &operator<<(void (*)(Streaming::stream *));
 	};
 }

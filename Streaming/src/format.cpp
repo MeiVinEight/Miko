@@ -1,4 +1,7 @@
 #include <format.h>
+#include <endian.h>
+#include <hexadecimal.h>
+#include <streaming.h>
 
 Streaming::format::format(Streaming::stream *stream): stream(stream)
 {
@@ -195,6 +198,32 @@ Streaming::format &Streaming::format::operator<<(const char *str)
 Streaming::format &Streaming::format::operator<<(const String::string &str)
 {
 	(*this) << str.address;
+	return *this;
+}
+Streaming::format &Streaming::format::operator<<(const Memory::exception &exce)
+{
+	Streaming::format &cout = *this;
+	Memory::string err(4);
+	Memory::BE::set(exce.code, err.address, 4);
+	cout << '[' << exce.type << "][" << Hexadecimal::format(err) << "] " << exce.message << Streaming::LF;
+	for (DWORD i = 0; i < exce.count; i++)
+	{
+		cout << exce.stack[i].offset;
+		cout << " [";
+		cout << exce.stack[i].library;
+		cout << '+';
+		cout << Hexadecimal::stringify((QWORD) exce.stack[i].offset - (QWORD) exce.stack[i].module);
+		cout << ']';
+		if (exce.stack[i].function.length)
+		{
+			cout << " (";
+			cout << exce.stack[i].function;
+			cout << '+';
+			cout << Hexadecimal::stringify((QWORD) exce.stack[i].offset - (QWORD) exce.stack[i].address);
+			cout << ')';
+		}
+		cout << Streaming::LF;
+	}
 	return *this;
 }
 Streaming::format &Streaming::format::operator<<(void (*f)(Streaming::stream *))
