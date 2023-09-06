@@ -4,6 +4,7 @@
 #include <WSASpec.h>
 #include <WinType.h>
 #include <Address.h>
+#include <memory.h>
 
 namespace WSA
 {
@@ -20,6 +21,7 @@ namespace WSA
 		WSAAPI SocketAddress(QWORD, QWORD, WORD);
 		WSAAPI SocketAddress(WORD);
 		WSAAPI SocketAddress(const WSA::Address &, WORD);
+		WSAAPI Memory::string stringify() const;
 	};
 }
 
