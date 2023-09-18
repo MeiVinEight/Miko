@@ -1,0 +1,29 @@
+{
+	"name": "Concurrency",
+	"source": "src",
+	"include": "include",
+	"definitions":
+	[
+		"CONCURRENCY_SHARED"
+	],
+	"depends":
+	[
+		"Memory",
+		"WTM"
+	],
+	"obj": ".compile\\",
+	"exe": "..\\.release\\Concurrency",
+	"options":
+	[
+		"/EHsc",
+		"/GS-",
+		"/O1",
+		"/LD",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"..\\Memory\\.compile\\typeinfo.obj",
+		"..\\.release\\Memory.lib",
+		"..\\.release\\WTM.lib"
+	]
+}
