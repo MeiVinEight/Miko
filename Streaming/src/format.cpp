@@ -83,45 +83,9 @@ Streaming::format &Streaming::format::operator>>(DWORD &x)
 }
 Streaming::format &Streaming::format::operator>>(QWORD &x)
 {
-	bool ava = true;
-	QWORD x1 = 0;
-	bool sign = true;
-	bool neg = false;
-	bool whitespace = false;
-	bool valid = false;
-	char c;
-	bool continu = true;
-	while (ava && continu)
-	{
-		ava &= this->read(&c, 1) != 0;
-		if (ava)
-		{
-			whitespace |= (c < 0x21);
-			if (c == '+' || c == '-')
-			{
-				continu = sign;
-				if (sign)
-				{
-					sign = false;
-					neg = c == '-';
-				}
-			}
-			else if (c >= '0' && c <= '9')
-			{
-				valid = true;
-				int d = c - '0';
-				x1 *= 10;
-				x1 += d;
-			}
-			else
-			{
-				continu = !whitespace;
-			}
-			this->temporary = continu ? 0xFFFFFFFF : (c & 0xFF);
-		}
-	}
-	x1 = neg ? -x1 : x1;
-	valid ? (x = x1) : 0;
+	String::string num;
+	(*this) >> num;
+	x = String::integer(num);
 	return *this;
 }
 Streaming::format &Streaming::format::operator>>(String::string &str)
