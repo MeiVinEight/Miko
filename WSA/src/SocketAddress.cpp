@@ -27,6 +27,10 @@ Memory::string WSA::SocketAddress::stringify() const
 		port[off--] = ('0' + (dwPort % 10));
 		dwPort /= 10;
 	}
+	if (off == 4)
+	{
+		port[off--] = '0';
+	}
 	off++;
 	Memory::string ret(ip.length + (2 * !this->IP.IPV4()) + 1 + (5 - off));
 	QWORD idx = !this->IP.IPV4();
