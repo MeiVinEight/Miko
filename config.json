@@ -16,6 +16,7 @@
 		"WTM",
 		"HTTP",
 		"CWS",
+		"Concurrency",
 		"WST"
 	]
 }
