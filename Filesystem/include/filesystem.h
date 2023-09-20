@@ -1,14 +1,9 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#ifdef FS_SHARED
-	#define FSAPI __declspec(dllexport)
-#else
-	#define FSAPI __declspec(dllimport)
-#endif
-
 #include <memory.h>
 #include <sstring.h>
+#include <fsspec.h>
 
 /*
  * TODO UNC ?

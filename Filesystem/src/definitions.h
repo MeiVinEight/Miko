@@ -1,8 +1,6 @@
 #ifndef FSDEF_H
 #define FSDEF_H
 
-#include <filesystem.h>
-
 #define MAX_PATH					260
 
 #define FILE_ATTRIBUTE_DIRECTORY	0x00000010
@@ -17,7 +15,5 @@
 #define STD_INPUT_HANDLE    ((DWORD)-10)
 #define STD_OUTPUT_HANDLE   ((DWORD)-11)
 #define STD_ERROR_HANDLE    ((DWORD)-12)
-
-Memory::string cstring(const String::string &);
 
 #endif //FSDEF_H
