@@ -52,7 +52,6 @@ typedef enum
 extern "C"
 {
 void *__stdcall CreateFileA(const char *, DWORD, DWORD, void *, DWORD, DWORD, void *);
-int __stdcall OpenFile(const char *, void *, unsigned int);
 BOOL __stdcall ReadFile(void *, void *, DWORD, DWORD *, void *);
 BOOL __stdcall WriteFile(void *, const void *, DWORD, DWORD *, void *);
 BOOL __stdcall SetFilePointerEx(void *, LARGE_INTEGER, PLARGE_INTEGER, DWORD);
@@ -200,8 +199,11 @@ bool Filesystem::absolute(const String::string &path)
 }
 QWORD Filesystem::open(const String::string &path, DWORD mode)
 {
-	OFSTRUCT data;
-	int hfVal = OpenFile((char *) path.native().address, &data, mode);
+	return Filesystem::open(path, mode, 0);
+}
+QWORD Filesystem::open(const String::string &path, DWORD mode, DWORD share)
+{
+	QWORD hfVal = (QWORD) CreateFileA((char *) path.native().address, mode, share, nullptr, Filesystem::OPEN_EXISTING, 0, nullptr);
 	if (hfVal == Filesystem::FILE_ERROR)
 	{
 		throw Memory::exception(Memory::error(), Memory::DOSERROR);

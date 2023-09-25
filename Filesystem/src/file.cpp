@@ -5,7 +5,7 @@
 Streaming::file::file(QWORD fdVal): object(fdVal)
 {
 }
-Streaming::file::file(const String::string &path): file(Filesystem::open(path, Filesystem::OF_READWRITE))
+Streaming::file::file(const String::string &path): file(Filesystem::open(path, Filesystem::FA_READ_DATA | Filesystem::FA_WRITE_DATA))
 {
 }
 Streaming::file::file(Streaming::file &&move) noexcept: object(move.object)

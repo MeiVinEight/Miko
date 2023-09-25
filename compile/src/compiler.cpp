@@ -114,7 +114,7 @@ String::string ReadJson(const String::string &filePath)
 		Streaming::cout << "File not found: " << filePath << Streaming::LF;
 		throw Memory::exception(2, Memory::DOSERROR);
 	}
-	Streaming::file file(Filesystem::open(filePath, Filesystem::OF_READ));
+	Streaming::file file(Filesystem::open(filePath, Filesystem::FA_READ_DATA));
 	Memory::string buf(file.available());
 	/*
 	 * Streaming::fully is a blocked-io object,
