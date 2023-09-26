@@ -88,9 +88,9 @@ int String::compare(const char *str1, const char *str2)
 {
 	return strcmp(str1, str2);
 }
-String::string String::stringify(double d)
+String::string String::stringify(double d, BYTE precision)
 {
-	Memory::string digits(20);
+	Memory::string digits(32);
 	Memory::fill(digits.address, 0, digits.length);
 	int decExponent = 0;
 	int firstDigitIndex;
@@ -162,6 +162,7 @@ String::string String::stringify(double d)
 		long long lowDigitDifference;
 		int q;
 
+		firstDigitIndex = 1;
 		MWORD b = (POWER(5, B5) * fractBits) << B2;
 		MWORD s = POWER(5, S5) << S2;
 		MWORD m = POWER(5, M5) << M2;
@@ -177,7 +178,7 @@ String::string String::stringify(double d)
 		}
 		else
 		{
-			digits[ndigit++] = '0' + q;
+			digits[firstDigitIndex + ndigit++] = '0' + q;
 		}
 		if (decExp < -3 || decExp >= 8)
 			high = low = false;
@@ -195,12 +196,11 @@ String::string String::stringify(double d)
 			{
 				low = high = true;
 			}
-			digits[ndigit++] = '0' + q;
+			digits[firstDigitIndex + ndigit++] = '0' + q;
 		}
 		lowDigitDifference = (b << 1).compare(tens); // (long long) ((long long) (b << 1) - tens)
 
 		decExponent = decExp + 1;
-		firstDigitIndex = 0;
 		nDigits = ndigit;
 		if (high)
 		{
@@ -225,94 +225,148 @@ String::string String::stringify(double d)
 		}
 	}
 
-	BYTE result[26]{0};
+	Memory::string result(255);
 	DWORD i = 0;
 	if (isNegative)
 		result[i++] = '-';
 
-	if (decExponent > 0 && decExponent < 8)
+	if (precision != 0xFF)
 	{
-		DWORD charLength = (nDigits < decExponent) ? nDigits : decExponent;
-		Memory::copy(result + i, digits.address + firstDigitIndex, charLength);
+		if (decExponent + precision < nDigits)
+		{
+			BYTE carr = digits[firstDigitIndex + decExponent + precision] > '4';
+			for (QWORD j = firstDigitIndex + decExponent + precision; carr && j --> firstDigitIndex;)
+			{
+				carr = 0;
+				digits[j]++;
+				if (digits[j] > '9')
+				{
+					carr = 1;
+					digits[j] -= 10;
+				}
+			}
+			digits[firstDigitIndex - 1] = '0' + carr;
+			firstDigitIndex -= carr;
+			decExponent += carr;
+			nDigits += carr;
+		}
+
+		if (decExponent <= 0)
+			result[i++] = '0';
+
+		BYTE charLength = decExponent < nDigits ? decExponent : nDigits;
+		Memory::copy(result.address + i, digits.address + firstDigitIndex, charLength);
 		i += charLength;
 		if (charLength < decExponent)
 		{
 			charLength = decExponent - charLength;
-			Memory::fill(result + i, '0', charLength);
+			Memory::fill(result.address + i, '0', charLength);
 			i += charLength;
-			result[i++] = '.';
+		}
+
+		result[i++] = '.';
+
+		BYTE trailing = precision;
+		if (decExponent < nDigits)
+		{
+			charLength = trailing < (nDigits - decExponent) ? trailing : (nDigits - decExponent);
+			Memory::copy(result.address + i, digits.address + firstDigitIndex + decExponent, charLength);
+			i += charLength;
+			trailing -= charLength;
+		}
+		Memory::fill(result.address + i, '0', trailing);
+		i += trailing;
+	}
+	else
+	{
+		if (decExponent > 0 && decExponent < 8)
+		{
+			DWORD charLength = (nDigits < decExponent) ? nDigits : decExponent;
+			Memory::copy(result.address + i, digits.address + firstDigitIndex, charLength);
+			i += charLength;
+			if (charLength < decExponent)
+			{
+				charLength = decExponent - charLength;
+				Memory::fill(result.address + i, '0', charLength);
+				i += charLength;
+				result[i++] = '.';
+				result[i++] = '0';
+			}
+			else
+			{
+				result[i++] = '.';
+				if (charLength < nDigits)
+				{
+					DWORD t = nDigits - charLength;
+					Memory::copy(result.address + i, digits.address + firstDigitIndex + charLength, t);
+					i += t;
+				}
+				else
+				{
+					result[i++] = '0';
+				}
+			}
+		}
+		else if (decExponent <= 0 && decExponent > -3)
+		{
 			result[i++] = '0';
+			result[i++] = '.';
+			if (decExponent != 0)
+			{
+				Memory::fill(result.address + i, '0', -decExponent);
+				i -= decExponent;
+			}
+			Memory::copy(result.address + i, digits.address + firstDigitIndex, nDigits);
+			i += nDigits;
 		}
 		else
 		{
+			result[i++] = digits[firstDigitIndex];
 			result[i++] = '.';
-			if (charLength < nDigits)
+			if (nDigits > 1)
 			{
-				DWORD t = nDigits - charLength;
-				Memory::copy(result + i, digits.address + firstDigitIndex + charLength, t);
-				i += t;
+				Memory::copy(result.address + i, digits.address + firstDigitIndex + 1, nDigits - 1);
+				i += nDigits - 1;
 			}
 			else
 			{
 				result[i++] = '0';
 			}
-		}
-	}
-	else if (decExponent <= 0 && decExponent > -3)
-	{
-		result[i++] = '0';
-		result[i++] = '.';
-		if (decExponent != 0)
-		{
-			Memory::fill(result + i, '0', -decExponent);
-			i -= decExponent;
-		}
-		Memory::copy(result + i, digits.address + firstDigitIndex, nDigits);
-		i += nDigits;
-	}
-	else
-	{
-		result[i++] = digits[firstDigitIndex];
-		result[i++] = '.';
-		if (nDigits > 1)
-		{
-			Memory::copy(result + i, digits.address + firstDigitIndex + 1, nDigits - 1);
-			i += nDigits - 1;
-		}
-		else
-		{
-			result[i++] = '0';
-		}
-		result[i++] = 'E';
-		int e;
-		if (decExponent <= 0)
-		{
-			result[i++] = '-';
-			e = -decExponent + 1;
-		}
-		else
-		{
-			e = decExponent - 1;
-		}
+			result[i++] = 'E';
+			int e;
+			if (decExponent <= 0)
+			{
+				result[i++] = '-';
+				e = -decExponent + 1;
+			}
+			else
+			{
+				e = decExponent - 1;
+			}
 
-		if (e < 10)
-		{
-			result[i++] = e + '0';
-		}
-		else if (e < 100)
-		{
-			result[i++] = (e / 10) + '0';
-			result[i++] = (e % 10) + '0';
-		}
-		else
-		{
-			result[i++] = (e / 100) + '0';
-			e %= 100;
-			result[i++] = (e / 10) + '0';
-			result[i++] = (e % 10) + '0';
+			if (e < 10)
+			{
+				result[i++] = e + '0';
+			}
+			else if (e < 100)
+			{
+				result[i++] = (e / 10) + '0';
+				result[i++] = (e % 10) + '0';
+			}
+			else
+			{
+				result[i++] = (e / 100) + '0';
+				e %= 100;
+				result[i++] = (e / 10) + '0';
+				result[i++] = (e % 10) + '0';
+			}
 		}
 	}
-	return String::string((char *) result, i);
+	return String::string((char *) result.address, i);
+}
+String::string String::stringify(double d)
+{
+	return String::stringify(d, -1);
 }
 String::string String::stringify(QWORD val, bool sign)
 {

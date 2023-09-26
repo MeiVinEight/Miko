@@ -43,6 +43,7 @@ namespace String
 
 	STRINGAPI QWORD length(const void *);
 	STRINGAPI int compare(const char *, const char *);
+	STRINGAPI String::string stringify(double, BYTE);
 	STRINGAPI String::string stringify(double);
 	STRINGAPI String::string stringify(QWORD, bool);
 	STRINGAPI String::string stringify(QWORD);
