@@ -81,6 +81,11 @@ String::string &String::string::operator+=(const String::string &str) &
 	Memory::copy(this->address.address + old, str.address.address, str.length());
 	return *this;
 }
+String::string &String::string::operator+=(char ch) &
+{
+	char buf[2] = {ch, 0};
+	return (*this) += buf;
+}
 String::string String::string::operator+(const char *str) const
 {
 	String::string lval(*this);
