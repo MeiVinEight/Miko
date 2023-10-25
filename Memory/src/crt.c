@@ -38,15 +38,6 @@ __declspec(dllexport) void *__cdecl realloc(void *block, unsigned long long size
 	}
 	return HeapReAlloc(heap, 0, block, size);
 }
-__declspec(dllexport) void *memset(void *addr, int c, unsigned long long size)
-{
-	unsigned char *buf = (unsigned char *) addr;
-	for (unsigned long long i = 0; i < size; i++)
-	{
-		buf[i] = c;
-	}
-	return addr;
-}
 __declspec(dllexport) int __cdecl _purecall()
 {
 	ExitProcess(3); // abort
